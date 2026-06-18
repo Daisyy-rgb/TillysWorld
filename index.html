@@ -8,42 +8,87 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-
-/* ── SIDEBAR ─────────────────────────────────────── */
 body{background:#201d16;display:flex;min-height:100vh;font-family:sans-serif;}
-.sidebar{width:210px;min-width:210px;background:#19160f;padding:1.4rem 0 2rem;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:100;border-right:1px solid rgba(255,255,255,0.04);}
-.sb-logo{padding:0 1.2rem 1.2rem;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:1.2rem;}
-.sb-logo .ey{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(184,173,158,.45);margin-bottom:4px;}
-.sb-logo .ti{font-family:'Cinzel',serif;font-size:15px;font-weight:400;color:#e8e2d8;letter-spacing:.1em;}
-.ng{margin-bottom:.4rem;}
-.ngl{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(184,173,158,.4);padding:.6rem 1.2rem .25rem;}
-.ni{display:flex;align-items:center;gap:8px;padding:.38rem 1.2rem;font-size:12px;color:#b8ad9e;cursor:pointer;transition:all .13s;border-left:2px solid transparent;user-select:none;}
+
+/* ── SIDEBAR ──────────────────────────────────── */
+.sidebar{width:214px;min-width:214px;background:#19160f;padding:1.4rem 0 1rem;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:100;border-right:1px solid rgba(255,255,255,.04);}
+.sb-logo{padding:0 1.2rem 1.1rem;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:1.1rem;}
+.sb-logo .ey{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(184,173,158,.4);margin-bottom:4px;}
+.sb-logo .ti{font-family:'Cinzel',serif;font-size:15px;color:#e8e2d8;letter-spacing:.1em;}
+.ng{margin-bottom:.3rem;}
+.ngl{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(184,173,158,.35);padding:.55rem 1.2rem .2rem;}
+.ni{display:flex;align-items:center;gap:8px;padding:.36rem 1.2rem;font-size:12px;color:#b8ad9e;cursor:pointer;border-left:2px solid transparent;user-select:none;transition:all .12s;}
 .ni:hover{color:#fff;background:rgba(255,255,255,.04);}
 .ni.active{color:#fff;border-left-color:#7b6fbb;background:rgba(123,111,187,.1);}
-.nd{width:4px;height:4px;border-radius:50%;background:rgba(184,173,158,.35);flex-shrink:0;transition:background .13s;}
+.nd{width:4px;height:4px;border-radius:50%;background:rgba(184,173,158,.3);flex-shrink:0;}
 .ni.active .nd{background:#7b6fbb;}
-.nadd{display:flex;align-items:center;gap:8px;padding:.38rem 1.2rem;font-size:11px;color:rgba(123,111,187,.8);cursor:pointer;transition:all .13s;}
-.nadd:hover{color:#9d93d8;background:rgba(123,111,187,.08);}
+.nadd{display:flex;align-items:center;gap:8px;padding:.36rem 1.2rem;font-size:11px;color:rgba(123,111,187,.75);cursor:pointer;transition:all .12s;}
+.nadd:hover{color:#b0a8e8;}
+.sb-bottom{margin-top:auto;padding:1rem 1.2rem 0;border-top:1px solid rgba(255,255,255,.06);}
+.sb-status{font-size:10px;color:#888;margin-bottom:.5rem;min-height:14px;}
+.sb-status.unsaved{color:#e0a020;}
+.sb-status.saving{color:#7b6fbb;}
+.sb-status.saved{color:#4a9960;}
+.sb-status.error{color:#c04040;}
+.sb-settings-btn{font-size:11px;color:rgba(184,173,158,.5);cursor:pointer;padding:4px 0;}
+.sb-settings-btn:hover{color:#b8ad9e;}
+.settings-panel{display:none;margin-top:.6rem;padding:.8rem;background:rgba(255,255,255,.05);border-radius:8px;}
+.settings-panel label{font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:#888;display:block;margin-bottom:4px;}
+.settings-panel input{width:100%;font-size:11px;font-family:monospace;padding:5px 8px;border-radius:5px;border:1px solid rgba(255,255,255,.12);background:#111;color:#ccc;margin-bottom:8px;}
+.settings-panel button{font-size:11px;padding:5px 12px;border-radius:5px;border:none;background:#3C3489;color:#fff;cursor:pointer;}
 
-/* ── MAIN ────────────────────────────────────────── */
-.main{margin-left:210px;flex:1;padding:2rem 2.4rem 3rem;max-width:980px;}
+/* ── EDIT MODE TOGGLE ─────────────────────────── */
+.edit-toggle-bar{display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;padding:.7rem 1rem;background:rgba(255,255,255,.04);border-radius:8px;}
+.edit-toggle-bar span{font-size:12px;color:#b8ad9e;}
+.toggle-switch{position:relative;width:36px;height:20px;cursor:pointer;}
+.toggle-switch input{opacity:0;width:0;height:0;}
+.toggle-track{position:absolute;inset:0;background:#444;border-radius:10px;transition:background .2s;}
+.toggle-thumb{position:absolute;width:14px;height:14px;background:#fff;border-radius:50%;top:3px;left:3px;transition:left .2s;}
+.toggle-switch input:checked~.toggle-track{background:#7b6fbb;}
+.toggle-switch input:checked~.toggle-thumb{left:19px;}
+
+/* ── MAIN ─────────────────────────────────────── */
+.main{margin-left:214px;flex:1;padding:2rem 2.4rem 3rem;max-width:980px;}
 .page{display:none;}
 .page.active{display:block;}
-.ph{margin-bottom:2rem;padding-bottom:1.2rem;border-bottom:1px solid rgba(255,255,255,.07);}
+.ph{margin-bottom:1.8rem;padding-bottom:1.1rem;border-bottom:1px solid rgba(255,255,255,.07);}
 .ph h1{font-family:'Cinzel',serif;font-size:26px;font-weight:400;color:#e8e2d8;letter-spacing:.07em;}
-.ph p{font-size:13px;color:rgba(184,173,158,.7);margin-top:5px;font-style:italic;}
+.ph p{font-size:13px;color:rgba(184,173,158,.7);margin-top:4px;font-style:italic;}
+.ph-edit-fields{display:flex;flex-direction:column;gap:6px;margin-top:.5rem;}
+.ph-edit-fields input{font-size:13px;font-family:sans-serif;padding:5px 9px;border-radius:6px;border:1px solid rgba(255,255,255,.12);background:#2e2a20;color:#e8e2d8;}
 
-/* ── LORE ────────────────────────────────────────── */
-.lb{margin-bottom:2.2rem;}
-.lbt{font-family:'Cinzel',serif;font-size:15px;font-weight:400;color:#c8c0b0;letter-spacing:.1em;margin-bottom:.8rem;padding-bottom:.5rem;border-bottom:1px solid rgba(255,255,255,.07);}
+/* ── LORE CARDS ───────────────────────────────── */
+.lb{margin-bottom:2rem;}
+.lbt{font-family:'Cinzel',serif;font-size:15px;color:#c8c0b0;letter-spacing:.1em;margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:1px solid rgba(255,255,255,.07);}
 .card{background:#ddd8d0;border-radius:10px;padding:1.4rem 1.6rem;margin-bottom:1rem;}
-.card h2{font-family:'Cinzel',serif;font-size:16px;font-weight:500;color:#2e2820;margin-bottom:.7rem;}
-.card h3{font-family:'Cinzel',serif;font-size:13px;color:#5a4e42;margin:1rem 0 .4rem;}
+.card h2{font-family:'Cinzel',serif;font-size:16px;font-weight:500;color:#2e2820;margin-bottom:.65rem;}
+.card h3{font-family:'Cinzel',serif;font-size:13px;color:#5a4e42;margin:1rem 0 .35rem;}
 .card p{font-size:14px;line-height:1.75;color:#5a4e42;}
-.card p+p{margin-top:.75rem;}
+.card p+p{margin-top:.7rem;}
 .card ul{list-style:none;padding:0;margin-top:.3rem;}
 .card ul li{font-size:14px;color:#5a4e42;padding:3px 0 3px 16px;position:relative;line-height:1.6;}
 .card ul li::before{content:'·';position:absolute;left:4px;color:#7b6fbb;}
+
+/* ── EDIT CARD ────────────────────────────────── */
+.edit-card{background:#ede8df;border-radius:10px;padding:1.2rem 1.4rem;margin-bottom:1rem;border:2px solid rgba(123,111,187,.3);}
+.edit-card-head{display:flex;align-items:center;gap:8px;margin-bottom:.8rem;}
+.sect-type-badge{font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:#888;background:rgba(0,0,0,.08);padding:2px 7px;border-radius:4px;}
+.ec-btn{font-size:11px;padding:3px 9px;border-radius:5px;cursor:pointer;border:1px solid #ccc;background:#fff;color:#555;}
+.ec-btn:hover{background:#f0f0f0;}
+.ec-btn.danger{border-color:#F09595;background:#FCEBEB;color:#A32D2D;}
+.ec-btn.danger:hover{background:#F7C1C1;}
+.sect-title-inp{font-family:'Cinzel',serif;font-size:15px;width:100%;padding:5px 8px;border-radius:6px;border:1px solid #ccc;background:#faf9f5;color:#2e2820;margin-bottom:.7rem;}
+.sect-body-ta{width:100%;font-size:13px;font-family:'IM Fell English',serif;line-height:1.7;color:#2e2820;padding:8px 10px;border-radius:6px;border:1px solid #ccc;background:#faf9f5;min-height:90px;resize:vertical;}
+.items-edit-wrap{display:flex;flex-direction:column;gap:6px;}
+.item-edit-row{display:flex;gap:6px;align-items:flex-start;}
+.item-edit-row input,.item-edit-row textarea{font-size:12px;font-family:sans-serif;padding:4px 7px;border-radius:5px;border:1px solid #ccc;background:#faf9f5;color:#2e2820;}
+.item-edit-row input{flex:1;}
+.item-edit-row textarea{flex:1;min-height:52px;resize:vertical;}
+.card-item-edit{background:#fff;border-radius:8px;padding:8px 10px;border:1px solid #ddd;display:flex;flex-direction:column;gap:6px;flex:1;}
+.small-add-btn{font-size:11px;color:#3C3489;background:none;border:1px dashed #AFA9EC;border-radius:6px;padding:5px 12px;cursor:pointer;margin-top:4px;width:100%;}
+.page-add-btn{font-family:sans-serif;font-size:12px;color:#3C3489;background:none;border:1px dashed #AFA9EC;border-radius:8px;padding:7px 16px;cursor:pointer;margin-top:.5rem;}
+
+/* ── GRIDS ────────────────────────────────────── */
 .fairy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.75rem;}
 .fairy-card{background:#ddd8d0;border-radius:8px;padding:1.1rem 1.2rem;}
 .fairy-card h3{font-family:'Cinzel',serif;font-size:14px;color:#2e2820;margin-bottom:6px;}
@@ -59,6 +104,12 @@ body{background:#201d16;display:flex;min-height:100vh;font-family:sans-serif;}
 .sov-cn{font-family:'Cinzel',serif;font-size:13px;color:#2e2820;margin-bottom:2px;}
 .sov-cs{font-size:11.5px;color:#8a7e72;font-style:italic;}
 .sov-lk{margin-top:6px;font-size:9px;color:#3C3489;letter-spacing:.12em;text-transform:uppercase;}
+.sov-edit-card{background:#ede8df;border-radius:8px;padding:.9rem 1rem;border:2px solid rgba(123,111,187,.25);display:flex;flex-direction:column;gap:6px;}
+.sov-edit-card input{font-size:12px;font-family:sans-serif;padding:4px 7px;border-radius:5px;border:1px solid #ccc;background:#faf9f5;color:#2e2820;width:100%;}
+.sov-edit-card label{font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:#999;}
+.sov-edit-controls{display:flex;gap:5px;justify-content:flex-end;}
+
+/* ── STAR STEPS ───────────────────────────────── */
 .step-list{display:flex;flex-direction:column;gap:.9rem;}
 .step-card{background:#ddd8d0;border-radius:9px;padding:1.2rem 1.4rem;border-left:3px solid;}
 .step-ch{display:flex;align-items:baseline;gap:10px;margin-bottom:.75rem;}
@@ -67,19 +118,38 @@ body{background:#201d16;display:flex;min-height:100vh;font-family:sans-serif;}
 .abl{font-size:9px;text-transform:uppercase;letter-spacing:.16em;color:#3C3489;margin-bottom:3px;}
 .dsl{font-size:9px;text-transform:uppercase;letter-spacing:.16em;color:#b83232;margin-top:9px;margin-bottom:3px;}
 .stxt{font-size:13.5px;line-height:1.72;color:#5a4e42;}
-.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:rgba(184,173,158,.7);cursor:pointer;padding:5px 10px;border-radius:6px;margin-bottom:1.5rem;transition:all .13s;}
-.back-btn:hover{color:#fff;background:rgba(255,255,255,.06);}
+.step-edit-card{background:#ede8df;border-radius:9px;padding:1.1rem 1.3rem;border-left:3px solid #7b6fbb;}
+.step-edit-card input{font-size:12px;font-family:'Cinzel',serif;padding:5px 8px;border-radius:5px;border:1px solid #ccc;background:#faf9f5;color:#2e2820;width:100%;margin-bottom:6px;}
+.step-edit-card .color-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.step-edit-card .color-row label{font-size:10px;color:#999;white-space:nowrap;}
+.step-edit-card textarea{width:100%;font-size:12px;font-family:sans-serif;line-height:1.6;padding:6px 8px;border-radius:5px;border:1px solid #ccc;background:#faf9f5;color:#2e2820;resize:vertical;min-height:72px;margin-bottom:4px;}
+.step-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:#3C3489;margin-bottom:3px;}
+.step-lbl-d{font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:#b83232;margin-bottom:3px;margin-top:8px;}
+
+/* ── CHAPTERS ─────────────────────────────────── */
 .chap-card{background:#ddd8d0;border-radius:10px;padding:1.6rem 1.9rem;margin-bottom:1.2rem;}
 .chap-ey{font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#aaa;margin-bottom:5px;}
 .chap-ti{font-family:'Cinzel',serif;font-size:22px;font-weight:400;color:#2e2820;margin-bottom:1rem;}
 .chap-bd{font-size:14px;line-height:1.82;color:#5a4e42;}
 .chap-bd p{margin-bottom:.75rem;}
+.chap-edit-card{background:#ede8df;border-radius:10px;padding:1.3rem 1.5rem;margin-bottom:1.2rem;border:2px solid rgba(123,111,187,.3);}
+.chap-edit-card input{font-size:13px;font-family:'Cinzel',serif;padding:5px 8px;border-radius:6px;border:1px solid #ccc;background:#faf9f5;color:#2e2820;width:100%;margin-bottom:8px;}
+.chap-edit-card textarea{width:100%;font-size:13px;font-family:'IM Fell English',serif;line-height:1.75;padding:8px 10px;border-radius:6px;border:1px solid #ccc;background:#faf9f5;color:#2e2820;min-height:200px;resize:vertical;}
+
+/* ── MISC ─────────────────────────────────────── */
+.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:rgba(184,173,158,.7);cursor:pointer;padding:5px 10px;border-radius:6px;margin-bottom:1.5rem;transition:all .13s;}
+.back-btn:hover{color:#fff;background:rgba(255,255,255,.06);}
 .ctable{width:100%;border-collapse:collapse;}
 .ctable th{font-size:9px;text-transform:uppercase;letter-spacing:.16em;color:#aaa;text-align:left;padding:6px 12px;border-bottom:1px solid rgba(0,0,0,.1);}
 .ctable td{padding:8px 12px;font-size:14px;color:#5a4e42;border-bottom:1px solid rgba(0,0,0,.06);}
 .ctable tr:last-child td{border-bottom:none;}
+.cal-edit-wrap input,.cal-edit-wrap textarea{font-size:13px;font-family:sans-serif;padding:5px 9px;border-radius:6px;border:1px solid #ccc;background:#faf9f5;color:#2e2820;width:100%;margin-bottom:6px;}
+.season-edit-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
+.season-edit-row input{flex:1;font-size:12px;padding:4px 7px;border-radius:5px;border:1px solid #ccc;background:#faf9f5;}
+.cur-edit-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
+.cur-edit-row input{flex:1;font-size:12px;padding:4px 7px;border-radius:5px;border:1px solid #ccc;background:#faf9f5;}
 
-/* ── CHARACTER SHEET (original style) ───────────── */
+/* ── CHARACTER SHEET ──────────────────────────── */
 .sheet-wrap{max-width:900px;}
 .sheet-toolbar{display:flex;gap:8px;margin-bottom:1rem;align-items:center;flex-wrap:wrap;}
 .mode-btn{font-size:12px;padding:6px 16px;border-radius:8px;border:1px solid #ccc;cursor:pointer;background:#fff;color:#555;}
@@ -153,7 +223,7 @@ hr.div{border:none;border-top:1px solid #eee;margin:.6rem 0;}
   <div class="ng">
     <div class="ngl">Characters</div>
     <div id="char-nav"></div>
-    <div class="nadd" onclick="addChar()">＋ New character sheet</div>
+    <div class="nadd" onclick="addChar()">＋ New character</div>
   </div>
   <div class="ng">
     <div class="ngl">The World</div>
@@ -171,286 +241,485 @@ hr.div{border:none;border-top:1px solid #eee;margin:.6rem 0;}
     <div class="ngl">Reference</div>
     <div class="ni" onclick="go('calendar')"><span class="nd"></span>Calendar &amp; Currency</div>
   </div>
+  <div class="sb-bottom">
+    <div class="sb-status" id="save-status">—</div>
+    <div class="sb-settings-btn" onclick="toggleSettings()">⚙ GitHub settings</div>
+    <div class="settings-panel" id="settings-panel">
+      <label>Personal Access Token</label>
+      <input type="password" id="pat-input" placeholder="github_pat_..." autocomplete="off">
+      <button onclick="saveToken()">Save token</button>
+    </div>
+  </div>
 </nav>
 
 <main class="main">
+  <div class="edit-toggle-bar">
+    <label class="toggle-switch">
+      <input type="checkbox" id="edit-toggle" onchange="setEditMode(this.checked)">
+      <div class="toggle-track"></div>
+      <div class="toggle-thumb"></div>
+    </label>
+    <span id="edit-toggle-label">Edit mode off — content is read-only</span>
+  </div>
 
-<!-- character pages injected here -->
-<div id="char-pages"></div>
+  <div id="char-pages"></div>
 
-<!-- WORLD OVERVIEW -->
-<section class="page" id="page-world">
-  <div class="ph"><h1>The World</h1><p>Spring of the 993rd Free Year (993 A.G.)</p></div>
-  <div class="lb"><div class="lbt">History</div>
-    <div class="card"><p>Long ago, God controlled the vast majority of magic and used it to set predetermined fates for all living things. The King of Humanity, the Fairy Paragon, and the largest Fragment of God rebelled and killed him. This freed magic for everyone — but chaos followed.</p>
-    <p>The three rebels reconvened and imposed limits on magic through an agreement known as <strong>The Binding</strong>. The world is set in a medieval-early renaissance era. The Free Calendar counts from the death of God.</p></div>
-  </div>
-  <div class="lb"><div class="lbt">The Mother Goddess</div>
-    <div class="card"><p>The Mother Goddess predates God entirely. Fairies are her children. She allied with the King of Humanity and the Fairy Paragon to defeat God, but spent everything in the process and fell into a deep sleep.</p>
-    <p>As part of their agreement she still sends her essence into the world while sleeping — this manifests as <strong>Fairy Fountains</strong>, which appear randomly. Anything submerged in a Fairy Fountain gains magical properties. They are essentially her dreams bleeding through into the waking world.</p>
-    <p>Most humans don't know she exists. Even most Fairies have forgotten her. The wealthy hoard Fairy Fountains, draining them for personal use. Finding one before the rich claim it is nearly impossible.</p></div>
-  </div>
-  <div class="lb"><div class="lbt">Notable Locations</div>
-    <div class="card"><h3>Alderrdeen Township</h3><p>The city where the story begins. Cobblestone streets, candlelight, merchant stalls, nobles who hoard Fairy Fountains. Home to Eustace's Oddities.</p></div>
-  </div>
-</section>
-
-<!-- MAGIC -->
-<section class="page" id="page-magic">
-  <div class="ph"><h1>Magic System</h1><p>Magic directs — it does not create</p></div>
-  <div class="lb"><div class="lbt">The Principle</div>
-    <div class="card"><p>Magic <em>directs</em> — it does not create. You cannot conjure something from nothing. You redirect forces that already exist in the world.</p>
-    <p>Magic is performed by drawing <strong>sigil circles</strong>. Each sigil represents a fundamental force. Combinations of sigils create instructions. To make fire from nothing requires combining Air, Motion/Force, Heat, Direction, and Containment sigils — five sigils combined correctly just to produce something resembling a fireball.</p>
-    <p>Regular magic takes years of practice to master. Big spells can take weeks to prepare. Magic is used mostly for small daily tasks.</p></div>
-  </div>
-  <div class="lb"><div class="lbt">Fundamental Forces (Sigils)</div>
-    <div class="sigil-grid">
-      <div class="sigil-card">Air</div><div class="sigil-card">Water</div><div class="sigil-card">Earth</div>
-      <div class="sigil-card">Heat</div><div class="sigil-card">Motion / Force</div><div class="sigil-card">Structural</div>
-      <div class="sigil-card">Botanical</div><div class="sigil-card">Sensory</div><div class="sigil-card">Vital</div>
-    </div>
-  </div>
-  <div class="lb"><div class="lbt">Schools of Magic</div>
-    <div class="card"><ul>
-      <li><strong>Elemental Direction</strong> — air, water, earth, fire</li>
-      <li><strong>Kinetics</strong> — force, motion, speed</li>
-      <li><strong>Structural</strong> — reinforcement, reduction, expansion</li>
-      <li><strong>Botanical</strong> — growth and decay</li>
-      <li><strong>Sensory</strong> — light, sound, temperature</li>
-      <li><strong>Vital</strong> — the body's own energy, heavily restricted</li>
-    </ul></div>
-  </div>
-  <div class="lb"><div class="lbt">The Binding &amp; Forbidden Magic</div>
-    <div class="card"><p>After God's death, the three rebels imposed <strong>The Binding</strong>. Forbidden magic draws from the raw power released when God fell — faster, stronger, no years of practice required.</p>
-    <p>The moment someone uses forbidden magic, every Fairy in the vicinity feels it. They come. They punish — killing some, turning others into monsters. No mercy. No context. No exceptions.</p>
-    <p><strong>Forbidden mages</strong> have survived by studying Fairy behavior for centuries. They have mapped territories, travel speeds, and patterns. They also hide behind fragments of the Skeleton Key, which drowns out the signal of their magic entirely.</p></div>
-  </div>
-  <div class="lb"><div class="lbt">Arcanists</div>
-    <div class="card"><p>Magic users who have chosen a <strong>Sovereignty</strong> — a discipline that shapes both their abilities and their soul over time — are called <strong>Arcanists</strong>. Each Sovereignty has <strong>10 Steps plus a Step 0</strong>, numbered from Step 0 to Step X (nearly unreachable pinnacle). Sanctioned practitioners change slowly. Forbidden magic practitioners change much faster and far more dangerously.</p></div>
-  </div>
-</section>
-
-<!-- FAIRIES -->
-<section class="page" id="page-fairies">
-  <div class="ph"><h1>Fairies &amp; Towers</h1><p>Children of the Mother Goddess</p></div>
-  <div class="lb"><div class="lbt">About Fairies</div>
-    <div class="card"><p>Fairies are the Mother Goddess's children — biologically identical regardless of type, but culturally divided. They can only use large amounts of magic when channeling it through a human.</p>
-    <p>Fairies are deeply racist toward one another despite being biologically the same. Many have forgotten the Mother Goddess. Fairies manifest in different forms when enforcing The Binding — some as storms, some as humans, others as shapeless monsters.</p></div>
-  </div>
-  <div class="lb"><div class="lbt">Types of Fairies</div>
-    <div class="fairy-grid">
-      <div class="fairy-card"><h3>Djinn</h3><p>Reside in Fairy Towers. Anyone who clears a tower to the top claims the Djinn's treasure and a piece of their power, usually as a Living Artifact.</p></div>
-      <div class="fairy-card"><h3>Daemons</h3><p>Offer power through deals, taking body parts, memories, emotions, firstborn children, or other personal costs in exchange.</p></div>
-      <div class="fairy-card"><h3>Angels</h3><p>Give power only to their most devout followers.</p></div>
-      <div class="fairy-card"><h3>Others (In Development)</h3><p>Asura, Devas, Nymphs, Spirits, Wraiths, Shades. Each gives magic away differently. Some are malicious.</p></div>
-    </div>
-  </div>
-  <div class="lb"><div class="lbt">Fairy Towers</div>
-    <div class="card"><p>Enormously difficult to clear. Even kings wouldn't attempt them — the cost in lives would be catastrophic. This makes them the great equalizer: no amount of wealth or power substitutes for the skill and luck required to reach the top alone. Each tower is different. Each Djinn is different. The Living Artifact rewarded varies by tower.</p></div>
-  </div>
-</section>
-
-<!-- ARTIFACTS -->
-<section class="page" id="page-artifacts">
-  <div class="ph"><h1>Living Artifacts</h1><p>Objects that contain a Fairy and hold one spell or power</p></div>
-  <div class="card"><p>Living Artifacts contain a Fairy and hold one spell or power within them. Clearing a Fairy Tower earns one. They are extraordinarily rare and valuable.</p></div>
-  <div class="card"><h2>Eustace's Sword</h2><p>Contained a fire Djinn. Every swing released flame. Eustace earned it in his youth clearing a tower. He kept it secret for decades. He spent it protecting Tilly at the end of Chapter I.</p></div>
-  <div class="card"><h2>The Skeleton Key</h2>
-    <p>The finger of the King of Humanity, who threw himself into a Fairy Fountain and made every part of his body holy. Allows travel through unseen doorways — any door leads to any other door, unpredictably. The longer it is used the more it infects the user's body. Fused to Tilly's right hand.</p>
-    <h3>Deeper Significance</h3>
-    <p>Each piece of the King's body resonates loudly with Fairies — not as a threat, but as something sacred. This has an unintended effect: <strong>it drowns out the signal of forbidden magic being used nearby.</strong> Whoever holds a fragment can use forbidden magic without Fairy detection.</p>
-    <p>The Kingdom holds half the fragments (believing them simply powerful relics). Forbidden mages hold the other half (knowing exactly what they do). Tilly holds one piece neither side has acquired. She is now caught between two forces who want her — for different reasons, neither of which they will tell her plainly.</p>
-  </div>
-</section>
-
-<!-- SOVEREIGNTIES -->
-<section class="page" id="page-sovereignties">
-  <div class="ph"><h1>The 22 Sovereignties</h1><p>Named after the 22 Major Arcana of the Tarot. Each has Steps 0–X.</p></div>
-  <div class="sov-grid" id="sov-grid"></div>
-</section>
-
-<!-- THE STAR -->
-<section class="page" id="page-the-star">
-  <div class="back-btn" onclick="go('sovereignties')">← Back to Sovereignties</div>
-  <div class="ph"><h1>The Star</h1><p>Sovereignty of Hope · XVII of the Major Arcana</p></div>
-  <div class="step-list" id="star-steps"></div>
-</section>
-
-<!-- CHAPTERS -->
-<section class="page" id="page-chapters">
-  <div class="ph"><h1>Chapters</h1><p>Spring of the 993rd Free Year</p></div>
-  <div class="chap-card">
-    <div class="chap-ey">Chapter I</div>
-    <div class="chap-ti">The Skeleton Key</div>
-    <div class="chap-bd">
-      <p>Tilly works the counter at Eustace's Oddities. A worn-down adventurer comes in looking at swords. She reads him immediately — no money, genuine need — and sells him one for practically nothing. Then a noble walks in. Same product. She sells it for ten times the price without blinking.</p>
-      <p>She visits Eustace, who is bedridden. He coughs. She decides to find a Fairy Fountain to enchant his medicine and heal him. She searches the outskirts of Alderrdeen all day. Beautiful landscapes. No fountain. The wealthy have claimed them all.</p>
-      <p>Returning home hungry, she steals bread from a market stall. Guards give chase. She rounds a corner into an alley and nearly steps on a dying man. He begs her not to give him away. She throws a tarp over him and acts casual.</p>
-      <p>Two guard groups converge — one chasing a bread thief, one hunting someone who escaped with a Living Artifact. The second group waves the first away. Tilly is alone with the dying man.</p>
-      <p>He presses something into her hand — a long pale bone-like key. It fuses to her finger before she can react. He tells her to run. It doesn't matter where. Just don't let it fall into the wrong hands. Then he is gone.</p>
-      <p>Tilly returns home. She has only moments with Eustace before guards arrive demanding the artifact. It won't leave her hand. They decide to take the finger. Eustace rises from his bed, unwraps his Living Artifact, and the sword erupts in flame.</p>
-      <p><em>"You will do no such thing."</em></p>
-      <p>He holds them off. Tilly is pushed through the back door. Eustace throws his sword through just before it closes. The guards who follow find themselves in the back alleyway. Tilly finds herself somewhere else entirely.</p>
-      <p>A snowfield. Silent. Cold. No city. No guards. No grandfather. Just Tilly, alone, with a dying flaming sword in the snow and a dead king's finger fused to her hand.</p>
-      <p>This is when she becomes a <strong>Candlebearer.</strong></p>
-    </div>
-  </div>
-</section>
-
-<!-- CALENDAR & CURRENCY -->
-<section class="page" id="page-calendar">
-  <div class="ph"><h1>Calendar &amp; Currency</h1><p>The Free Calendar counts from the death of God</p></div>
-  <div class="lb"><div class="lbt">The Free Calendar</div>
-    <div class="card"><p>The calendar counts from the death of God — A.G. (Anno God's-death). Current date: <strong>Spring of the 993rd Free Year (993 A.G. — Springtide)</strong>.</p>
-    <h3>Seasons</h3><ul><li>Springtide</li><li>Highsun</li><li>Dimfall</li><li>Deeprest</li></ul></div>
-  </div>
-  <div class="lb"><div class="lbt">Currency</div>
-    <div class="card"><table class="ctable">
-      <thead><tr><th>Coin</th><th>Material</th><th>Exchange</th></tr></thead>
-      <tbody>
-        <tr><td><strong>Aurem</strong></td><td>Gold</td><td>Highest denomination</td></tr>
-        <tr><td><strong>Sonen</strong></td><td>Silver</td><td>20 per Aurem</td></tr>
-        <tr><td><strong>Trin</strong></td><td>Copper</td><td>100 per Sonen · 2000 per Aurem</td></tr>
-      </tbody>
-    </table></div>
-  </div>
-</section>
-
+  <section class="page" id="page-world"><div id="render-world"></div></section>
+  <section class="page" id="page-magic"><div id="render-magic"></div></section>
+  <section class="page" id="page-fairies"><div id="render-fairies"></div></section>
+  <section class="page" id="page-artifacts"><div id="render-artifacts"></div></section>
+  <section class="page" id="page-sovereignties"><div id="render-sovereignties"></div></section>
+  <section class="page" id="page-the-star"><div id="render-the-star"></div></section>
+  <section class="page" id="page-chapters"><div id="render-chapters"></div></section>
+  <section class="page" id="page-calendar"><div id="render-calendar"></div></section>
 </main>
 
 <script>
-// ═══════════════════════════════════════════════════
-//  DATA — stored in localStorage
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+/* %%CONTENT_START%% */
+let CONTENT = {"charOrder":["tilly"],"chars":{"tilly":{"id":"tilly","number":"01","nameJp":"ティリー","nameEn":"Tilly","title":"Eustace's beloved child","arcanaLabel":"Arcana","arcanaValue":"The Star","stepLabel":"Step","stepValue":"0 — Candlebearer","imgUrl":"https://i.imgur.com/RqDz8JN.jpeg","appearance":"Short shaggy dark auburn hair\nWarm amber eyes\nWorn vest · linen shirt · old boots","quote":"Tilly is twelve years old and has already learned that the world is not always kind. Raised above a cluttered antique shop in the city of Alderrdeen by her grandfather, she has a gift for knowing exactly what something is worth, and exactly what someone can pay. She is sharper than she looks, and kinder than she has any reason to be. She asks for very little in return for either. She loves deeply and without condition, and it has never once occurred to her that this might someday cost her something.","footer1":"Alderrdeen Township","footer2":"993 A.G. — Springtide","karma":425,"basicInfo":[{"label":"Age","value":"12"},{"label":"Race","value":"Human"},{"label":"Origin","value":"Orphaned from a young age, Tilly was raised in an antique shop by a local man who took her in."},{"label":"Guardian","value":"Eustace (Grandfather)"},{"label":"Residence","value":"Eustace's Oddities"},{"label":"Alignment","value":"Chaotic Good"}],"stats":[{"name":"Kindness","val":88},{"name":"Courage","val":80},{"name":"Wit","val":64},{"name":"Stubbornness","val":91},{"name":"Luck","val":49},{"name":"Renown","val":1}],"customSections":[{"title":"Items","items":[{"name":"4 Sonens","note":"(20 of these make up a single Aurem)"},{"name":"7 Trins","note":"(100 of these make up a single Sonen)"}]},{"title":"Living Artifacts","items":[{"name":"The Skeleton Key","note":"fused to right hand"},{"name":"Eustace's Sword","note":"inherited"}]}]}},"pages":{"world":{"title":"The World","subtitle":"Spring of the 993rd Free Year (993 A.G.)","sections":[{"id":"w1","title":"History","body":"Long ago, God controlled the vast majority of magic and used it to set predetermined fates for all living things. The King of Humanity, the Fairy Paragon, and the largest Fragment of God rebelled and killed him. This freed magic for everyone — but chaos followed.\n\nThe three rebels reconvened and imposed limits on magic through an agreement known as The Binding. The world is set in a medieval-early renaissance era. The Free Calendar counts from the death of God."},{"id":"w2","title":"The Mother Goddess","body":"The Mother Goddess predates God entirely. Fairies are her children. She allied with the King of Humanity and the Fairy Paragon to defeat God, but spent everything in the process and fell into a deep sleep.\n\nAs part of their agreement she still sends her essence into the world while sleeping — this manifests as Fairy Fountains, which appear randomly. Anything submerged in a Fairy Fountain gains magical properties. They are essentially her dreams bleeding through into the waking world.\n\nMost humans don't know she exists. Even most Fairies have forgotten her. The wealthy hoard Fairy Fountains, draining them for personal use. Finding one before the rich claim it is nearly impossible."},{"id":"w3","title":"Notable Locations","type":"cards","items":[{"name":"Alderrdeen Township","body":"The city where the story begins. Cobblestone streets, candlelight, merchant stalls, nobles who hoard Fairy Fountains. Home to Eustace's Oddities."}]}]},"magic":{"title":"Magic System","subtitle":"Magic directs — it does not create","sections":[{"id":"m1","title":"The Principle","body":"Magic directs — it does not create. You cannot conjure something from nothing. You redirect forces that already exist in the world.\n\nMagic is performed by drawing sigil circles. Each sigil represents a fundamental force. Combinations of sigils create instructions. To make fire from nothing requires combining Air, Motion/Force, Heat, Direction, and Containment sigils — five sigils combined correctly just to produce something resembling a fireball.\n\nRegular magic takes years of practice to master. Big spells can take weeks to prepare. Magic is used mostly for small daily tasks."},{"id":"m2","title":"Fundamental Forces (Sigils)","type":"tags","items":["Air","Water","Earth","Heat","Motion / Force","Structural","Botanical","Sensory","Vital"]},{"id":"m3","title":"Schools of Magic","type":"list","items":["Elemental Direction — air, water, earth, fire","Kinetics — force, motion, speed","Structural — reinforcement, reduction, expansion","Botanical — growth and decay","Sensory — light, sound, temperature","Vital — the body's own energy, heavily restricted"]},{"id":"m4","title":"The Binding & Forbidden Magic","body":"After God's death, the three rebels imposed The Binding — limiting magic to sanctioned, caged use. Forbidden magic draws from the raw power released when God fell. It is faster, stronger, and requires no years of practice.\n\nThe moment someone uses forbidden magic, every Fairy in the vicinity feels it. They come. They punish — killing some, turning others into monsters. No mercy. No context. No exceptions.\n\nForbidden mages have survived by studying Fairy behavior for centuries. They have mapped territories, travel speeds, and patterns. They also hide behind fragments of the Skeleton Key, which drowns out the signal of their magic entirely."},{"id":"m5","title":"Arcanists","body":"Magic users who have chosen a Sovereignty — a discipline that shapes both their abilities and their soul over time — are called Arcanists. Each Sovereignty has 10 Steps plus a Step 0, numbered from Step 0 to Step X (nearly unreachable pinnacle). Sanctioned practitioners change slowly. Forbidden magic practitioners change much faster and far more dangerously."}]},"fairies":{"title":"Fairies & Towers","subtitle":"Children of the Mother Goddess","sections":[{"id":"f1","title":"About Fairies","body":"Fairies are the Mother Goddess's children — biologically identical regardless of type, but culturally divided. They can only use large amounts of magic when channeling it through a human.\n\nFairies are deeply racist toward one another despite being biologically the same. Many have forgotten the Mother Goddess. Fairies manifest in different forms when enforcing The Binding — some as storms, some as humans, others as shapeless monsters."},{"id":"f2","title":"Types of Fairies","type":"cards","items":[{"name":"Djinn","body":"Reside in Fairy Towers. Anyone who clears a tower to the top claims the Djinn's treasure and a piece of their power, usually as a Living Artifact."},{"name":"Daemons","body":"Offer power through deals, taking body parts, memories, emotions, firstborn children, or other personal costs in exchange."},{"name":"Angels","body":"Give power only to their most devout followers."},{"name":"Others (In Development)","body":"Asura, Devas, Nymphs, Spirits, Wraiths, Shades. Each gives magic away differently. Some are malicious."}]},{"id":"f3","title":"Fairy Towers","body":"Enormously difficult to clear. Even kings wouldn't attempt them — the cost in lives would be catastrophic. This makes them the great equalizer: no amount of wealth or power substitutes for the skill and luck required to reach the top alone.\n\nEach tower is different. Each Djinn is different. The Living Artifact rewarded varies by tower."}]},"artifacts":{"title":"Living Artifacts","subtitle":"Objects that contain a Fairy and hold one spell or power","sections":[{"id":"a0","title":"","body":"Living Artifacts contain a Fairy and hold one spell or power within them. Clearing a Fairy Tower earns one. They are extraordinarily rare and valuable."},{"id":"a1","title":"Eustace's Sword","body":"Contained a fire Djinn. Every swing released flame. Eustace earned it in his youth clearing a tower. He kept it secret for decades. He spent it protecting Tilly at the end of Chapter I."},{"id":"a2","title":"The Skeleton Key","body":"The finger of the King of Humanity, who threw himself into a Fairy Fountain and made every part of his body holy. Allows travel through unseen doorways — any door leads to any other door, unpredictably. The longer it is used the more it infects the user's body. Fused to Tilly's right hand."},{"id":"a3","title":"Deeper Significance (Skeleton Key)","body":"Each piece of the King's body resonates loudly with Fairies — not as a threat, but as something sacred. This has an unintended effect: it drowns out the signal of forbidden magic being used nearby. Whoever holds a fragment can use forbidden magic without Fairy detection.\n\nThe Kingdom holds half the fragments (believing them simply powerful relics). Forbidden mages hold the other half (knowing exactly what they do). Tilly holds one piece neither side has acquired. She is now caught between two forces who want her — for different reasons, neither of which they will tell her plainly."}]}},"sovereignties":[{"num":"0","card":"The Fool","name":"Sovereignty of Wandering"},{"num":"I","card":"The Magician","name":"Sovereignty of Direction"},{"num":"II","card":"The High Priestess","name":"Sovereignty of Secrets"},{"num":"III","card":"The Empress","name":"Sovereignty of Growth"},{"num":"IV","card":"The Emperor","name":"Sovereignty of Command"},{"num":"V","card":"The Hierophant","name":"Sovereignty of Tradition"},{"num":"VI","card":"The Lovers","name":"Sovereignty of Bonds"},{"num":"VII","card":"The Chariot","name":"Sovereignty of Motion"},{"num":"VIII","card":"Strength","name":"Sovereignty of Force"},{"num":"IX","card":"The Hermit","name":"Sovereignty of Isolation"},{"num":"X","card":"Wheel of Fortune","name":"Sovereignty of Luck"},{"num":"XI","card":"Justice","name":"Sovereignty of Balance"},{"num":"XII","card":"The Hanged Man","name":"Sovereignty of Sacrifice"},{"num":"XIII","card":"Death","name":"Sovereignty of Endings"},{"num":"XIV","card":"Temperance","name":"Sovereignty of Restraint"},{"num":"XV","card":"The Devil","name":"Sovereignty of Temptation"},{"num":"XVI","card":"The Tower","name":"Sovereignty of Destruction"},{"num":"XVII","card":"The Star","name":"Sovereignty of Hope","detail":true,"featured":true},{"num":"XVIII","card":"The Moon","name":"Sovereignty of Illusion"},{"num":"XIX","card":"The Sun","name":"Sovereignty of Radiance"},{"num":"XX","card":"Judgement","name":"Sovereignty of Awakening"},{"num":"XXI","card":"The World","name":"Sovereignty of Completion"}],"starSteps":[{"step":0,"title":"Candlebearer","color":"#94a3b8","ability":"A faint warm light emanates from the Arcanist that wind and water cannot extinguish. Small radius. Always present. Can be dimmed by will. In complete darkness it's the difference between seeing and not seeing.","downside":"They begin sleeping later than usual. Nothing dramatic yet."},{"step":1,"title":"Omen-Reader","color":"#86efac","ability":"They begin noticing signs others miss. A fighter's weight shifting before they throw a punch. A mage's breath changing before they draw a sigil. They see it coming a half second before it arrives. In a brawl a half second is everything.","downside":"They begin feeling the emotions of people around them without meaning to. Someone nearby is grieving and they feel it like pressure behind their eyes. They can't turn it off yet."},{"step":2,"title":"Stargazer","color":"#67e8f9","ability":"Their light has developed an edge. They can focus it into a narrow beam — not enough to burn yet, but enough to blind someone momentarily. They can also project it as a short burst in all directions, disorienting multiple enemies at once. By studying the night sky for an hour they gain a vague sense of what tomorrow holds for themselves or someone nearby.","downside":"They can no longer lie convincingly. Their light flickers almost imperceptibly when they say something untrue. Animals notice first. Then perceptive people."},{"step":3,"title":"Fate-Charter","color":"#a78bfa","ability":"They begin to read the immediate future in combat with frightening accuracy. Not minutes ahead — seconds. The next blow. The next step. The next breath. They move through a fight like water finding its path, never quite where the attack lands. They aren't faster than their opponents. They simply aren't there when the hit arrives. They can also sense when someone nearby is at a turning point in their life.","downside":"They are inexplicably drawn to people who are suffering. Strangers in pain find them. They cannot walk past someone in genuine despair without stopping. This is not a choice."},{"step":4,"title":"Lodestar","color":"#fbbf24","ability":"They can now project their light as a physical force. A concentrated pulse that hits like a shove — enough to knock someone off their feet or send a weapon spinning out of a hand. It can be fired repeatedly but costs genuine effort. Lost things also find their way to them — a missing person wanders past them on the street, a stolen object turns up nearby.","downside":"They stop being able to sustain hatred. They can be furious. Devastated. But hatred dissolves in them like salt in water."},{"step":5,"title":"Scribe of Skies","color":"#f97316","ability":"Their body has begun to change. Bones subtly denser. Reflexes sharpened beyond normal human limits without any training to explain it. The road is rewriting them from the inside. They hit harder than they should for their size and recover from impacts faster than makes sense. They also always know the broad shape of fate moving around them — who is in danger, where hope is concentrated. Always on. Cannot be turned off.","downside":"They stop needing to eat as much. A meal every few days sustains them. People who know them well begin to notice they never seem hungry."},{"step":6,"title":"Astrologer of Ruin","color":"#ef4444","ability":"They can see the threads of fate connecting people in a fight. Who is about to make a fatal mistake. Where the turning point of the battle is. They only need to pull the right thread at the right moment and watch everything unravel. They can also hear wishes — not spoken ones, the ones people carry silently. With focus they can isolate a single person's deepest want.","downside":"They begin to glow faintly in complete darkness. They cannot control it."},{"step":7,"title":"Living Constellation","color":"#ec4899","ability":"Their light has become something altogether different. They can shape it into walls of blazing radiance that physical weapons cannot pass through. Beams that strike with the force of a battering ram. A corona of burning light around their body that makes close combat deeply unpleasant. Allies near them feel steadier and harder to break. Enemies feel watched from very far away and found wanting.","downside":"Their tears are luminescent. They cannot hide grief. It literally shines out of them."},{"step":8,"title":"Terror of the Void","color":"#8b5cf6","ability":"Once per fight they can stop time for a single breath. In that breath they can move, redirect, reposition, pull someone out of the path of something unsurvivable. When time resumes nobody saw them move. Their body now heals at a rate that is difficult to explain — cuts close within minutes, broken bones within hours. They are becoming very hard to kill.","downside":"They have begun to forget small human things. The taste of their favourite food. The sound of a voice they loved. Small human details blur while cosmic ones sharpen."},{"step":9,"title":"Sovereign of Hope","color":"#3b82f6","ability":"They are no longer entirely fighting with a body. They are fighting with a concept. Their strikes carry weight beyond physical force — a blow doesn't just break bone, it breaks something in the spirit of whoever receives it. Anyone who has truly given up and comes near them feels something shift — the genuine sense that one more try is worth it. No range limit. Cannot be resisted. It has ended sieges. Their light can be seen from miles away if fully released.","downside":"They are no longer aging. They will outlive everyone they love unless something kills them first. They are beginning to understand what that means."},{"step":10,"title":"The Star","color":"#e2e8f0","ability":"There are no reliable accounts of a Star in combat because nothing that has ever fought one has survived to describe it coherently. What fragments exist speak of light that rewrites what it touches. Of wounds that simply cease to exist. Of enemies who stopped fighting not because they were defeated but because in the presence of a Star the concept of fighting seemed very small and very far away. A Star does not win battles. A Star ends them.","downside":"They are still here. Still themselves. But when they look at the people around them there is something in their eyes that wasn't there before. A distance. Not coldness. But they are seeing something the rest of the world cannot see yet. And sometimes when someone speaks to them there is a moment — just a breath — before they remember to respond like a person."}],"chapters":[{"number":"I","title":"The Skeleton Key","body":"Tilly works the counter at Eustace's Oddities. A worn-down adventurer comes in looking at swords. She reads him immediately — no money, genuine need — and sells him one for practically nothing. Then a noble walks in. Same product. She sells it for ten times the price without blinking.\n\nShe visits Eustace, who is bedridden. He coughs. She decides to find a Fairy Fountain to enchant his medicine and heal him. She searches the outskirts of Alderrdeen all day. Beautiful landscapes. No fountain. The wealthy have claimed them all.\n\nReturning home hungry, she steals bread from a market stall. Guards give chase. She rounds a corner into an alley and nearly steps on a dying man. He begs her not to give him away. She throws a tarp over him and acts casual.\n\nTwo guard groups converge — one chasing a bread thief, one hunting someone who escaped with a Living Artifact. The second group waves the first away. Tilly is alone with the dying man.\n\nHe presses something into her hand — a long pale bone-like key. It fuses to her finger before she can react. He tells her to run. It doesn't matter where. Just don't let it fall into the wrong hands. Then he is gone.\n\nTilly returns home. She has only moments with Eustace before guards arrive demanding the artifact. It won't leave her hand. They decide to take the finger. Eustace rises from his bed, unwraps his Living Artifact, and the sword erupts in flame.\n\n\"You will do no such thing.\"\n\nHe holds them off. Tilly is pushed through the back door. Eustace throws his sword through just before it closes. The guards who follow find themselves in the back alleyway. Tilly finds herself somewhere else entirely.\n\nA snowfield. Silent. Cold. No city. No guards. No grandfather. Just Tilly, alone, with a dying flaming sword in the snow and a dead king's finger fused to her hand.\n\nThis is when she becomes a Candlebearer."}],"calendarNote":"The calendar counts from the death of God — A.G. (Anno God's-death). Current date: Spring of the 993rd Free Year (993 A.G. — Springtide).","seasons":["Springtide","Highsun","Dimfall","Deeprest"],"currency":[{"name":"Aurem","material":"Gold","exchange":"Highest denomination"},{"name":"Sonen","material":"Silver","exchange":"20 per Aurem"},{"name":"Trin","material":"Copper","exchange":"100 per Sonen · 2000 per Aurem"}]};
+/* %%CONTENT_END%% */
+// ═══════════════════════════════════════════════════════
 
+// ── APP STATE ─────────────────────────────────────────
+let editMode = false;
+let saveTimer = null;
+const REPO = 'daisyy-rgb/TillysWorld';
+const FILE = 'index.html';
+
+function g(id){ return document.getElementById(id); }
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── GITHUB SAVE ───────────────────────────────────────
+function getToken(){ return localStorage.getItem('tw_pat')||''; }
+function saveToken(){
+  const v = g('pat-input').value.trim();
+  if(v){ localStorage.setItem('tw_pat',v); setStatus('Token saved.','saved'); g('settings-panel').style.display='none'; }
+}
+function toggleSettings(){
+  const p=g('settings-panel');
+  p.style.display = p.style.display==='none'?'block':'none';
+  if(p.style.display==='block'){ const t=getToken(); if(t) g('pat-input').value=t; }
+}
+
+function setStatus(msg,type){
+  const el=g('save-status');
+  el.textContent=msg;
+  el.className='sb-status '+(type||'');
+}
+
+function scheduleSave(){
+  setStatus('● Unsaved changes','unsaved');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(pushToGitHub, 8000);
+}
+
+async function pushToGitHub(){
+  const token = getToken();
+  if(!token){ setStatus('⚠ No token — set one in GitHub settings','error'); return; }
+  setStatus('⟳ Saving to GitHub…','saving');
+  try {
+    // Fetch current file for SHA + template
+    const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`,{
+      headers:{ Authorization:'token '+token, 'User-Agent':'TillysWorld-Wiki' }
+    });
+    if(!r.ok) throw new Error('Fetch failed: '+r.status);
+    const fd = await r.json();
+    const sha = fd.sha;
+    const raw = decodeURIComponent(escape(atob(fd.content.replace(/\n/g,''))));
+
+    // Replace CONTENT block
+    const newBlock = '/* %%CONTENT_START%% */\nlet CONTENT = '+JSON.stringify(CONTENT)+';\n/* %%CONTENT_END%% */';
+    const newHtml = raw.replace(/\/\* %%CONTENT_START%% \*\/[\s\S]*?\/\* %%CONTENT_END%% \*\//, newBlock);
+
+    // Push
+    const encoded = btoa(unescape(encodeURIComponent(newHtml)));
+    const pr = await fetch(`https://api.github.com/repos/${REPO}/contents/${FILE}`,{
+      method:'PUT',
+      headers:{ Authorization:'token '+token, 'Content-Type':'application/json', 'User-Agent':'TillysWorld-Wiki' },
+      body: JSON.stringify({ message:'Wiki auto-save', content:encoded, sha })
+    });
+    if(!pr.ok){ const e=await pr.json(); throw new Error(e.message||pr.status); }
+    setStatus('✓ Saved to GitHub','saved');
+  } catch(e){
+    setStatus('✕ '+e.message,'error');
+  }
+}
+
+// ── EDIT MODE ─────────────────────────────────────────
+function setEditMode(on){
+  editMode = on;
+  g('edit-toggle-label').textContent = on
+    ? 'Edit mode ON — changes save to GitHub automatically'
+    : 'Edit mode off — content is read-only';
+  rerenderCurrentPage();
+}
+
+let currentPage = '';
+function rerenderCurrentPage(){
+  if(!currentPage) return;
+  if(currentPage.startsWith('char-')) return; // chars have their own mode
+  renderPage(currentPage);
+}
+
+// ── NAVIGATION ────────────────────────────────────────
+function go(pageId){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el=g('page-'+pageId);
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.ni').forEach(n=>{
+    const fn=n.getAttribute('onclick')||'';
+    n.classList.toggle('active', fn.includes("'"+pageId+"'"));
+  });
+  currentPage = pageId;
+  renderPage(pageId);
+  window.scrollTo(0,0);
+}
+
+function renderPage(pageId){
+  if(['world','magic','fairies','artifacts'].includes(pageId)) renderLorePage(pageId);
+  else if(pageId==='sovereignties') renderSovPage();
+  else if(pageId==='the-star') renderStarPage();
+  else if(pageId==='chapters') renderChaptersPage();
+  else if(pageId==='calendar') renderCalendarPage();
+}
+
+// ── LORE PAGES ────────────────────────────────────────
+function renderLorePage(pid){
+  const page = CONTENT.pages[pid];
+  let html = '';
+
+  if(editMode){
+    html += `<div class="ph">
+      <div class="ph-edit-fields">
+        <input value="${esc(page.title)}" placeholder="Page title" style="font-family:'Cinzel',serif;font-size:22px;color:#e8e2d8;background:#2e2a20;border-color:rgba(255,255,255,.15);"
+          oninput="CONTENT.pages['${pid}'].title=this.value;scheduleSave();">
+        <input value="${esc(page.subtitle)}" placeholder="Subtitle"
+          oninput="CONTENT.pages['${pid}'].subtitle=this.value;scheduleSave();">
+      </div>
+    </div>`;
+  } else {
+    html += `<div class="ph"><h1>${esc(page.title)}</h1><p>${esc(page.subtitle)}</p></div>`;
+  }
+
+  page.sections.forEach((sec,idx)=>{
+    html += renderSection(pid,idx,sec);
+  });
+
+  if(editMode){
+    html += `<div style="margin-top:.5rem">
+      <button class="page-add-btn" onclick="addSection('${pid}','text')">+ Add text section</button>
+      <button class="page-add-btn" style="margin-left:8px;" onclick="addSection('${pid}','list')">+ Add list section</button>
+      <button class="page-add-btn" style="margin-left:8px;" onclick="addSection('${pid}','cards')">+ Add cards section</button>
+    </div>`;
+  }
+
+  g('render-'+pid).innerHTML = html;
+}
+
+function renderSection(pid,idx,sec){
+  const type = sec.type || 'text';
+  if(!editMode){
+    // VIEW
+    let inner = sec.title ? `<h2>${esc(sec.title)}</h2>` : '';
+    if(type==='text'){
+      inner += (sec.body||'').split('\n\n').filter(Boolean).map(p=>`<p>${esc(p)}</p>`).join('');
+    } else if(type==='list'){
+      inner += `<ul>${(sec.items||[]).map(it=>`<li>${esc(it)}</li>`).join('')}</ul>`;
+    } else if(type==='tags'){
+      return `<div class="lb"><div class="lbt">${esc(sec.title)}</div><div class="sigil-grid">${(sec.items||[]).map(t=>`<div class="sigil-card">${esc(t)}</div>`).join('')}</div></div>`;
+    } else if(type==='cards'){
+      const cards = (sec.items||[]).map(it=>`<div class="fairy-card"><h3>${esc(it.name)}</h3><p>${esc(it.body)}</p></div>`).join('');
+      return `<div class="lb"><div class="lbt">${esc(sec.title)}</div><div class="fairy-grid">${cards}</div></div>`;
+    }
+    return `<div class="card">${inner}</div>`;
+  }
+
+  // EDIT
+  let content = '';
+  const rr = `rerenderLore('${pid}')`;
+
+  if(type==='text'){
+    content = `<textarea class="sect-body-ta" oninput="CONTENT.pages['${pid}'].sections[${idx}].body=this.value;scheduleSave();" rows="6">${esc(sec.body||'')}</textarea>`;
+  } else if(type==='list'||type==='tags'){
+    const itemsHtml = (sec.items||[]).map((it,ii)=>`
+      <div class="item-edit-row">
+        <input value="${esc(it)}" oninput="CONTENT.pages['${pid}'].sections[${idx}].items[${ii}]=this.value;scheduleSave();">
+        <button class="rmbtn" onclick="CONTENT.pages['${pid}'].sections[${idx}].items.splice(${ii},1);${rr};scheduleSave();">✕</button>
+      </div>`).join('');
+    content = `<div class="items-edit-wrap">${itemsHtml}</div>
+      <button class="small-add-btn" onclick="CONTENT.pages['${pid}'].sections[${idx}].items.push('New item');${rr};scheduleSave();">+ Add item</button>`;
+  } else if(type==='cards'){
+    const cardsHtml = (sec.items||[]).map((it,ii)=>`
+      <div class="item-edit-row">
+        <div class="card-item-edit">
+          <input value="${esc(it.name)}" placeholder="Name" oninput="CONTENT.pages['${pid}'].sections[${idx}].items[${ii}].name=this.value;scheduleSave();">
+          <textarea oninput="CONTENT.pages['${pid}'].sections[${idx}].items[${ii}].body=this.value;scheduleSave();" rows="3">${esc(it.body||'')}</textarea>
+        </div>
+        <button class="rmbtn" onclick="CONTENT.pages['${pid}'].sections[${idx}].items.splice(${ii},1);${rr};scheduleSave();">✕</button>
+      </div>`).join('');
+    content = `<div class="items-edit-wrap">${cardsHtml}</div>
+      <button class="small-add-btn" onclick="CONTENT.pages['${pid}'].sections[${idx}].items.push({name:'New card',body:''});${rr};scheduleSave();">+ Add card</button>`;
+  }
+
+  const typeSelect = `<select style="font-size:11px;padding:3px 6px;border-radius:4px;border:1px solid #ccc;" onchange="CONTENT.pages['${pid}'].sections[${idx}].type=this.value;if(this.value!=='cards')CONTENT.pages['${pid}'].sections[${idx}].items=CONTENT.pages['${pid}'].sections[${idx}].items||[];if(this.value==='text')CONTENT.pages['${pid}'].sections[${idx}].body=CONTENT.pages['${pid}'].sections[${idx}].body||'';${rr};scheduleSave();">
+    <option value="text" ${type==='text'?'selected':''}>Text</option>
+    <option value="list" ${type==='list'?'selected':''}>List</option>
+    <option value="tags" ${type==='tags'?'selected':''}>Tags/Grid</option>
+    <option value="cards" ${type==='cards'?'selected':''}>Cards</option>
+  </select>`;
+
+  return `<div class="edit-card">
+    <div class="edit-card-head">
+      <span class="sect-type-badge">${type}</span>
+      ${typeSelect}
+      <button class="ec-btn" onclick="moveSec('${pid}',${idx},-1)">↑</button>
+      <button class="ec-btn" onclick="moveSec('${pid}',${idx},1)">↓</button>
+      <button class="ec-btn danger" onclick="CONTENT.pages['${pid}'].sections.splice(${idx},1);${rr};scheduleSave();">Remove</button>
+    </div>
+    <input class="sect-title-inp" value="${esc(sec.title||'')}" placeholder="Section title (leave blank for no title)"
+      oninput="CONTENT.pages['${pid}'].sections[${idx}].title=this.value;scheduleSave();">
+    ${content}
+  </div>`;
+}
+
+function rerenderLore(pid){ renderLorePage(pid); }
+
+function addSection(pid,type){
+  const s = {id:'s'+Date.now(),title:'New Section',type};
+  if(type==='text') s.body='';
+  else if(type==='list'||type==='tags') s.items=[];
+  else if(type==='cards') s.items=[];
+  CONTENT.pages[pid].sections.push(s);
+  renderLorePage(pid);
+  scheduleSave();
+}
+
+function moveSec(pid,idx,dir){
+  const secs=CONTENT.pages[pid].sections;
+  const ni=idx+dir;
+  if(ni<0||ni>=secs.length) return;
+  [secs[idx],secs[ni]]=[secs[ni],secs[idx]];
+  renderLorePage(pid);
+  scheduleSave();
+}
+
+// ── SOVEREIGNTIES ─────────────────────────────────────
+function renderSovPage(){
+  let html = '';
+  if(editMode){
+    html += `<div class="ph"><div class="ph-edit-fields">
+      <input value="The 22 Sovereignties" style="font-family:'Cinzel',serif;font-size:22px;color:#e8e2d8;background:#2e2a20;border-color:rgba(255,255,255,.15);" readonly>
+      <input value="Named after the 22 Major Arcana of the Tarot. Each has Steps 0–X." style="background:#2e2a20;border-color:rgba(255,255,255,.15);color:rgba(184,173,158,.7);" readonly>
+    </div></div>`;
+    html += `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem;">`;
+    CONTENT.sovereignties.forEach((s,i)=>{
+      html += `<div class="sov-edit-card">
+        <label>Roman numeral</label>
+        <input value="${esc(s.num)}" oninput="CONTENT.sovereignties[${i}].num=this.value;scheduleSave();">
+        <label>Card name</label>
+        <input value="${esc(s.card)}" oninput="CONTENT.sovereignties[${i}].card=this.value;scheduleSave();">
+        <label>Sovereignty name</label>
+        <input value="${esc(s.name)}" oninput="CONTENT.sovereignties[${i}].name=this.value;scheduleSave();">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+          <input type="checkbox" ${s.detail?'checked':''} onchange="CONTENT.sovereignties[${i}].detail=this.checked;CONTENT.sovereignties[${i}].featured=this.checked;scheduleSave();" style="width:auto;">
+          Links to The Star steps page
+        </label>
+        <div class="sov-edit-controls">
+          <button class="ec-btn" onclick="moveSov(${i},-1)">↑</button>
+          <button class="ec-btn" onclick="moveSov(${i},1)">↓</button>
+          <button class="ec-btn danger" onclick="CONTENT.sovereignties.splice(${i},1);renderSovPage();scheduleSave();">✕</button>
+        </div>
+      </div>`;
+    });
+    html += `</div>
+      <button class="page-add-btn" style="margin-top:1rem;" onclick="CONTENT.sovereignties.push({num:'XXII',card:'New Card',name:'Sovereignty of ___'});renderSovPage();scheduleSave();">+ Add Sovereignty</button>`;
+  } else {
+    html += `<div class="ph"><h1>The 22 Sovereignties</h1><p>Named after the 22 Major Arcana of the Tarot. Each has Steps 0–X.</p></div>`;
+    html += `<div class="sov-grid">`;
+    CONTENT.sovereignties.forEach(s=>{
+      html += `<div class="sov-card${s.featured?' ft':''}${s.detail?' hd':''}" ${s.detail?`onclick="go('the-star')"`:''}">
+        <div class="sov-num">${esc(s.num)}</div>
+        <div class="sov-cn">${esc(s.card)}</div>
+        <div class="sov-cs">${esc(s.name)}</div>
+        ${s.detail?`<div class="sov-lk">Full detail →</div>`:''}
+      </div>`;
+    });
+    html += `</div>`;
+  }
+  g('render-sovereignties').innerHTML = html;
+}
+
+function moveSov(idx,dir){
+  const ni=idx+dir; const a=CONTENT.sovereignties;
+  if(ni<0||ni>=a.length) return;
+  [a[idx],a[ni]]=[a[ni],a[idx]];
+  renderSovPage(); scheduleSave();
+}
+
+// ── STAR STEPS ────────────────────────────────────────
+function renderStarPage(){
+  let html = `<div class="back-btn" onclick="go('sovereignties')">← Back to Sovereignties</div>`;
+  html += editMode
+    ? `<div class="ph"><div class="ph-edit-fields"><input value="The Star" style="font-family:'Cinzel',serif;font-size:22px;color:#e8e2d8;background:#2e2a20;border-color:rgba(255,255,255,.15);" readonly><input value="Sovereignty of Hope · XVII" style="background:#2e2a20;border-color:rgba(255,255,255,.15);color:rgba(184,173,158,.7);" readonly></div></div>`
+    : `<div class="ph"><h1>The Star</h1><p>Sovereignty of Hope · XVII of the Major Arcana</p></div>`;
+
+  html += `<div class="step-list">`;
+  CONTENT.starSteps.forEach((s,i)=>{
+    if(!editMode){
+      html += `<div class="step-card" style="border-left-color:${esc(s.color)}">
+        <div class="step-ch"><span class="step-nl">Step ${s.step===10?'X':s.step}</span><span class="step-tt">${esc(s.title)}</span></div>
+        <div class="abl">Ability</div><div class="stxt">${esc(s.ability)}</div>
+        <div class="dsl">Downside</div><div class="stxt">${esc(s.downside)}</div>
+      </div>`;
+    } else {
+      html += `<div class="step-edit-card" style="border-left-color:${esc(s.color)}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:11px;color:#888;">Step ${s.step===10?'X':s.step}</span>
+          <div style="display:flex;gap:5px;">
+            <button class="ec-btn" onclick="moveStar(${i},-1)">↑</button>
+            <button class="ec-btn" onclick="moveStar(${i},1)">↓</button>
+            <button class="ec-btn danger" onclick="CONTENT.starSteps.splice(${i},1);renderStarPage();scheduleSave();">✕</button>
+          </div>
+        </div>
+        <div class="color-row">
+          <label>Step number:</label>
+          <input type="number" value="${s.step}" style="width:60px;padding:3px 6px;border-radius:4px;border:1px solid #ccc;" oninput="CONTENT.starSteps[${i}].step=parseInt(this.value)||0;scheduleSave();">
+          <label>Color:</label>
+          <input type="color" value="${s.color}" style="width:36px;height:26px;border:none;padding:0;cursor:pointer;" oninput="CONTENT.starSteps[${i}].color=this.value;scheduleSave();">
+        </div>
+        <input value="${esc(s.title)}" placeholder="Step title" oninput="CONTENT.starSteps[${i}].title=this.value;scheduleSave();">
+        <div class="step-lbl">Ability</div>
+        <textarea oninput="CONTENT.starSteps[${i}].ability=this.value;scheduleSave();" rows="4">${esc(s.ability)}</textarea>
+        <div class="step-lbl-d">Downside</div>
+        <textarea oninput="CONTENT.starSteps[${i}].downside=this.value;scheduleSave();" rows="3">${esc(s.downside)}</textarea>
+      </div>`;
+    }
+  });
+  html += `</div>`;
+  if(editMode){
+    html += `<button class="page-add-btn" style="margin-top:1rem;" onclick="CONTENT.starSteps.push({step:CONTENT.starSteps.length,title:'New Step',color:'#94a3b8',ability:'',downside:''});renderStarPage();scheduleSave();">+ Add step</button>`;
+  }
+  g('render-the-star').innerHTML = html;
+}
+
+function moveStar(idx,dir){
+  const ni=idx+dir; const a=CONTENT.starSteps;
+  if(ni<0||ni>=a.length) return;
+  [a[idx],a[ni]]=[a[ni],a[idx]];
+  renderStarPage(); scheduleSave();
+}
+
+// ── CHAPTERS ──────────────────────────────────────────
+function renderChaptersPage(){
+  let html = editMode
+    ? `<div class="ph"><div class="ph-edit-fields"><input value="Chapters" style="font-family:'Cinzel',serif;font-size:22px;color:#e8e2d8;background:#2e2a20;border-color:rgba(255,255,255,.15);" readonly></div></div>`
+    : `<div class="ph"><h1>Chapters</h1><p>Spring of the 993rd Free Year</p></div>`;
+
+  CONTENT.chapters.forEach((ch,i)=>{
+    if(!editMode){
+      const paras = (ch.body||'').split('\n\n').filter(Boolean).map(p=>`<p>${esc(p)}</p>`).join('');
+      html += `<div class="chap-card">
+        <div class="chap-ey">Chapter ${esc(ch.number)}</div>
+        <div class="chap-ti">${esc(ch.title)}</div>
+        <div class="chap-bd">${paras}</div>
+      </div>`;
+    } else {
+      html += `<div class="chap-edit-card">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+          <input value="${esc(ch.number)}" placeholder="Chapter number (e.g. I)" style="width:80px;font-family:'Cinzel',serif;" oninput="CONTENT.chapters[${i}].number=this.value;scheduleSave();">
+          <input value="${esc(ch.title)}" placeholder="Chapter title" style="flex:1;font-family:'Cinzel',serif;font-size:16px;" oninput="CONTENT.chapters[${i}].title=this.value;scheduleSave();">
+          <button class="ec-btn" onclick="moveChap(${i},-1)">↑</button>
+          <button class="ec-btn" onclick="moveChap(${i},1)">↓</button>
+          <button class="ec-btn danger" onclick="CONTENT.chapters.splice(${i},1);renderChaptersPage();scheduleSave();">✕</button>
+        </div>
+        <div style="font-size:10px;color:#999;margin-bottom:4px;font-family:sans-serif;">Body text — separate paragraphs with a blank line</div>
+        <textarea oninput="CONTENT.chapters[${i}].body=this.value;scheduleSave();" rows="14">${esc(ch.body||'')}</textarea>
+      </div>`;
+    }
+  });
+
+  if(editMode){
+    html += `<button class="page-add-btn" onclick="CONTENT.chapters.push({number:'II',title:'New Chapter',body:''});renderChaptersPage();scheduleSave();">+ Add chapter</button>`;
+  }
+  g('render-chapters').innerHTML = html;
+}
+
+function moveChap(idx,dir){
+  const ni=idx+dir; const a=CONTENT.chapters;
+  if(ni<0||ni>=a.length) return;
+  [a[idx],a[ni]]=[a[ni],a[idx]];
+  renderChaptersPage(); scheduleSave();
+}
+
+// ── CALENDAR & CURRENCY ───────────────────────────────
+function renderCalendarPage(){
+  let html = editMode
+    ? `<div class="ph"><div class="ph-edit-fields"><input value="Calendar &amp; Currency" style="font-family:'Cinzel',serif;font-size:22px;color:#e8e2d8;background:#2e2a20;border-color:rgba(255,255,255,.15);" readonly></div></div>`
+    : `<div class="ph"><h1>Calendar &amp; Currency</h1><p>The Free Calendar counts from the death of God</p></div>`;
+
+  if(!editMode){
+    html += `<div class="lb"><div class="lbt">The Free Calendar</div>
+      <div class="card"><p>${esc(CONTENT.calendarNote)}</p>
+        <h3>Seasons</h3><ul>${CONTENT.seasons.map(s=>`<li>${esc(s)}</li>`).join('')}</ul>
+      </div></div>
+      <div class="lb"><div class="lbt">Currency</div>
+      <div class="card"><table class="ctable">
+        <thead><tr><th>Coin</th><th>Material</th><th>Exchange</th></tr></thead>
+        <tbody>${CONTENT.currency.map(c=>`<tr><td><strong>${esc(c.name)}</strong></td><td>${esc(c.material)}</td><td>${esc(c.exchange)}</td></tr>`).join('')}</tbody>
+      </table></div></div>`;
+  } else {
+    // Calendar note
+    html += `<div class="lb"><div class="lbt">The Free Calendar</div><div class="edit-card cal-edit-wrap">
+      <label style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:.12em;">Calendar note</label>
+      <textarea oninput="CONTENT.calendarNote=this.value;scheduleSave();" rows="3">${esc(CONTENT.calendarNote)}</textarea>
+      <label style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:.12em;margin-top:8px;display:block;">Seasons</label>
+      <div class="items-edit-wrap">
+        ${CONTENT.seasons.map((s,i)=>`<div class="season-edit-row">
+          <input value="${esc(s)}" oninput="CONTENT.seasons[${i}]=this.value;scheduleSave();">
+          <button class="rmbtn" onclick="CONTENT.seasons.splice(${i},1);renderCalendarPage();scheduleSave();">✕</button>
+        </div>`).join('')}
+      </div>
+      <button class="small-add-btn" onclick="CONTENT.seasons.push('New Season');renderCalendarPage();scheduleSave();">+ Add season</button>
+    </div></div>`;
+    // Currency
+    html += `<div class="lb"><div class="lbt">Currency</div><div class="edit-card">
+      ${CONTENT.currency.map((c,i)=>`<div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;">
+        <input value="${esc(c.name)}" placeholder="Name" style="width:90px;font-weight:bold;font-size:12px;padding:4px 7px;border-radius:5px;border:1px solid #ccc;background:#faf9f5;" oninput="CONTENT.currency[${i}].name=this.value;scheduleSave();">
+        <input value="${esc(c.material)}" placeholder="Material" style="flex:1;font-size:12px;padding:4px 7px;border-radius:5px;border:1px solid #ccc;background:#faf9f5;" oninput="CONTENT.currency[${i}].material=this.value;scheduleSave();">
+        <input value="${esc(c.exchange)}" placeholder="Exchange rate" style="flex:2;font-size:12px;padding:4px 7px;border-radius:5px;border:1px solid #ccc;background:#faf9f5;" oninput="CONTENT.currency[${i}].exchange=this.value;scheduleSave();">
+        <button class="rmbtn" onclick="CONTENT.currency.splice(${i},1);renderCalendarPage();scheduleSave();">✕</button>
+      </div>`).join('')}
+      <button class="small-add-btn" onclick="CONTENT.currency.push({name:'New',material:'',exchange:''});renderCalendarPage();scheduleSave();">+ Add currency</button>
+    </div></div>`;
+  }
+  g('render-calendar').innerHTML = html;
+}
+
+// ── CHARACTER SHEETS ──────────────────────────────────
 const BLANK_CHAR = () => ({
-  id: 'c' + Date.now(),
-  number: '02',
-  nameJp: '',
-  nameEn: 'New Character',
-  title: '',
-  arcanaLabel: 'Arcana',
-  arcanaValue: '',
-  stepLabel: 'Step',
-  stepValue: '',
-  imgUrl: '',
-  appearance: '',
-  quote: '',
-  footer1: '',
-  footer2: '993 A.G. — Springtide',
-  karma: 0,
-  basicInfo: [{label:'Age',value:''},{label:'Alignment',value:''}],
-  stats: [{name:'New stat',val:50}],
-  customSections: []
+  id:'c'+Date.now(),number:'02',nameJp:'',nameEn:'New Character',title:'',
+  arcanaLabel:'Arcana',arcanaValue:'',stepLabel:'Step',stepValue:'',
+  imgUrl:'',appearance:'',quote:'',footer1:'',footer2:'993 A.G. — Springtide',
+  karma:0,basicInfo:[{label:'Age',value:''},{label:'Alignment',value:''}],
+  stats:[{name:'New stat',val:50}],customSections:[]
 });
 
-const TILLY_DEFAULT = {
-  id: 'tilly',
-  number: '01',
-  nameJp: 'ティリー',
-  nameEn: 'Tilly',
-  title: "Eustace's beloved child",
-  arcanaLabel: 'Arcana',
-  arcanaValue: 'The Star',
-  stepLabel: 'Step',
-  stepValue: '0 — Candlebearer',
-  imgUrl: 'https://i.imgur.com/RqDz8JN.jpeg',
-  appearance: 'Short shaggy dark auburn hair\nWarm amber eyes\nWorn vest · linen shirt · old boots',
-  quote: 'Tilly is twelve years old and has already learned that the world is not always kind. Raised above a cluttered antique shop in the city of Alderrdeen by her grandfather, she has a gift for knowing exactly what something is worth, and exactly what someone can pay. She is sharper than she looks, and kinder than she has any reason to be. She asks for very little in return for either. She loves deeply and without condition, and it has never once occurred to her that this might someday cost her something.',
-  footer1: 'Alderrdeen Township',
-  footer2: '993 A.G. — Springtide',
-  karma: 425,
-  basicInfo: [
-    {label:'Age',value:'12'},
-    {label:'Race',value:'Human'},
-    {label:'Origin',value:'Orphaned from a young age, Tilly was raised in an antique shop by a local man who took her in.'},
-    {label:'Guardian',value:'Eustace (Grandfather)'},
-    {label:'Residence',value:"Eustace's Oddities"},
-    {label:'Alignment',value:'Chaotic Good'}
-  ],
-  stats: [
-    {name:'Kindness',val:88},{name:'Courage',val:80},{name:'Wit',val:64},
-    {name:'Stubbornness',val:91},{name:'Luck',val:49},{name:'Renown',val:1}
-  ],
-  customSections: [
-    {title:'Items',items:[
-      {name:'4 Sonens',note:'(20 of these make up a single Aurem)'},
-      {name:'7 Trins',note:'(100 of these make up a single Sonen)'}
-    ]},
-    {title:'Living Artifacts',items:[
-      {name:'The Skeleton Key',note:'fused to right hand'},
-      {name:"Eustace's Sword",note:'inherited'}
-    ]}
-  ]
-};
+function saveChars(){ scheduleSave(); }
 
-// Load or init
-let charOrder, chars;
-try {
-  const saved = JSON.parse(localStorage.getItem('tw_chars') || 'null');
-  if (saved && saved.order && saved.data) {
-    charOrder = saved.order;
-    chars = saved.data;
-    // Ensure Tilly's default data is present if she exists in order but not data
-    if (charOrder.includes('tilly') && !chars['tilly']) chars['tilly'] = TILLY_DEFAULT;
-  } else {
-    charOrder = ['tilly'];
-    chars = { tilly: JSON.parse(JSON.stringify(TILLY_DEFAULT)) };
-  }
-} catch(e) {
-  charOrder = ['tilly'];
-  chars = { tilly: JSON.parse(JSON.stringify(TILLY_DEFAULT)) };
-}
-
-function saveChars() {
-  localStorage.setItem('tw_chars', JSON.stringify({ order: charOrder, data: chars }));
-}
-
-// ═══════════════════════════════════════════════════
-//  UTILS
-// ═══════════════════════════════════════════════════
-
-function esc(s) {
-  return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-
-function g(id) { return document.getElementById(id); }
-
-// ═══════════════════════════════════════════════════
-//  NAVIGATION
-// ═══════════════════════════════════════════════════
-
-function go(pageId) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const el = g('page-' + pageId);
-  if (el) el.classList.add('active');
-  document.querySelectorAll('.ni').forEach(n => {
-    const fn = n.getAttribute('onclick') || '';
-    n.classList.toggle('active', fn.includes("'" + pageId + "'"));
-  });
-  window.scrollTo(0, 0);
-}
-
-// ═══════════════════════════════════════════════════
-//  CHARACTER SHEET — BUILD HTML
-// ═══════════════════════════════════════════════════
-
-function buildSheetHTML(id) {
-  const c = chars[id];
-  const kPct = ((c.karma + 500) / 1000) * 100;
-  return `
-  <div class="sheet-wrap">
+function buildSheetHTML(id){
+  const c=CONTENT.chars[id];
+  const kP=((c.karma+500)/1000)*100;
+  return `<div class="sheet-wrap">
     <div class="sheet-toolbar">
       <button class="mode-btn active" id="${id}__bv" onclick="sMode('${id}','vm')">View</button>
       <button class="mode-btn" id="${id}__be" onclick="sMode('${id}','em')">Edit</button>
       <button class="tbtn tbtn-img" onclick="sSaveImg('${id}')">Save as image</button>
-      ${id !== 'tilly' ? `<button class="tbtn tbtn-del" onclick="delChar('${id}')">Delete</button>` : ''}
+      ${id!=='tilly'?`<button class="tbtn tbtn-del" onclick="delChar('${id}')">Delete</button>`:''}
     </div>
-
     <div class="sheet vm" id="${id}__sheet">
       <div class="char-number display" id="${id}__dn">${esc(c.number)}</div>
       <div class="top-label">Character</div>
-
       <div class="display">
         <div class="njp" id="${id}__djp">${esc(c.nameJp)}</div>
         <div class="nen" id="${id}__den">${esc(c.nameEn)}</div>
@@ -464,7 +733,6 @@ function buildSheetHTML(id) {
           <span id="${id}__dsv" style="font-family:'Cinzel',serif;font-size:15px;color:#555;letter-spacing:.05em;">${esc(c.stepValue)}</span>
         </div>
       </div>
-
       <div class="editable" style="margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid #eee;">
         <div class="frow"><span class="flabel">Char no.</span><input type="text" id="${id}__en" value="${esc(c.number)}" style="width:60px;"></div>
         <div class="frow"><span class="flabel">Name (JP)</span><input type="text" id="${id}__ejp" value="${esc(c.nameJp)}"></div>
@@ -479,14 +747,12 @@ function buildSheetHTML(id) {
           <input type="text" id="${id}__esv" value="${esc(c.stepValue)}" placeholder="e.g. Candlebearer" oninput="sStep('${id}')" style="flex:1;">
         </div>
       </div>
-
       <div class="two-col">
         <div>
           <div id="${id}__biv" class="display"></div>
           <div id="${id}__bie" class="editable"></div>
           <button class="add-btn editable" onclick="sAddBI('${id}')">+ Add info field</button>
           <hr class="div">
-
           <div class="slabel">Karma scale</div>
           <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
             <span style="font-size:13px;color:#666;font-family:sans-serif;">Alignment value <span class="kbadge">karma <span id="${id}__dkb">${c.karma>=0?'+':''}${c.karma}</span></span></span>
@@ -496,25 +762,21 @@ function buildSheetHTML(id) {
             <input type="range" min="-500" max="500" step="1" id="${id}__ek" value="${c.karma}" style="width:100%;" oninput="sKarma('${id}',parseInt(this.value))">
           </div>
           <div class="karma-track">
-            <div class="karma-evil" id="${id}__kev" style="width:${100-kPct}%;"></div>
-            <div class="karma-good" id="${id}__kgd" style="width:${kPct}%;"></div>
+            <div class="karma-evil" id="${id}__kev" style="width:${100-kP}%;"></div>
+            <div class="karma-good" id="${id}__kgd" style="width:${kP}%;"></div>
           </div>
           <div class="karma-labels"><span class="karma-label-evil">Supreme Evil −500</span><span class="karma-label-good">Supreme Good +500</span></div>
           <hr class="div">
-
           <div id="${id}__csv" class="display"></div>
           <div id="${id}__cse" class="editable"></div>
           <button class="add-btn editable" onclick="sAddCS('${id}')">+ Add Category Tab</button>
         </div>
-
         <div>
           <div class="art-frame">
             <div class="art-ph" id="${id}__aph" style="${c.imgUrl?'display:none':'display:flex'}">
-              <span style="font-size:28px;opacity:.3;">🖼</span>
-              <span>Paste an image URL in edit mode</span>
+              <span style="font-size:28px;opacity:.3;">🖼</span><span>Paste an image URL in edit mode</span>
             </div>
-            <img class="art-img" id="${id}__aimg" src="${esc(c.imgUrl)}" alt="Character art"
-              style="${c.imgUrl?'display:block':'display:none'}"
+            <img class="art-img" id="${id}__aimg" src="${esc(c.imgUrl)}" alt="" style="${c.imgUrl?'display:block':'display:none'}"
               onerror="this.style.display='none';g('${id}__aph').style.display='flex';">
           </div>
           <div class="editable" style="margin-top:8px;">
@@ -527,20 +789,17 @@ function buildSheetHTML(id) {
           </div>
         </div>
       </div>
-
       <hr class="div">
       <div style="margin-bottom:.7rem;">
         <div class="slabel">Character</div>
         <p class="trait-block display" id="${id}__dq">${esc(c.quote)}</p>
         <div class="editable"><textarea id="${id}__eq">${esc(c.quote)}</textarea></div>
       </div>
-
       <hr class="div">
       <div class="slabel">Status</div>
       <div id="${id}__stv"></div>
       <div id="${id}__ste" class="editable"></div>
       <button class="add-btn editable" onclick="sAddStat('${id}')">+ Add stat</button>
-
       <hr class="div">
       <div class="footer-row">
         <span class="display" id="${id}__df1">${esc(c.footer1)}</span>
@@ -552,305 +811,107 @@ function buildSheetHTML(id) {
   </div>`;
 }
 
-// ═══════════════════════════════════════════════════
-//  SHEET RENDER FUNCTIONS
-// ═══════════════════════════════════════════════════
-
-function sRenderBI(id) {
-  const c = chars[id];
-  g(id+'__biv').innerHTML = c.basicInfo.map(bi =>
-    `<div class="info-row"><span class="info-label">${bi.label}</span><span class="info-value">${bi.value}</span></div>`
-  ).join('');
-  g(id+'__bie').innerHTML = c.basicInfo.map((bi, i) =>
-    `<div class="frow">
-      <input type="text" value="${esc(bi.label)}" placeholder="Label" onchange="chars['${id}'].basicInfo[${i}].label=this.value;sRenderBI('${id}');saveChars();" style="width:90px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;flex-shrink:0;">
-      <input type="text" value="${esc(bi.value)}" placeholder="Value" onchange="chars['${id}'].basicInfo[${i}].value=this.value;sRenderBI('${id}');saveChars();" style="flex:1;">
-      <button class="rmbtn" onclick="chars['${id}'].basicInfo.splice(${i},1);sRenderBI('${id}');saveChars();">✕</button>
-    </div>`
-  ).join('');
+function sRenderBI(id){
+  const c=CONTENT.chars[id];
+  g(id+'__biv').innerHTML=c.basicInfo.map(bi=>`<div class="info-row"><span class="info-label">${bi.label}</span><span class="info-value">${bi.value}</span></div>`).join('');
+  g(id+'__bie').innerHTML=c.basicInfo.map((bi,i)=>`<div class="frow">
+    <input type="text" value="${esc(bi.label)}" style="width:90px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;flex-shrink:0;" onchange="CONTENT.chars['${id}'].basicInfo[${i}].label=this.value;sRenderBI('${id}');saveChars();">
+    <input type="text" value="${esc(bi.value)}" style="flex:1;" onchange="CONTENT.chars['${id}'].basicInfo[${i}].value=this.value;sRenderBI('${id}');saveChars();">
+    <button class="rmbtn" onclick="CONTENT.chars['${id}'].basicInfo.splice(${i},1);sRenderBI('${id}');saveChars();">✕</button>
+  </div>`).join('');
 }
 
-function sRenderStats(id) {
-  const c = chars[id];
-  g(id+'__stv').innerHTML = c.stats.map(s => {
-    const n = parseFloat(s.val); const pct = Math.min(isNaN(n)?0:n, 100);
-    return `<div class="stat-row-v"><span class="stat-name">${s.name}</span><div class="stat-bg"><div class="stat-fill" style="width:${pct}%"></div></div><span class="stat-val">${s.val}</span></div>`;
+function sRenderStats(id){
+  const c=CONTENT.chars[id];
+  g(id+'__stv').innerHTML=c.stats.map(s=>{
+    const n=parseFloat(s.val); const p=Math.min(isNaN(n)?0:n,100);
+    return `<div class="stat-row-v"><span class="stat-name">${s.name}</span><div class="stat-bg"><div class="stat-fill" style="width:${p}%"></div></div><span class="stat-val">${s.val}</span></div>`;
   }).join('');
-  g(id+'__ste').innerHTML = c.stats.map((s, i) => {
-    const nv = isNaN(parseFloat(s.val)) ? 50 : Math.min(Math.max(parseFloat(s.val),0),100);
+  g(id+'__ste').innerHTML=c.stats.map((s,i)=>{
+    const nv=isNaN(parseFloat(s.val))?50:Math.min(Math.max(parseFloat(s.val),0),100);
     return `<div class="stat-row-e">
-      <input type="text" value="${esc(s.name)}" onchange="chars['${id}'].stats[${i}].name=this.value;sRenderStats('${id}');saveChars();" style="width:110px;flex-shrink:0;">
-      <input type="range" min="0" max="100" step="1" value="${nv}" oninput="chars['${id}'].stats[${i}].val=parseInt(this.value);this.nextElementSibling.value=this.value;sRenderStats('${id}');saveChars();" style="flex:1;min-width:60px;">
-      <input type="text" value="${esc(String(s.val))}" onchange="chars['${id}'].stats[${i}].val=this.value;sRenderStats('${id}');saveChars();" style="width:52px;flex-shrink:0;text-align:center;" placeholder="0–∞">
-      <button class="rmbtn" onclick="chars['${id}'].stats.splice(${i},1);sRenderStats('${id}');saveChars();">✕</button>
+      <input type="text" value="${esc(s.name)}" onchange="CONTENT.chars['${id}'].stats[${i}].name=this.value;sRenderStats('${id}');saveChars();" style="width:110px;flex-shrink:0;">
+      <input type="range" min="0" max="100" step="1" value="${nv}" oninput="CONTENT.chars['${id}'].stats[${i}].val=parseInt(this.value);this.nextElementSibling.value=this.value;sRenderStats('${id}');saveChars();" style="flex:1;min-width:60px;">
+      <input type="text" value="${esc(String(s.val))}" onchange="CONTENT.chars['${id}'].stats[${i}].val=this.value;sRenderStats('${id}');saveChars();" style="width:52px;flex-shrink:0;text-align:center;">
+      <button class="rmbtn" onclick="CONTENT.chars['${id}'].stats.splice(${i},1);sRenderStats('${id}');saveChars();">✕</button>
     </div>`;
   }).join('');
 }
 
-function sRenderCS(id) {
-  const c = chars[id];
-  g(id+'__csv').innerHTML = c.customSections.map(sec =>
-    `<div style="margin-bottom:.5rem;"><div class="slabel">${sec.title}</div>${
-      sec.items.length === 0 ? '<span class="empty-note">None</span>' :
-      sec.items.map(it => `<span class="item-tag"><span style="color:#222;font-weight:500;">${it.name}</span>${it.note?`<span style="color:#aaa;font-size:11px;">· ${it.note}</span>`:''}</span>`).join('')
-    }</div>`
-  ).join('');
-  g(id+'__cse').innerHTML = c.customSections.map((sec, si) =>
-    `<div style="margin-bottom:16px;padding:12px;background:#f9f9f9;border-radius:10px;border:1px solid #eee;">
-      <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;">
-        <span style="font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:.1em;font-family:sans-serif;">Tab</span>
-        <input type="text" value="${esc(sec.title)}" onchange="chars['${id}'].customSections[${si}].title=this.value;sRenderCS('${id}');saveChars();" style="font-weight:bold;flex:1;">
-        <button class="rmbtn" onclick="chars['${id}'].customSections.splice(${si},1);sRenderCS('${id}');saveChars();">✕</button>
+function sRenderCS(id){
+  const c=CONTENT.chars[id];
+  g(id+'__csv').innerHTML=c.customSections.map(sec=>`<div style="margin-bottom:.5rem;"><div class="slabel">${sec.title}</div>${
+    sec.items.length===0?'<span class="empty-note">None</span>':
+    sec.items.map(it=>`<span class="item-tag"><span style="color:#222;font-weight:500;">${it.name}</span>${it.note?`<span style="color:#aaa;font-size:11px;">· ${it.note}</span>`:''}</span>`).join('')
+  }</div>`).join('');
+  g(id+'__cse').innerHTML=c.customSections.map((sec,si)=>`<div style="margin-bottom:16px;padding:12px;background:#f9f9f9;border-radius:10px;border:1px solid #eee;">
+    <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;">
+      <span style="font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:.1em;font-family:sans-serif;">Tab</span>
+      <input type="text" value="${esc(sec.title)}" onchange="CONTENT.chars['${id}'].customSections[${si}].title=this.value;sRenderCS('${id}');saveChars();" style="font-weight:bold;flex:1;">
+      <button class="rmbtn" onclick="CONTENT.chars['${id}'].customSections.splice(${si},1);sRenderCS('${id}');saveChars();">✕</button>
+    </div>
+    ${sec.items.map((it,ii)=>`<div class="item-row-e">
+      <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+        <input type="text" value="${esc(it.name)}" onchange="CONTENT.chars['${id}'].customSections[${si}].items[${ii}].name=this.value;sRenderCS('${id}');saveChars();">
+        <input type="text" value="${esc(it.note)}" onchange="CONTENT.chars['${id}'].customSections[${si}].items[${ii}].note=this.value;sRenderCS('${id}');saveChars();" style="font-size:11px;" placeholder="Note (optional)">
       </div>
-      ${sec.items.map((it, ii) =>
-        `<div class="item-row-e">
-          <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
-            <input type="text" value="${esc(it.name)}" onchange="chars['${id}'].customSections[${si}].items[${ii}].name=this.value;sRenderCS('${id}');saveChars();">
-            <input type="text" value="${esc(it.note)}" onchange="chars['${id}'].customSections[${si}].items[${ii}].note=this.value;sRenderCS('${id}');saveChars();" style="font-size:11px;" placeholder="Note (optional)">
-          </div>
-          <button class="rmbtn" onclick="chars['${id}'].customSections[${si}].items.splice(${ii},1);sRenderCS('${id}');saveChars();">✕</button>
-        </div>`
-      ).join('')}
-      <button class="add-btn" style="margin-top:8px;" onclick="chars['${id}'].customSections[${si}].items.push({name:'New entry',note:''});sRenderCS('${id}');saveChars();">+ Add to ${sec.title}</button>
-    </div>`
-  ).join('');
+      <button class="rmbtn" onclick="CONTENT.chars['${id}'].customSections[${si}].items.splice(${ii},1);sRenderCS('${id}');saveChars();">✕</button>
+    </div>`).join('')}
+    <button class="add-btn" style="margin-top:8px;" onclick="CONTENT.chars['${id}'].customSections[${si}].items.push({name:'New entry',note:''});sRenderCS('${id}');saveChars();">+ Add to ${sec.title}</button>
+  </div>`).join('');
 }
 
-function sKarma(id, v) {
-  chars[id].karma = v;
-  const p = ((v+500)/1000)*100;
-  g(id+'__kev').style.width = (100-p)+'%';
-  g(id+'__kgd').style.width = p+'%';
-  const s = v>=0?'+':'';
-  g(id+'__dkv').textContent = s+v;
-  g(id+'__dkb').textContent = s+v;
-  g(id+'__dkv').style.color = v>=0?'#185FA5':'#A32D2D';
-  saveChars();
-}
+function sKarma(id,v){ CONTENT.chars[id].karma=v; const p=((v+500)/1000)*100; g(id+'__kev').style.width=(100-p)+'%'; g(id+'__kgd').style.width=p+'%'; const s=v>=0?'+':''; g(id+'__dkv').textContent=s+v; g(id+'__dkb').textContent=s+v; g(id+'__dkv').style.color=v>=0?'#185FA5':'#A32D2D'; saveChars(); }
+function sArcana(id){ const al=g(id+'__eal'),av=g(id+'__eav'); if(al)CONTENT.chars[id].arcanaLabel=al.value; if(av)CONTENT.chars[id].arcanaValue=av.value; g(id+'__dal').textContent=CONTENT.chars[id].arcanaLabel; g(id+'__dav').textContent=CONTENT.chars[id].arcanaValue; g(id+'__dar').style.display=CONTENT.chars[id].arcanaValue?'flex':'none'; saveChars(); }
+function sStep(id){ const sl=g(id+'__esl'),sv=g(id+'__esv'); if(sl)CONTENT.chars[id].stepLabel=sl.value; if(sv)CONTENT.chars[id].stepValue=sv.value; g(id+'__dsl').textContent=CONTENT.chars[id].stepLabel; g(id+'__dsv').textContent=CONTENT.chars[id].stepValue; g(id+'__dsr').style.display=CONTENT.chars[id].stepValue?'flex':'none'; saveChars(); }
+function sImg(id,url){ CONTENT.chars[id].imgUrl=url; const img=g(id+'__aimg'),ph=g(id+'__aph'); if(url&&url.trim()){img.src=url.trim();img.style.display='block';ph.style.display='none';img.onerror=()=>{img.style.display='none';ph.style.display='flex';};}else{img.style.display='none';ph.style.display='flex';} saveChars(); }
+function sApplyEdits(id){ const c=CONTENT.chars[id]; const r=eid=>{const el=g(id+'__'+eid);return el?el.value:'';}; c.number=r('en');c.nameJp=r('ejp');c.nameEn=r('een');c.title=r('eti');c.quote=r('eq');c.footer1=r('ef1');c.footer2=r('ef2');c.appearance=r('eap'); g(id+'__dn').textContent=c.number;g(id+'__djp').textContent=c.nameJp;g(id+'__den').textContent=c.nameEn;g(id+'__dti').textContent=c.title;g(id+'__dq').textContent=c.quote;g(id+'__df1').textContent=c.footer1;g(id+'__df2').textContent=c.footer2;g(id+'__dap').innerHTML=esc(c.appearance).replace(/\n/g,'<br>'); sArcana(id);sStep(id);saveChars();renderCharNav(); }
+function sMode(id,mode){ const sh=g(id+'__sheet');sh.classList.remove('vm','em');sh.classList.add(mode);g(id+'__bv').classList.toggle('active',mode==='vm');g(id+'__be').classList.toggle('active',mode==='em');if(mode==='vm')sApplyEdits(id); }
+function sAddBI(id){ CONTENT.chars[id].basicInfo.push({label:'New Label',value:''});sRenderBI(id);saveChars(); }
+function sAddStat(id){ CONTENT.chars[id].stats.push({name:'New stat',val:50});sRenderStats(id);saveChars(); }
+function sAddCS(id){ CONTENT.chars[id].customSections.push({title:'New Category',items:[]});sRenderCS(id);saveChars(); }
+function sSaveImg(id){ const btn=event.target;btn.textContent='Saving…';btn.disabled=true;const sh=g(id+'__sheet');const wasEm=sh.classList.contains('em');if(wasEm){sApplyEdits(id);sh.classList.remove('em');sh.classList.add('vm');}html2canvas(sh,{backgroundColor:null,scale:2,useCORS:true,allowTaint:true}).then(c=>{const l=document.createElement('a');l.download=(CONTENT.chars[id].nameEn||'char').toLowerCase().replace(/\s+/g,'-')+'-sheet.png';l.href=c.toDataURL('image/png');l.click();btn.textContent='Save as image';btn.disabled=false;if(wasEm){sh.classList.remove('vm');sh.classList.add('em');}}).catch(()=>{btn.textContent='Save as image';btn.disabled=false;}); }
 
-function sArcana(id) {
-  const al = g(id+'__eal'), av = g(id+'__eav');
-  if(al) chars[id].arcanaLabel = al.value;
-  if(av) chars[id].arcanaValue = av.value;
-  g(id+'__dal').textContent = chars[id].arcanaLabel;
-  g(id+'__dav').textContent = chars[id].arcanaValue;
-  g(id+'__dar').style.display = chars[id].arcanaValue ? 'flex' : 'none';
-  saveChars();
-}
+function initSheet(id){ sRenderBI(id);sRenderStats(id);sRenderCS(id); }
 
-function sStep(id) {
-  const sl = g(id+'__esl'), sv = g(id+'__esv');
-  if(sl) chars[id].stepLabel = sl.value;
-  if(sv) chars[id].stepValue = sv.value;
-  g(id+'__dsl').textContent = chars[id].stepLabel;
-  g(id+'__dsv').textContent = chars[id].stepValue;
-  g(id+'__dsr').style.display = chars[id].stepValue ? 'flex' : 'none';
-  saveChars();
-}
-
-function sImg(id, url) {
-  chars[id].imgUrl = url;
-  const img = g(id+'__aimg'), ph = g(id+'__aph');
-  if(url && url.trim()) {
-    img.src = url.trim(); img.style.display = 'block'; ph.style.display = 'none';
-    img.onerror = () => { img.style.display='none'; ph.style.display='flex'; };
-  } else { img.style.display='none'; ph.style.display='flex'; }
-  saveChars();
-}
-
-function sApplyEdits(id) {
-  const c = chars[id];
-  const read = (eid) => { const el=g(id+'__'+eid); return el?el.value:''; };
-  c.number   = read('en');  c.nameJp  = read('ejp'); c.nameEn = read('een');
-  c.title    = read('eti'); c.quote   = read('eq');  c.footer1= read('ef1');
-  c.footer2  = read('ef2'); c.appearance = read('eap');
-  g(id+'__dn').textContent  = c.number;
-  g(id+'__djp').textContent = c.nameJp;
-  g(id+'__den').textContent = c.nameEn;
-  g(id+'__dti').textContent = c.title;
-  g(id+'__dq').textContent  = c.quote;
-  g(id+'__df1').textContent = c.footer1;
-  g(id+'__df2').textContent = c.footer2;
-  g(id+'__dap').innerHTML   = esc(c.appearance).replace(/\n/g,'<br>');
-  sArcana(id); sStep(id);
-  saveChars();
-  // Update sidebar name
-  renderCharNav();
-}
-
-function sMode(id, mode) {
-  const sheet = g(id+'__sheet');
-  sheet.classList.remove('vm','em');
-  sheet.classList.add(mode);
-  g(id+'__bv').classList.toggle('active', mode==='vm');
-  g(id+'__be').classList.toggle('active', mode==='em');
-  if(mode==='vm') sApplyEdits(id);
-}
-
-function sAddBI(id)   { chars[id].basicInfo.push({label:'New Label',value:''}); sRenderBI(id); saveChars(); }
-function sAddStat(id) { chars[id].stats.push({name:'New stat',val:50}); sRenderStats(id); saveChars(); }
-function sAddCS(id)   { chars[id].customSections.push({title:'New Category',items:[]}); sRenderCS(id); saveChars(); }
-
-function sSaveImg(id) {
-  const btn = event.target;
-  btn.textContent = 'Saving...'; btn.disabled = true;
-  const sheet = g(id+'__sheet');
-  const wasEdit = sheet.classList.contains('em');
-  if(wasEdit){ sApplyEdits(id); sheet.classList.remove('em'); sheet.classList.add('vm'); }
-  html2canvas(sheet, { backgroundColor:null, scale:2, useCORS:true, allowTaint:true }).then(canvas => {
-    const link = document.createElement('a');
-    link.download = (chars[id].nameEn||'character').toLowerCase().replace(/\s+/g,'-')+'-sheet.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-    btn.textContent = 'Save as image'; btn.disabled = false;
-    if(wasEdit){ sheet.classList.remove('vm'); sheet.classList.add('em'); }
-  }).catch(() => { btn.textContent='Save as image'; btn.disabled=false; });
-}
-
-// ═══════════════════════════════════════════════════
-//  CHARACTER MANAGEMENT
-// ═══════════════════════════════════════════════════
-
-function initSheet(id) {
-  sRenderBI(id);
-  sRenderStats(id);
-  sRenderCS(id);
-}
-
-function addCharPage(id) {
-  const sec = document.createElement('section');
-  sec.className = 'page';
-  sec.id = 'page-char-' + id;
-  sec.innerHTML = buildSheetHTML(id);
+function addCharPage(id){
+  const sec=document.createElement('section');
+  sec.className='page';
+  sec.id='page-char-'+id;
+  sec.innerHTML=buildSheetHTML(id);
   g('char-pages').appendChild(sec);
   initSheet(id);
 }
 
-function renderCharNav() {
-  g('char-nav').innerHTML = charOrder.map(id => {
-    const c = chars[id];
-    const name = c ? (c.nameEn || 'Unnamed') : 'Unnamed';
-    return `<div class="ni" id="nav-char-${id}" onclick="go('char-${id}')"><span class="nd"></span>${name}</div>`;
-  }).join('');
+function renderCharNav(){
+  g('char-nav').innerHTML=CONTENT.charOrder.map(id=>`<div class="ni" onclick="go('char-${id}')"><span class="nd"></span>${esc(CONTENT.chars[id]?CONTENT.chars[id].nameEn:'?')}</div>`).join('');
 }
 
-function addChar() {
-  const c = BLANK_CHAR();
-  chars[c.id] = c;
-  charOrder.push(c.id);
-  saveChars();
+function addChar(){
+  const c=BLANK_CHAR();
+  CONTENT.chars[c.id]=c;
+  CONTENT.charOrder.push(c.id);
   addCharPage(c.id);
   renderCharNav();
-  go('char-' + c.id);
+  go('char-'+c.id);
+  scheduleSave();
 }
 
-function delChar(id) {
-  if (!confirm('Delete this character sheet? This cannot be undone.')) return;
-  charOrder = charOrder.filter(x => x !== id);
-  delete chars[id];
-  saveChars();
-  const sec = g('page-char-' + id);
-  if (sec) sec.remove();
+function delChar(id){
+  if(!confirm('Delete this character? Cannot be undone.')) return;
+  CONTENT.charOrder=CONTENT.charOrder.filter(x=>x!==id);
+  delete CONTENT.chars[id];
+  const sec=g('page-char-'+id);
+  if(sec) sec.remove();
   renderCharNav();
-  go(charOrder.length ? 'char-' + charOrder[0] : 'world');
+  go(CONTENT.charOrder.length?'char-'+CONTENT.charOrder[0]:'world');
+  scheduleSave();
 }
 
-// ═══════════════════════════════════════════════════
-//  SOVEREIGNTY & STAR DATA
-// ═══════════════════════════════════════════════════
-
-const SOVS = [
-  {num:'0',card:'The Fool',name:'Sovereignty of Wandering'},
-  {num:'I',card:'The Magician',name:'Sovereignty of Direction'},
-  {num:'II',card:'The High Priestess',name:'Sovereignty of Secrets'},
-  {num:'III',card:'The Empress',name:'Sovereignty of Growth'},
-  {num:'IV',card:'The Emperor',name:'Sovereignty of Command'},
-  {num:'V',card:'The Hierophant',name:'Sovereignty of Tradition'},
-  {num:'VI',card:'The Lovers',name:'Sovereignty of Bonds'},
-  {num:'VII',card:'The Chariot',name:'Sovereignty of Motion'},
-  {num:'VIII',card:'Strength',name:'Sovereignty of Force'},
-  {num:'IX',card:'The Hermit',name:'Sovereignty of Isolation'},
-  {num:'X',card:'Wheel of Fortune',name:'Sovereignty of Luck'},
-  {num:'XI',card:'Justice',name:'Sovereignty of Balance'},
-  {num:'XII',card:'The Hanged Man',name:'Sovereignty of Sacrifice'},
-  {num:'XIII',card:'Death',name:'Sovereignty of Endings'},
-  {num:'XIV',card:'Temperance',name:'Sovereignty of Restraint'},
-  {num:'XV',card:'The Devil',name:'Sovereignty of Temptation'},
-  {num:'XVI',card:'The Tower',name:'Sovereignty of Destruction'},
-  {num:'XVII',card:'The Star',name:'Sovereignty of Hope',detail:'the-star',ft:true},
-  {num:'XVIII',card:'The Moon',name:'Sovereignty of Illusion'},
-  {num:'XIX',card:'The Sun',name:'Sovereignty of Radiance'},
-  {num:'XX',card:'Judgement',name:'Sovereignty of Awakening'},
-  {num:'XXI',card:'The World',name:'Sovereignty of Completion'},
-];
-
-const STAR = [
-  {s:0,t:'Candlebearer',c:'#94a3b8',
-   a:'A faint warm light emanates from the Arcanist that wind and water cannot extinguish. Small radius. Always present. Can be dimmed by will. In complete darkness it\'s the difference between seeing and not seeing.',
-   d:'They begin sleeping later than usual. Nothing dramatic yet.'},
-  {s:1,t:'Omen-Reader',c:'#86efac',
-   a:'They begin noticing signs others miss. A fighter\'s weight shifting before they throw a punch. A mage\'s breath changing before they draw a sigil. They see it coming a half second before it arrives. In a brawl a half second is everything.',
-   d:'They begin feeling the emotions of people around them without meaning to. Someone nearby is grieving and they feel it like pressure behind their eyes. They can\'t turn it off yet.'},
-  {s:2,t:'Stargazer',c:'#67e8f9',
-   a:'Their light has developed an edge. They can focus it into a narrow beam — not enough to burn yet, but enough to blind someone momentarily. They can also project it as a short burst in all directions, disorienting multiple enemies at once. By studying the night sky for an hour they gain a vague sense of what tomorrow holds for themselves or someone nearby.',
-   d:'They can no longer lie convincingly. Their light flickers almost imperceptibly when they say something untrue. Animals notice first. Then perceptive people.'},
-  {s:3,t:'Fate-Charter',c:'#a78bfa',
-   a:'They begin to read the immediate future in combat with frightening accuracy. Not minutes ahead — seconds. The next blow. The next step. The next breath. They move through a fight like water finding its path, never quite where the attack lands. They aren\'t faster than their opponents. They simply aren\'t there when the hit arrives. They can also sense when someone nearby is at a turning point in their life.',
-   d:'They are inexplicably drawn to people who are suffering. Strangers in pain find them. They cannot walk past someone in genuine despair without stopping. This is not a choice.'},
-  {s:4,t:'Lodestar',c:'#fbbf24',
-   a:'They can now project their light as a physical force. A concentrated pulse that hits like a shove — enough to knock someone off their feet or send a weapon spinning out of a hand. It can be fired repeatedly but costs genuine effort. Lost things also find their way to them — a missing person wanders past them on the street, a stolen object turns up nearby.',
-   d:'They stop being able to sustain hatred. They can be furious. Devastated. But hatred dissolves in them like salt in water.'},
-  {s:5,t:'Scribe of Skies',c:'#f97316',
-   a:'Their body has begun to change. Bones subtly denser. Reflexes sharpened beyond normal human limits without any training to explain it. The road is rewriting them from the inside. They hit harder than they should for their size and recover from impacts faster than makes sense. They also always know the broad shape of fate moving around them — who is in danger, where hope is concentrated. Always on. Cannot be turned off.',
-   d:'They stop needing to eat as much. A meal every few days sustains them. People who know them well begin to notice they never seem hungry.'},
-  {s:6,t:'Astrologer of Ruin',c:'#ef4444',
-   a:'They can see the threads of fate connecting people in a fight. Who is about to make a fatal mistake. Where the turning point of the battle is. They only need to pull the right thread at the right moment and watch everything unravel. They can also hear wishes — not spoken ones, the ones people carry silently. With focus they can isolate a single person\'s deepest want.',
-   d:'They begin to glow faintly in complete darkness. They cannot control it.'},
-  {s:7,t:'Living Constellation',c:'#ec4899',
-   a:'Their light has become something altogether different. They can shape it into walls of blazing radiance that physical weapons cannot pass through. Beams that strike with the force of a battering ram. A corona of burning light around their body that makes close combat deeply unpleasant. Allies near them feel steadier and harder to break. Enemies feel watched from very far away and found wanting.',
-   d:'Their tears are luminescent. They cannot hide grief. It literally shines out of them.'},
-  {s:8,t:'Terror of the Void',c:'#8b5cf6',
-   a:'Once per fight they can stop time for a single breath. In that breath they can move, redirect, reposition, pull someone out of the path of something unsurvivable. When time resumes nobody saw them move. Their body now heals at a rate that is difficult to explain — cuts close within minutes, broken bones within hours. They are becoming very hard to kill.',
-   d:'They have begun to forget small human things. The taste of their favourite food. The sound of a voice they loved. Small human details blur while cosmic ones sharpen.'},
-  {s:9,t:'Sovereign of Hope',c:'#3b82f6',
-   a:'They are no longer entirely fighting with a body. They are fighting with a concept. Their strikes carry weight beyond physical force — a blow doesn\'t just break bone, it breaks something in the spirit of whoever receives it. Anyone who has truly given up and comes near them feels something shift — the genuine sense that one more try is worth it. No range limit. Cannot be resisted. It has ended sieges. Their light can be seen from miles away if fully released.',
-   d:'They are no longer aging. They will outlive everyone they love unless something kills them first. They are beginning to understand what that means.'},
-  {s:10,t:'The Star',c:'#e2e8f0',
-   a:'There are no reliable accounts of a Star in combat because nothing that has ever fought one has survived to describe it coherently. What fragments exist speak of light that rewrites what it touches. Of wounds that simply cease to exist. Of enemies who stopped fighting not because they were defeated but because in the presence of a Star the concept of fighting seemed very small and very far away. A Star does not win battles. A Star ends them.',
-   d:'They are still here. Still themselves. But when they look at the people around them there is something in their eyes that wasn\'t there before. A distance. Not coldness. But they are seeing something the rest of the world cannot see yet. And sometimes when someone speaks to them there is a moment — just a breath — before they remember to respond like a person.'},
-];
-
-// ═══════════════════════════════════════════════════
-//  INIT
-// ═══════════════════════════════════════════════════
-
-// Build sovereignty grid
-g('sov-grid').innerHTML = SOVS.map(s =>
-  `<div class="sov-card${s.ft?' ft':''}${s.detail?' hd':''}" ${s.detail?`onclick="go('${s.detail}')"`:''}">
-    <div class="sov-num">${s.num}</div>
-    <div class="sov-cn">${s.card}</div>
-    <div class="sov-cs">${s.name}</div>
-    ${s.detail?`<div class="sov-lk">Full detail →</div>`:''}
-  </div>`
-).join('');
-
-// Build star steps
-g('star-steps').innerHTML = STAR.map(s =>
-  `<div class="step-card" style="border-left-color:${s.c}">
-    <div class="step-ch"><span class="step-nl">Step ${s.s===10?'X':s.s}</span><span class="step-tt">${s.t}</span></div>
-    <div class="abl">Ability</div><div class="stxt">${s.a}</div>
-    <div class="dsl">Downside</div><div class="stxt">${s.d}</div>
-  </div>`
-).join('');
-
-// Build all character pages
-charOrder.forEach(id => addCharPage(id));
-
-// Build sidebar nav
+// ── INIT ──────────────────────────────────────────────
+CONTENT.charOrder.forEach(id=>addCharPage(id));
 renderCharNav();
-
-// Start on first character
-go('char-' + charOrder[0]);
+go('char-'+CONTENT.charOrder[0]);
 </script>
 </body>
 </html>
