@@ -4,1331 +4,853 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tilly's World</title>
-<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --sidebar-bg: #19160f;
-  --sidebar-text: #b8ad9e;
-  --sidebar-accent: #7b6fbb;
-  --main-bg: #201d16;
-  --parchment: #ddd8d0;
-  --parchment-light: #e8e3db;
-  --card-border: rgba(0,0,0,0.12);
-  --text-dark: #2e2820;
-  --text-mid: #5a4e42;
-  --text-light: #8a7e72;
-  --accent: #3C3489;
-  --accent-light: #7b6fbb;
-  --gold: #c9a84c;
-}
-
-body {
-  background: var(--main-bg);
-  display: flex;
-  min-height: 100vh;
-  font-family: 'IM Fell English', serif;
-  color: var(--text-dark);
-}
-
-/* ── SIDEBAR ─────────────────────────────────────────── */
-.sidebar {
-  width: 210px;
-  min-width: 210px;
-  background: var(--sidebar-bg);
-  padding: 1.4rem 0 2rem;
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: 0; left: 0; bottom: 0;
-  overflow-y: auto;
-  z-index: 100;
-  border-right: 1px solid rgba(255,255,255,0.04);
-}
-
-.sidebar-logo {
-  padding: 0 1.2rem 1.2rem;
-  border-bottom: 1px solid rgba(255,255,255,0.07);
-  margin-bottom: 1.2rem;
-}
-
-.sidebar-logo .eyebrow {
-  font-family: sans-serif;
-  font-size: 9px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(184,173,158,0.45);
-  margin-bottom: 4px;
-}
-
-.sidebar-logo .title {
-  font-family: 'Cinzel', serif;
-  font-size: 15px;
-  font-weight: 400;
-  color: #e8e2d8;
-  letter-spacing: 0.1em;
-}
-
-.nav-group {
-  margin-bottom: 0.4rem;
-}
-
-.nav-group-label {
-  font-family: sans-serif;
-  font-size: 9px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(184,173,158,0.4);
-  padding: 0.6rem 1.2rem 0.25rem;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0.38rem 1.2rem;
-  font-family: sans-serif;
-  font-size: 12px;
-  color: var(--sidebar-text);
-  cursor: pointer;
-  transition: all 0.13s;
-  border-left: 2px solid transparent;
-  user-select: none;
-}
-
-.nav-item:hover { color: #fff; background: rgba(255,255,255,0.04); }
-
-.nav-item.active {
-  color: #fff;
-  border-left-color: var(--sidebar-accent);
-  background: rgba(123,111,187,0.1);
-}
-
-.nav-dot {
-  width: 4px; height: 4px;
-  border-radius: 50%;
-  background: rgba(184,173,158,0.35);
-  flex-shrink: 0;
-  transition: background 0.13s;
-}
-
-.nav-item.active .nav-dot { background: var(--sidebar-accent); }
-
-/* ── MAIN ─────────────────────────────────────────────── */
-.main {
-  margin-left: 210px;
-  flex: 1;
-  padding: 2.2rem 2.4rem 3rem;
-  max-width: 1000px;
-}
-
-/* ── PAGES ────────────────────────────────────────────── */
-.page { display: none; }
-.page.active { display: block; }
-
-/* ── PAGE HEADER ──────────────────────────────────────── */
-.page-head {
-  margin-bottom: 2rem;
-  padding-bottom: 1.2rem;
-  border-bottom: 1px solid rgba(255,255,255,0.07);
-}
-
-.page-head h1 {
-  font-family: 'Cinzel', serif;
-  font-size: 26px;
-  font-weight: 400;
-  color: #e8e2d8;
-  letter-spacing: 0.07em;
-  line-height: 1.2;
-}
-
-.page-head p {
-  font-size: 13px;
-  color: rgba(184,173,158,0.7);
-  margin-top: 5px;
-  font-family: sans-serif;
-  font-style: italic;
-}
-
-/* ── LORE SECTION ─────────────────────────────────────── */
-.lore-block { margin-bottom: 2.2rem; }
-
-.lore-block-title {
-  font-family: 'Cinzel', serif;
-  font-size: 15px;
-  font-weight: 400;
-  color: #c8c0b0;
-  letter-spacing: 0.1em;
-  margin-bottom: 0.8rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(255,255,255,0.07);
-}
-
-/* ── CARD ─────────────────────────────────────────────── */
-.card {
-  background: var(--parchment);
-  border-radius: 10px;
-  padding: 1.4rem 1.6rem;
-  margin-bottom: 1rem;
-}
-
-.card h2 {
-  font-family: 'Cinzel', serif;
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text-dark);
-  margin-bottom: 0.7rem;
-  letter-spacing: 0.05em;
-}
-
-.card h3 {
-  font-family: 'Cinzel', serif;
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--text-mid);
-  margin: 1rem 0 0.4rem;
-  letter-spacing: 0.07em;
-}
-
-.card p {
-  font-size: 14px;
-  line-height: 1.75;
-  color: var(--text-mid);
-}
-
-.card p + p { margin-top: 0.75rem; }
-
-.card ul {
-  list-style: none;
-  padding: 0;
-  margin-top: 0.3rem;
-}
-
-.card ul li {
-  font-size: 14px;
-  color: var(--text-mid);
-  padding: 3px 0 3px 16px;
-  position: relative;
-  line-height: 1.6;
-}
-
-.card ul li::before {
-  content: '·';
-  position: absolute;
-  left: 4px;
-  color: var(--accent-light);
-}
-
-/* ── CHARACTER SHEET ──────────────────────────────────── */
-.char-sheet {
-  background: var(--parchment);
-  border-radius: 12px;
-  padding: 2rem 2.2rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.char-sheet::after {
-  content: '';
-  position: absolute;
-  top: 0; right: 0;
-  width: 160px; height: 160px;
-  background: radial-gradient(circle at top right, rgba(60,52,137,0.07), transparent 65%);
-  pointer-events: none;
-}
-
-.char-name-jp {
-  font-family: sans-serif;
-  font-size: 11px;
-  color: #aaa;
-  letter-spacing: 0.12em;
-  margin-bottom: 2px;
-}
-
-.char-name {
-  font-family: 'Cinzel', serif;
-  font-size: 34px;
-  font-weight: 400;
-  color: var(--text-dark);
-  letter-spacing: 0.05em;
-  line-height: 1.1;
-  margin-bottom: 5px;
-}
-
-.char-role {
-  font-size: 13px;
-  color: var(--text-light);
-  font-style: italic;
-  margin-bottom: 1.2rem;
-}
-
-.char-synopsis {
-  font-size: 13px;
-  line-height: 1.8;
-  color: var(--text-mid);
-  font-style: italic;
-  border-top: 1px solid rgba(0,0,0,0.1);
-  border-bottom: 1px solid rgba(0,0,0,0.1);
-  padding: 1rem 0;
-  margin: 1rem 0 1.2rem;
-}
-
-.char-fields {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.8rem 1.4rem;
-  margin-bottom: 1.2rem;
-}
-
-.char-field label {
-  display: block;
-  font-family: sans-serif;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: #aaa;
-  margin-bottom: 2px;
-}
-
-.char-field span {
-  font-size: 13.5px;
-  color: var(--text-dark);
-  line-height: 1.4;
-}
-
-.char-field.full { grid-column: 1 / -1; }
-
-/* Step badge */
-.step-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(135deg, #2d2875, #5c51a8);
-  color: #fff;
-  font-family: 'Cinzel', serif;
-  font-size: 11px;
-  padding: 6px 14px;
-  border-radius: 20px;
-  letter-spacing: 0.07em;
-  margin-bottom: 1.2rem;
-}
-
-.step-badge .sep { opacity: 0.4; }
-
-/* Stats */
-.stats-section { margin: 0.8rem 0 1rem; }
-
-.stat-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 7px;
-}
-
-.stat-label {
-  font-family: sans-serif;
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-mid);
-  width: 108px;
-  flex-shrink: 0;
-}
-
-.stat-bar-bg {
-  flex: 1;
-  height: 7px;
-  background: rgba(0,0,0,0.1);
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.stat-bar-fill {
-  height: 100%;
-  border-radius: 4px;
-  background: linear-gradient(to right, #3C3489, #7b6fbb);
-}
-
-.stat-bar-fill.gold {
-  background: linear-gradient(to right, #a07830, #c9a84c);
-}
-
-.stat-val {
-  font-family: sans-serif;
-  font-size: 11px;
-  color: var(--text-dark);
-  width: 26px;
-  text-align: right;
-  flex-shrink: 0;
-}
-
-/* Karma */
-.karma-wrap { margin: 0.8rem 0 1rem; }
-
-.karma-labels {
-  display: flex;
-  justify-content: space-between;
-  font-family: sans-serif;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: #aaa;
-  margin-bottom: 4px;
-}
-
-.karma-bar-bg {
-  height: 9px;
-  background: rgba(0,0,0,0.1);
-  border-radius: 5px;
-  overflow: hidden;
-}
-
-.karma-bar-fill {
-  height: 100%;
-  background: linear-gradient(to right, #4361c4, #7b6fbb);
-}
-
-.karma-val {
-  font-family: sans-serif;
-  font-size: 10px;
-  color: var(--text-mid);
-  text-align: center;
-  margin-top: 3px;
-}
-
-/* Tags */
-.tag-row { margin-top: 0.8rem; }
-
-.tag-row-label {
-  font-family: sans-serif;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: #aaa;
-  margin-bottom: 5px;
-}
-
-.tag {
-  display: inline-block;
-  font-family: sans-serif;
-  font-size: 11px;
-  padding: 3px 10px;
-  border-radius: 11px;
-  margin: 2px 3px 2px 0;
-}
-
-.tag-artifact {
-  background: rgba(60,52,137,0.1);
-  border: 1px solid rgba(60,52,137,0.22);
-  color: #3C3489;
-}
-
-.tag-item {
-  background: rgba(0,0,0,0.06);
-  border: 1px solid rgba(0,0,0,0.11);
-  color: var(--text-mid);
-}
-
-.char-quote {
-  margin-top: 1.2rem;
-  padding-top: 0.9rem;
-  border-top: 1px solid rgba(0,0,0,0.1);
-  font-size: 13px;
-  color: #aaa;
-  font-style: italic;
-  text-align: center;
-}
-
-/* ── CHARACTER GRID ───────────────────────────────────── */
-.char-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.char-thumb {
-  background: var(--parchment);
-  border-radius: 10px;
-  padding: 1.2rem 1.4rem;
-  cursor: pointer;
-  transition: transform 0.14s, box-shadow 0.14s, border-color 0.14s;
-  border: 2px solid transparent;
-}
-
-.char-thumb:hover {
-  transform: translateY(-2px);
-  border-color: rgba(60,52,137,0.35);
-  box-shadow: 0 5px 18px rgba(0,0,0,0.28);
-}
-
-.char-thumb-name {
-  font-family: 'Cinzel', serif;
-  font-size: 20px;
-  color: var(--text-dark);
-  margin-bottom: 2px;
-}
-
-.char-thumb-sub {
-  font-size: 12px;
-  color: var(--text-light);
-  font-style: italic;
-  margin-bottom: 0.8rem;
-}
-
-.char-thumb-tags { display: flex; flex-wrap: wrap; gap: 4px; }
-
-.char-thumb-tag {
-  font-family: sans-serif;
-  font-size: 10px;
-  padding: 2px 8px;
-  border-radius: 9px;
-  background: rgba(60,52,137,0.1);
-  color: #3C3489;
-}
-
-/* ── SOVEREIGNTY GRID ─────────────────────────────────── */
-.sov-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
-  gap: 0.75rem;
-}
-
-.sov-card {
-  background: var(--parchment);
-  border-radius: 8px;
-  padding: 1rem 1.1rem;
-  border: 2px solid transparent;
-  transition: all 0.14s;
-}
-
-.sov-card.has-detail { cursor: pointer; }
-
-.sov-card.has-detail:hover {
-  transform: translateY(-2px);
-  border-color: rgba(60,52,137,0.35);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.22);
-}
-
-.sov-card.featured {
-  border-color: rgba(60,52,137,0.4);
-  background: #eae6f5;
-}
-
-.sov-num {
-  font-family: sans-serif;
-  font-size: 9px;
-  color: #bbb;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  margin-bottom: 3px;
-}
-
-.sov-card-name {
-  font-family: 'Cinzel', serif;
-  font-size: 13px;
-  color: var(--text-dark);
-  margin-bottom: 2px;
-}
-
-.sov-card-sov {
-  font-size: 11.5px;
-  color: var(--text-light);
-  font-style: italic;
-}
-
-.sov-link {
-  margin-top: 6px;
-  font-family: sans-serif;
-  font-size: 9px;
-  color: var(--accent);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-/* ── STAR STEPS ───────────────────────────────────────── */
-.step-list { display: flex; flex-direction: column; gap: 0.9rem; }
-
-.step-card {
-  background: var(--parchment);
-  border-radius: 9px;
-  padding: 1.2rem 1.4rem;
-  border-left: 3px solid;
-}
-
-.step-card-head {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  margin-bottom: 0.75rem;
-}
-
-.step-num-label {
-  font-family: sans-serif;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: #bbb;
-}
-
-.step-title {
-  font-family: 'Cinzel', serif;
-  font-size: 15px;
-  color: var(--text-dark);
-}
-
-.ability-label {
-  font-family: sans-serif;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: #3C3489;
-  margin-bottom: 3px;
-}
-
-.downside-label {
-  font-family: sans-serif;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: #b83232;
-  margin-top: 9px;
-  margin-bottom: 3px;
-}
-
-.step-text {
-  font-size: 13.5px;
-  line-height: 1.72;
-  color: var(--text-mid);
-}
-
-/* ── FAIRY GRID ───────────────────────────────────────── */
-.fairy-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 0.75rem;
-}
-
-.fairy-card {
-  background: var(--parchment);
-  border-radius: 8px;
-  padding: 1.1rem 1.2rem;
-}
-
-.fairy-card h3 {
-  font-family: 'Cinzel', serif;
-  font-size: 14px;
-  color: var(--text-dark);
-  margin-bottom: 6px;
-}
-
-.fairy-card p {
-  font-size: 13px;
-  line-height: 1.65;
-  color: var(--text-mid);
-}
-
-/* ── SIGIL GRID ───────────────────────────────────────── */
-.sigil-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 0.6rem;
-}
-
-.sigil-card {
-  background: var(--parchment);
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  text-align: center;
-  font-family: 'Cinzel', serif;
-  font-size: 13px;
-  color: var(--text-dark);
-}
-
-/* ── CURRENCY TABLE ───────────────────────────────────── */
-.currency-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.currency-table th {
-  font-family: sans-serif;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: #aaa;
-  text-align: left;
-  padding: 6px 12px;
-  border-bottom: 1px solid rgba(0,0,0,0.1);
-}
-
-.currency-table td {
-  padding: 8px 12px;
-  font-size: 14px;
-  color: var(--text-mid);
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-}
-
-.currency-table tr:last-child td { border-bottom: none; }
-
-/* ── CHAPTER CARD ─────────────────────────────────────── */
-.chapter-card {
-  background: var(--parchment);
-  border-radius: 10px;
-  padding: 1.6rem 1.9rem;
-  margin-bottom: 1.2rem;
-}
-
-.chapter-eyebrow {
-  font-family: sans-serif;
-  font-size: 9px;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: #aaa;
-  margin-bottom: 5px;
-}
-
-.chapter-title {
-  font-family: 'Cinzel', serif;
-  font-size: 22px;
-  font-weight: 400;
-  color: var(--text-dark);
-  margin-bottom: 1rem;
-}
-
-.chapter-body {
-  font-size: 14px;
-  line-height: 1.82;
-  color: var(--text-mid);
-}
-
-.chapter-body p { margin-bottom: 0.75rem; }
-.chapter-body p:last-child { margin-bottom: 0; }
-
-/* ── BACK BUTTON ──────────────────────────────────────── */
-.back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: sans-serif;
-  font-size: 12px;
-  color: rgba(184,173,158,0.7);
-  cursor: pointer;
-  padding: 5px 10px;
-  border-radius: 6px;
-  margin-bottom: 1.5rem;
-  transition: all 0.13s;
-}
-
-.back-btn:hover { color: #fff; background: rgba(255,255,255,0.06); }
-
-/* ── SCROLLBAR ────────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+*{box-sizing:border-box;margin:0;padding:0;}
+
+/* ── SIDEBAR ─────────────────────────────────────── */
+body{background:#201d16;display:flex;min-height:100vh;font-family:sans-serif;}
+.sidebar{width:210px;min-width:210px;background:#19160f;padding:1.4rem 0 2rem;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:100;border-right:1px solid rgba(255,255,255,0.04);}
+.sb-logo{padding:0 1.2rem 1.2rem;border-bottom:1px solid rgba(255,255,255,0.07);margin-bottom:1.2rem;}
+.sb-logo .ey{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(184,173,158,.45);margin-bottom:4px;}
+.sb-logo .ti{font-family:'Cinzel',serif;font-size:15px;font-weight:400;color:#e8e2d8;letter-spacing:.1em;}
+.ng{margin-bottom:.4rem;}
+.ngl{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(184,173,158,.4);padding:.6rem 1.2rem .25rem;}
+.ni{display:flex;align-items:center;gap:8px;padding:.38rem 1.2rem;font-size:12px;color:#b8ad9e;cursor:pointer;transition:all .13s;border-left:2px solid transparent;user-select:none;}
+.ni:hover{color:#fff;background:rgba(255,255,255,.04);}
+.ni.active{color:#fff;border-left-color:#7b6fbb;background:rgba(123,111,187,.1);}
+.nd{width:4px;height:4px;border-radius:50%;background:rgba(184,173,158,.35);flex-shrink:0;transition:background .13s;}
+.ni.active .nd{background:#7b6fbb;}
+.nadd{display:flex;align-items:center;gap:8px;padding:.38rem 1.2rem;font-size:11px;color:rgba(123,111,187,.8);cursor:pointer;transition:all .13s;}
+.nadd:hover{color:#9d93d8;background:rgba(123,111,187,.08);}
+
+/* ── MAIN ────────────────────────────────────────── */
+.main{margin-left:210px;flex:1;padding:2rem 2.4rem 3rem;max-width:980px;}
+.page{display:none;}
+.page.active{display:block;}
+.ph{margin-bottom:2rem;padding-bottom:1.2rem;border-bottom:1px solid rgba(255,255,255,.07);}
+.ph h1{font-family:'Cinzel',serif;font-size:26px;font-weight:400;color:#e8e2d8;letter-spacing:.07em;}
+.ph p{font-size:13px;color:rgba(184,173,158,.7);margin-top:5px;font-style:italic;}
+
+/* ── LORE ────────────────────────────────────────── */
+.lb{margin-bottom:2.2rem;}
+.lbt{font-family:'Cinzel',serif;font-size:15px;font-weight:400;color:#c8c0b0;letter-spacing:.1em;margin-bottom:.8rem;padding-bottom:.5rem;border-bottom:1px solid rgba(255,255,255,.07);}
+.card{background:#ddd8d0;border-radius:10px;padding:1.4rem 1.6rem;margin-bottom:1rem;}
+.card h2{font-family:'Cinzel',serif;font-size:16px;font-weight:500;color:#2e2820;margin-bottom:.7rem;}
+.card h3{font-family:'Cinzel',serif;font-size:13px;color:#5a4e42;margin:1rem 0 .4rem;}
+.card p{font-size:14px;line-height:1.75;color:#5a4e42;}
+.card p+p{margin-top:.75rem;}
+.card ul{list-style:none;padding:0;margin-top:.3rem;}
+.card ul li{font-size:14px;color:#5a4e42;padding:3px 0 3px 16px;position:relative;line-height:1.6;}
+.card ul li::before{content:'·';position:absolute;left:4px;color:#7b6fbb;}
+.fairy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.75rem;}
+.fairy-card{background:#ddd8d0;border-radius:8px;padding:1.1rem 1.2rem;}
+.fairy-card h3{font-family:'Cinzel',serif;font-size:14px;color:#2e2820;margin-bottom:6px;}
+.fairy-card p{font-size:13px;line-height:1.65;color:#5a4e42;}
+.sigil-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.6rem;}
+.sigil-card{background:#ddd8d0;border-radius:8px;padding:.75rem 1rem;text-align:center;font-family:'Cinzel',serif;font-size:13px;color:#2e2820;}
+.sov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:.75rem;}
+.sov-card{background:#ddd8d0;border-radius:8px;padding:1rem 1.1rem;border:2px solid transparent;transition:all .14s;}
+.sov-card.hd{cursor:pointer;}
+.sov-card.hd:hover{transform:translateY(-2px);border-color:rgba(60,52,137,.35);box-shadow:0 4px 14px rgba(0,0,0,.22);}
+.sov-card.ft{border-color:rgba(60,52,137,.4);background:#eae6f5;}
+.sov-num{font-size:9px;color:#bbb;letter-spacing:.16em;text-transform:uppercase;margin-bottom:3px;}
+.sov-cn{font-family:'Cinzel',serif;font-size:13px;color:#2e2820;margin-bottom:2px;}
+.sov-cs{font-size:11.5px;color:#8a7e72;font-style:italic;}
+.sov-lk{margin-top:6px;font-size:9px;color:#3C3489;letter-spacing:.12em;text-transform:uppercase;}
+.step-list{display:flex;flex-direction:column;gap:.9rem;}
+.step-card{background:#ddd8d0;border-radius:9px;padding:1.2rem 1.4rem;border-left:3px solid;}
+.step-ch{display:flex;align-items:baseline;gap:10px;margin-bottom:.75rem;}
+.step-nl{font-size:9px;text-transform:uppercase;letter-spacing:.16em;color:#bbb;}
+.step-tt{font-family:'Cinzel',serif;font-size:15px;color:#2e2820;}
+.abl{font-size:9px;text-transform:uppercase;letter-spacing:.16em;color:#3C3489;margin-bottom:3px;}
+.dsl{font-size:9px;text-transform:uppercase;letter-spacing:.16em;color:#b83232;margin-top:9px;margin-bottom:3px;}
+.stxt{font-size:13.5px;line-height:1.72;color:#5a4e42;}
+.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:rgba(184,173,158,.7);cursor:pointer;padding:5px 10px;border-radius:6px;margin-bottom:1.5rem;transition:all .13s;}
+.back-btn:hover{color:#fff;background:rgba(255,255,255,.06);}
+.chap-card{background:#ddd8d0;border-radius:10px;padding:1.6rem 1.9rem;margin-bottom:1.2rem;}
+.chap-ey{font-size:9px;text-transform:uppercase;letter-spacing:.2em;color:#aaa;margin-bottom:5px;}
+.chap-ti{font-family:'Cinzel',serif;font-size:22px;font-weight:400;color:#2e2820;margin-bottom:1rem;}
+.chap-bd{font-size:14px;line-height:1.82;color:#5a4e42;}
+.chap-bd p{margin-bottom:.75rem;}
+.ctable{width:100%;border-collapse:collapse;}
+.ctable th{font-size:9px;text-transform:uppercase;letter-spacing:.16em;color:#aaa;text-align:left;padding:6px 12px;border-bottom:1px solid rgba(0,0,0,.1);}
+.ctable td{padding:8px 12px;font-size:14px;color:#5a4e42;border-bottom:1px solid rgba(0,0,0,.06);}
+.ctable tr:last-child td{border-bottom:none;}
+
+/* ── CHARACTER SHEET (original style) ───────────── */
+.sheet-wrap{max-width:900px;}
+.sheet-toolbar{display:flex;gap:8px;margin-bottom:1rem;align-items:center;flex-wrap:wrap;}
+.mode-btn{font-size:12px;padding:6px 16px;border-radius:8px;border:1px solid #ccc;cursor:pointer;background:#fff;color:#555;}
+.mode-btn.active{background:#EEEDFE;color:#3C3489;border-color:#AFA9EC;}
+.tbtn{font-size:12px;padding:6px 16px;border-radius:8px;cursor:pointer;}
+.tbtn-img{border:1px solid #AFA9EC;background:#3C3489;color:#fff;}
+.tbtn-img:hover{background:#534AB7;}
+.tbtn-del{border:1px solid #F09595;background:#FCEBEB;color:#A32D2D;}
+.tbtn-del:hover{background:#F7C1C1;}
+.sheet{background:#ddd8d0;border:1px solid #e0e0e0;border-radius:12px;padding:1.2rem 1.5rem;font-family:'IM Fell English',serif;position:relative;}
+.sheet.vm .editable{display:none;}
+.sheet.vm .display{display:block;}
+.sheet.em .editable{display:block;}
+.sheet.em .display{display:none;}
+.top-label{font-size:11px;letter-spacing:.15em;color:#999;text-transform:uppercase;font-family:sans-serif;margin-bottom:4px;}
+.char-number{font-family:'Cinzel',serif;font-size:48px;font-weight:400;color:#000;line-height:1;opacity:.18;position:absolute;top:2rem;right:2rem;}
+.njp{font-size:13px;color:#aaa;font-family:sans-serif;margin-bottom:2px;}
+.nen{font-family:'Cinzel',serif;font-size:32px;font-weight:400;color:#222;margin:0 0 4px;letter-spacing:.05em;}
+.ntitle{font-size:15px;color:#666;font-style:italic;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid #eee;}
+.two-col{display:grid;grid-template-columns:1fr 200px;gap:1.2rem;margin-bottom:.8rem;}
+.art-frame{border:4px solid #111;border-radius:6px;box-shadow:inset 0 0 0 2px #555,inset 0 0 0 5px #111;overflow:hidden;height:280px;position:relative;background:#111;}
+.art-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;height:100%;color:#888;font-size:12px;font-family:sans-serif;text-align:center;padding:1rem;}
+.art-img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;}
+.info-row{display:flex;gap:8px;margin-bottom:6px;font-size:14px;align-items:baseline;}
+.info-label{color:#aaa;font-family:sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;min-width:90px;padding-top:2px;flex-shrink:0;}
+.info-value{color:#222;font-size:14px;line-height:1.4;}
+input[type=text],textarea{width:100%;font-size:13px;font-family:sans-serif;padding:4px 8px;border-radius:6px;border:1px solid #ddd;background:#f9f9f9;color:#222;}
+textarea{resize:vertical;min-height:48px;}
+.frow{display:flex;gap:8px;margin-bottom:6px;align-items:center;}
+.flabel{color:#aaa;font-family:sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;min-width:90px;flex-shrink:0;}
+hr.div{border:none;border-top:1px solid #eee;margin:.6rem 0;}
+.slabel{font-family:sans-serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#bbb;margin-bottom:6px;}
+.stat-name{font-family:sans-serif;font-size:12px;color:#666;min-width:130px;}
+.stat-row-v{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.stat-bg{flex:1;height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;}
+.stat-fill{height:100%;border-radius:3px;background:#3C3489;transition:width .2s;}
+.stat-val{font-family:sans-serif;font-size:11px;color:#777;min-width:36px;text-align:right;white-space:nowrap;flex-shrink:0;}
+.stat-row-e{display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:6px 8px;background:#f9f9f9;border-radius:8px;border:1px solid #eee;}
+.stat-row-e input[type=text]{width:120px;flex-shrink:0;}
+.stat-row-e input[type=range]{flex:1;min-width:60px;}
+.rmbtn{flex-shrink:0;width:28px;height:28px;border-radius:6px;border:1px solid #F09595;background:#FCEBEB;color:#A32D2D;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;font-family:sans-serif;line-height:1;}
+.rmbtn:hover{background:#F7C1C1;}
+.add-btn{font-family:sans-serif;font-size:12px;color:#3C3489;background:none;border:1px dashed #AFA9EC;border-radius:8px;padding:6px 14px;cursor:pointer;margin-top:4px;width:100%;}
+.karma-track{width:100%;height:10px;border-radius:5px;overflow:hidden;display:flex;margin:8px 0 4px;}
+.karma-evil{height:100%;background:#A32D2D;transition:width .15s;}
+.karma-good{height:100%;background:#185FA5;transition:width .15s;}
+.karma-labels{display:flex;justify-content:space-between;font-size:10px;font-family:sans-serif;}
+.karma-label-evil{color:#A32D2D;}
+.karma-label-good{color:#185FA5;}
+.karma-value{font-family:'Cinzel',serif;font-size:18px;font-weight:400;}
+.kbadge{display:inline-block;background:#EEEDFE;color:#3C3489;font-family:sans-serif;font-size:11px;padding:3px 10px;border-radius:6px;margin-left:8px;vertical-align:middle;}
+.item-tag{display:inline-flex;align-items:center;gap:6px;border:1px solid #ddd;border-radius:6px;font-size:12px;font-family:sans-serif;color:#666;padding:3px 10px;margin:3px 3px 3px 0;}
+.item-row-e{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px;background:#fff;border-radius:6px;border:1px solid #eee;}
+.item-row-e input[type=text]{flex:1;}
+.trait-block{font-size:16px;color:#666;font-style:italic;line-height:1.6;border-left:2px solid #AFA9EC;padding-left:12px;}
+.url-hint{font-size:11px;color:#aaa;font-family:sans-serif;margin-top:4px;}
+.empty-note{font-size:12px;font-family:sans-serif;color:#aaa;font-style:italic;}
+.footer-row{font-family:sans-serif;font-size:11px;color:#999;display:flex;justify-content:space-between;gap:8px;}
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px;}
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════ SIDEBAR ══════════════════════════════════ -->
 <nav class="sidebar">
-  <div class="sidebar-logo">
-    <div class="eyebrow">World Wiki</div>
-    <div class="title">Tilly's World</div>
+  <div class="sb-logo">
+    <div class="ey">World Wiki</div>
+    <div class="ti">Tilly's World</div>
   </div>
-
-  <div class="nav-group">
-    <div class="nav-group-label">Characters</div>
-    <div class="nav-item active" onclick="go('characters')"><span class="nav-dot"></span>All Characters</div>
-    <div class="nav-item" onclick="go('char-tilly')"><span class="nav-dot"></span>Tilly</div>
-    <div class="nav-item" onclick="go('char-eustace')"><span class="nav-dot"></span>Eustace</div>
+  <div class="ng">
+    <div class="ngl">Characters</div>
+    <div id="char-nav"></div>
+    <div class="nadd" onclick="addChar()">＋ New character sheet</div>
   </div>
-
-  <div class="nav-group">
-    <div class="nav-group-label">The World</div>
-    <div class="nav-item" onclick="go('world')"><span class="nav-dot"></span>Overview</div>
-    <div class="nav-item" onclick="go('magic')"><span class="nav-dot"></span>Magic System</div>
-    <div class="nav-item" onclick="go('fairies')"><span class="nav-dot"></span>Fairies &amp; Towers</div>
-    <div class="nav-item" onclick="go('artifacts')"><span class="nav-dot"></span>Living Artifacts</div>
-    <div class="nav-item" onclick="go('sovereignties')"><span class="nav-dot"></span>Sovereignties</div>
+  <div class="ng">
+    <div class="ngl">The World</div>
+    <div class="ni" onclick="go('world')"><span class="nd"></span>Overview</div>
+    <div class="ni" onclick="go('magic')"><span class="nd"></span>Magic System</div>
+    <div class="ni" onclick="go('fairies')"><span class="nd"></span>Fairies &amp; Towers</div>
+    <div class="ni" onclick="go('artifacts')"><span class="nd"></span>Living Artifacts</div>
+    <div class="ni" onclick="go('sovereignties')"><span class="nd"></span>Sovereignties</div>
   </div>
-
-  <div class="nav-group">
-    <div class="nav-group-label">Story</div>
-    <div class="nav-item" onclick="go('chapters')"><span class="nav-dot"></span>Chapters</div>
+  <div class="ng">
+    <div class="ngl">Story</div>
+    <div class="ni" onclick="go('chapters')"><span class="nd"></span>Chapters</div>
   </div>
-
-  <div class="nav-group">
-    <div class="nav-group-label">Reference</div>
-    <div class="nav-item" onclick="go('calendar')"><span class="nav-dot"></span>Calendar &amp; Currency</div>
+  <div class="ng">
+    <div class="ngl">Reference</div>
+    <div class="ni" onclick="go('calendar')"><span class="nd"></span>Calendar &amp; Currency</div>
   </div>
 </nav>
 
-<!-- ═══════════════════════════════════ MAIN ═════════════════════════════════════ -->
 <main class="main">
 
-  <!-- ALL CHARACTERS -->
-  <section class="page active" id="page-characters">
-    <div class="page-head">
-      <h1>Characters</h1>
-      <p>All known characters in Tilly's World</p>
-    </div>
-    <div class="char-grid" id="char-grid"></div>
-  </section>
+<!-- character pages injected here -->
+<div id="char-pages"></div>
 
-  <!-- CHARACTER SHEETS (one per character, rendered by JS) -->
-  <section class="page" id="page-char-tilly"><div class="char-sheet-wrap"></div></section>
-  <section class="page" id="page-char-eustace"><div class="char-sheet-wrap"></div></section>
+<!-- WORLD OVERVIEW -->
+<section class="page" id="page-world">
+  <div class="ph"><h1>The World</h1><p>Spring of the 993rd Free Year (993 A.G.)</p></div>
+  <div class="lb"><div class="lbt">History</div>
+    <div class="card"><p>Long ago, God controlled the vast majority of magic and used it to set predetermined fates for all living things. The King of Humanity, the Fairy Paragon, and the largest Fragment of God rebelled and killed him. This freed magic for everyone — but chaos followed.</p>
+    <p>The three rebels reconvened and imposed limits on magic through an agreement known as <strong>The Binding</strong>. The world is set in a medieval-early renaissance era. The Free Calendar counts from the death of God.</p></div>
+  </div>
+  <div class="lb"><div class="lbt">The Mother Goddess</div>
+    <div class="card"><p>The Mother Goddess predates God entirely. Fairies are her children. She allied with the King of Humanity and the Fairy Paragon to defeat God, but spent everything in the process and fell into a deep sleep.</p>
+    <p>As part of their agreement she still sends her essence into the world while sleeping — this manifests as <strong>Fairy Fountains</strong>, which appear randomly. Anything submerged in a Fairy Fountain gains magical properties. They are essentially her dreams bleeding through into the waking world.</p>
+    <p>Most humans don't know she exists. Even most Fairies have forgotten her. The wealthy hoard Fairy Fountains, draining them for personal use. Finding one before the rich claim it is nearly impossible.</p></div>
+  </div>
+  <div class="lb"><div class="lbt">Notable Locations</div>
+    <div class="card"><h3>Alderrdeen Township</h3><p>The city where the story begins. Cobblestone streets, candlelight, merchant stalls, nobles who hoard Fairy Fountains. Home to Eustace's Oddities.</p></div>
+  </div>
+</section>
 
-  <!-- WORLD OVERVIEW -->
-  <section class="page" id="page-world">
-    <div class="page-head">
-      <h1>The World</h1>
-      <p>Spring of the 993rd Free Year (993 A.G.)</p>
+<!-- MAGIC -->
+<section class="page" id="page-magic">
+  <div class="ph"><h1>Magic System</h1><p>Magic directs — it does not create</p></div>
+  <div class="lb"><div class="lbt">The Principle</div>
+    <div class="card"><p>Magic <em>directs</em> — it does not create. You cannot conjure something from nothing. You redirect forces that already exist in the world.</p>
+    <p>Magic is performed by drawing <strong>sigil circles</strong>. Each sigil represents a fundamental force. Combinations of sigils create instructions. To make fire from nothing requires combining Air, Motion/Force, Heat, Direction, and Containment sigils — five sigils combined correctly just to produce something resembling a fireball.</p>
+    <p>Regular magic takes years of practice to master. Big spells can take weeks to prepare. Magic is used mostly for small daily tasks.</p></div>
+  </div>
+  <div class="lb"><div class="lbt">Fundamental Forces (Sigils)</div>
+    <div class="sigil-grid">
+      <div class="sigil-card">Air</div><div class="sigil-card">Water</div><div class="sigil-card">Earth</div>
+      <div class="sigil-card">Heat</div><div class="sigil-card">Motion / Force</div><div class="sigil-card">Structural</div>
+      <div class="sigil-card">Botanical</div><div class="sigil-card">Sensory</div><div class="sigil-card">Vital</div>
     </div>
+  </div>
+  <div class="lb"><div class="lbt">Schools of Magic</div>
+    <div class="card"><ul>
+      <li><strong>Elemental Direction</strong> — air, water, earth, fire</li>
+      <li><strong>Kinetics</strong> — force, motion, speed</li>
+      <li><strong>Structural</strong> — reinforcement, reduction, expansion</li>
+      <li><strong>Botanical</strong> — growth and decay</li>
+      <li><strong>Sensory</strong> — light, sound, temperature</li>
+      <li><strong>Vital</strong> — the body's own energy, heavily restricted</li>
+    </ul></div>
+  </div>
+  <div class="lb"><div class="lbt">The Binding &amp; Forbidden Magic</div>
+    <div class="card"><p>After God's death, the three rebels imposed <strong>The Binding</strong>. Forbidden magic draws from the raw power released when God fell — faster, stronger, no years of practice required.</p>
+    <p>The moment someone uses forbidden magic, every Fairy in the vicinity feels it. They come. They punish — killing some, turning others into monsters. No mercy. No context. No exceptions.</p>
+    <p><strong>Forbidden mages</strong> have survived by studying Fairy behavior for centuries. They have mapped territories, travel speeds, and patterns. They also hide behind fragments of the Skeleton Key, which drowns out the signal of their magic entirely.</p></div>
+  </div>
+  <div class="lb"><div class="lbt">Arcanists</div>
+    <div class="card"><p>Magic users who have chosen a <strong>Sovereignty</strong> — a discipline that shapes both their abilities and their soul over time — are called <strong>Arcanists</strong>. Each Sovereignty has <strong>10 Steps plus a Step 0</strong>, numbered from Step 0 to Step X (nearly unreachable pinnacle). Sanctioned practitioners change slowly. Forbidden magic practitioners change much faster and far more dangerously.</p></div>
+  </div>
+</section>
 
-    <div class="lore-block">
-      <div class="lore-block-title">History</div>
-      <div class="card">
-        <p>Long ago, God controlled the vast majority of magic and used it to set predetermined fates for all living things. The King of Humanity, the Fairy Paragon, and the largest Fragment of God rebelled and killed him. This freed magic for everyone — but chaos followed.</p>
-        <p>The three rebels reconvened and imposed limits on magic through an agreement known as <strong>The Binding</strong>. The world is set in a medieval-early renaissance era. The Free Calendar counts from the death of God.</p>
-      </div>
+<!-- FAIRIES -->
+<section class="page" id="page-fairies">
+  <div class="ph"><h1>Fairies &amp; Towers</h1><p>Children of the Mother Goddess</p></div>
+  <div class="lb"><div class="lbt">About Fairies</div>
+    <div class="card"><p>Fairies are the Mother Goddess's children — biologically identical regardless of type, but culturally divided. They can only use large amounts of magic when channeling it through a human.</p>
+    <p>Fairies are deeply racist toward one another despite being biologically the same. Many have forgotten the Mother Goddess. Fairies manifest in different forms when enforcing The Binding — some as storms, some as humans, others as shapeless monsters.</p></div>
+  </div>
+  <div class="lb"><div class="lbt">Types of Fairies</div>
+    <div class="fairy-grid">
+      <div class="fairy-card"><h3>Djinn</h3><p>Reside in Fairy Towers. Anyone who clears a tower to the top claims the Djinn's treasure and a piece of their power, usually as a Living Artifact.</p></div>
+      <div class="fairy-card"><h3>Daemons</h3><p>Offer power through deals, taking body parts, memories, emotions, firstborn children, or other personal costs in exchange.</p></div>
+      <div class="fairy-card"><h3>Angels</h3><p>Give power only to their most devout followers.</p></div>
+      <div class="fairy-card"><h3>Others (In Development)</h3><p>Asura, Devas, Nymphs, Spirits, Wraiths, Shades. Each gives magic away differently. Some are malicious.</p></div>
     </div>
+  </div>
+  <div class="lb"><div class="lbt">Fairy Towers</div>
+    <div class="card"><p>Enormously difficult to clear. Even kings wouldn't attempt them — the cost in lives would be catastrophic. This makes them the great equalizer: no amount of wealth or power substitutes for the skill and luck required to reach the top alone. Each tower is different. Each Djinn is different. The Living Artifact rewarded varies by tower.</p></div>
+  </div>
+</section>
 
-    <div class="lore-block">
-      <div class="lore-block-title">The Mother Goddess</div>
-      <div class="card">
-        <p>The Mother Goddess predates God entirely. Fairies are her children. She allied with the King of Humanity and the Fairy Paragon to defeat God, but spent everything in the process and fell into a deep sleep.</p>
-        <p>As part of their agreement she still sends her essence into the world while sleeping — this manifests as <strong>Fairy Fountains</strong>, which appear randomly throughout the world. Anything submerged in a Fairy Fountain gains magical properties. They are essentially her dreams bleeding through into the waking world.</p>
-        <p>Most humans don't know she exists. Even most Fairies have forgotten her. Only the most ancient Fairies still remember her name. The wealthy hoard Fairy Fountains, draining them for personal use. Finding one before the rich claim it is nearly impossible.</p>
-      </div>
-    </div>
+<!-- ARTIFACTS -->
+<section class="page" id="page-artifacts">
+  <div class="ph"><h1>Living Artifacts</h1><p>Objects that contain a Fairy and hold one spell or power</p></div>
+  <div class="card"><p>Living Artifacts contain a Fairy and hold one spell or power within them. Clearing a Fairy Tower earns one. They are extraordinarily rare and valuable.</p></div>
+  <div class="card"><h2>Eustace's Sword</h2><p>Contained a fire Djinn. Every swing released flame. Eustace earned it in his youth clearing a tower. He kept it secret for decades. He spent it protecting Tilly at the end of Chapter I.</p></div>
+  <div class="card"><h2>The Skeleton Key</h2>
+    <p>The finger of the King of Humanity, who threw himself into a Fairy Fountain and made every part of his body holy. Allows travel through unseen doorways — any door leads to any other door, unpredictably. The longer it is used the more it infects the user's body. Fused to Tilly's right hand.</p>
+    <h3>Deeper Significance</h3>
+    <p>Each piece of the King's body resonates loudly with Fairies — not as a threat, but as something sacred. This has an unintended effect: <strong>it drowns out the signal of forbidden magic being used nearby.</strong> Whoever holds a fragment can use forbidden magic without Fairy detection.</p>
+    <p>The Kingdom holds half the fragments (believing them simply powerful relics). Forbidden mages hold the other half (knowing exactly what they do). Tilly holds one piece neither side has acquired. She is now caught between two forces who want her — for different reasons, neither of which they will tell her plainly.</p>
+  </div>
+</section>
 
-    <div class="lore-block">
-      <div class="lore-block-title">Notable Locations</div>
-      <div class="card">
-        <h3>Alderrdeen Township</h3>
-        <p>The city where the story begins. A typical city — cobblestone streets, candlelight, merchant stalls, nobles who hoard Fairy Fountains. Home to Eustace's Oddities.</p>
-      </div>
-    </div>
-  </section>
+<!-- SOVEREIGNTIES -->
+<section class="page" id="page-sovereignties">
+  <div class="ph"><h1>The 22 Sovereignties</h1><p>Named after the 22 Major Arcana of the Tarot. Each has Steps 0–X.</p></div>
+  <div class="sov-grid" id="sov-grid"></div>
+</section>
 
-  <!-- MAGIC SYSTEM -->
-  <section class="page" id="page-magic">
-    <div class="page-head">
-      <h1>Magic System</h1>
-      <p>Magic directs — it does not create</p>
-    </div>
+<!-- THE STAR -->
+<section class="page" id="page-the-star">
+  <div class="back-btn" onclick="go('sovereignties')">← Back to Sovereignties</div>
+  <div class="ph"><h1>The Star</h1><p>Sovereignty of Hope · XVII of the Major Arcana</p></div>
+  <div class="step-list" id="star-steps"></div>
+</section>
 
-    <div class="lore-block">
-      <div class="lore-block-title">The Principle</div>
-      <div class="card">
-        <p>Magic <em>directs</em> — it does not create. You cannot conjure something from nothing. You redirect forces that already exist in the world.</p>
-        <p>Magic is performed by drawing <strong>sigil circles</strong>. Each sigil represents a fundamental force. Combinations of sigils create instructions. The more complex the effect, the more sigils required and the more precision demanded.</p>
-        <p>Regular magic takes years of practice to master. Big spells — battlefield fog, minor earthquakes — can take weeks to prepare. Magic is used mostly for small daily tasks. To make fire from nothing requires combining Air, Motion/Force, Heat, Direction, and Containment sigils — five sigils combined correctly just to produce something resembling a fireball.</p>
-      </div>
+<!-- CHAPTERS -->
+<section class="page" id="page-chapters">
+  <div class="ph"><h1>Chapters</h1><p>Spring of the 993rd Free Year</p></div>
+  <div class="chap-card">
+    <div class="chap-ey">Chapter I</div>
+    <div class="chap-ti">The Skeleton Key</div>
+    <div class="chap-bd">
+      <p>Tilly works the counter at Eustace's Oddities. A worn-down adventurer comes in looking at swords. She reads him immediately — no money, genuine need — and sells him one for practically nothing. Then a noble walks in. Same product. She sells it for ten times the price without blinking.</p>
+      <p>She visits Eustace, who is bedridden. He coughs. She decides to find a Fairy Fountain to enchant his medicine and heal him. She searches the outskirts of Alderrdeen all day. Beautiful landscapes. No fountain. The wealthy have claimed them all.</p>
+      <p>Returning home hungry, she steals bread from a market stall. Guards give chase. She rounds a corner into an alley and nearly steps on a dying man. He begs her not to give him away. She throws a tarp over him and acts casual.</p>
+      <p>Two guard groups converge — one chasing a bread thief, one hunting someone who escaped with a Living Artifact. The second group waves the first away. Tilly is alone with the dying man.</p>
+      <p>He presses something into her hand — a long pale bone-like key. It fuses to her finger before she can react. He tells her to run. It doesn't matter where. Just don't let it fall into the wrong hands. Then he is gone.</p>
+      <p>Tilly returns home. She has only moments with Eustace before guards arrive demanding the artifact. It won't leave her hand. They decide to take the finger. Eustace rises from his bed, unwraps his Living Artifact, and the sword erupts in flame.</p>
+      <p><em>"You will do no such thing."</em></p>
+      <p>He holds them off. Tilly is pushed through the back door. Eustace throws his sword through just before it closes. The guards who follow find themselves in the back alleyway. Tilly finds herself somewhere else entirely.</p>
+      <p>A snowfield. Silent. Cold. No city. No guards. No grandfather. Just Tilly, alone, with a dying flaming sword in the snow and a dead king's finger fused to her hand.</p>
+      <p>This is when she becomes a <strong>Candlebearer.</strong></p>
     </div>
+  </div>
+</section>
 
-    <div class="lore-block">
-      <div class="lore-block-title">Fundamental Forces (Sigils)</div>
-      <div class="sigil-grid">
-        <div class="sigil-card">Air</div>
-        <div class="sigil-card">Water</div>
-        <div class="sigil-card">Earth</div>
-        <div class="sigil-card">Heat</div>
-        <div class="sigil-card">Motion / Force</div>
-        <div class="sigil-card">Structural</div>
-        <div class="sigil-card">Botanical</div>
-        <div class="sigil-card">Sensory</div>
-        <div class="sigil-card">Vital</div>
-      </div>
-    </div>
-
-    <div class="lore-block">
-      <div class="lore-block-title">Schools of Magic</div>
-      <div class="card">
-        <ul>
-          <li><strong>Elemental Direction</strong> — air, water, earth, fire</li>
-          <li><strong>Kinetics</strong> — force, motion, speed</li>
-          <li><strong>Structural</strong> — reinforcement, reduction, expansion</li>
-          <li><strong>Botanical</strong> — growth and decay</li>
-          <li><strong>Sensory</strong> — light, sound, temperature</li>
-          <li><strong>Vital</strong> — the body's own energy, heavily restricted</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="lore-block">
-      <div class="lore-block-title">The Binding &amp; Forbidden Magic</div>
-      <div class="card">
-        <p>After God's death, the three rebels imposed <strong>The Binding</strong> — limiting magic to sanctioned, caged use. Forbidden magic draws from the raw power released when God fell. It is faster, stronger, and requires no years of practice.</p>
-        <p>The moment someone uses forbidden magic, every Fairy in the vicinity feels it. They come. They punish — killing some, turning others into monsters. No mercy. No context. No exceptions.</p>
-        <p>Most people don't know the difference between regular magic and forbidden magic. They just know that dark magic brings bad omens and terrible things follow.</p>
-        <p><strong>Forbidden mages</strong> have survived by studying Fairy behavior for centuries. They have mapped territories, travel speeds, and patterns. They know which Fairies can be outrun and which cannot. This knowledge is passed down through their hidden community and is more precious than any spell. They also hide behind fragments of the Skeleton Key, which drowns out the signal of their magic entirely.</p>
-      </div>
-    </div>
-
-    <div class="lore-block">
-      <div class="lore-block-title">Arcanists</div>
-      <div class="card">
-        <p>Magic users who have chosen a <strong>Sovereignty</strong> — a discipline that shapes both their abilities and their soul over time — are called <strong>Arcanists</strong>. Most ordinary people don't know the word or what it means.</p>
-        <p>Each Sovereignty has <strong>10 Steps plus a Step 0</strong>, numbered from Step 0 (the beginning) to Step X (nearly unreachable pinnacle). Sanctioned practitioners change slowly as they walk their road. Forbidden magic practitioners change much faster and far more dangerously.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- FAIRIES & TOWERS -->
-  <section class="page" id="page-fairies">
-    <div class="page-head">
-      <h1>Fairies &amp; Towers</h1>
-      <p>Children of the Mother Goddess</p>
-    </div>
-
-    <div class="lore-block">
-      <div class="lore-block-title">About Fairies</div>
-      <div class="card">
-        <p>Fairies are the Mother Goddess's children — biologically identical regardless of type, but culturally divided. They can only use large amounts of magic when channeling it through a human.</p>
-        <p>Fairies are deeply racist toward one another despite being biologically the same. Many have forgotten the Mother Goddess and built their own identities and hierarchies in her absence.</p>
-        <p>Fairies manifest in different forms when enforcing The Binding. Some come as storms. Some appear as humans. Others are shapeless, horrifying monsters.</p>
-      </div>
-    </div>
-
-    <div class="lore-block">
-      <div class="lore-block-title">Types of Fairies</div>
-      <div class="fairy-grid">
-        <div class="fairy-card">
-          <h3>Djinn</h3>
-          <p>Reside in Fairy Towers. Anyone who clears a tower to the top claims the Djinn's treasure and a piece of their power, usually in the form of a Living Artifact.</p>
-        </div>
-        <div class="fairy-card">
-          <h3>Daemons</h3>
-          <p>Offer power through deals, taking body parts, memories, emotions, firstborn children, or other personal costs in exchange.</p>
-        </div>
-        <div class="fairy-card">
-          <h3>Angels</h3>
-          <p>Give power only to their most devout followers.</p>
-        </div>
-        <div class="fairy-card">
-          <h3>Others (In Development)</h3>
-          <p>Asura, Devas, Nymphs, Spirits, Wraiths, Shades. Each gives magic away differently. Some are malicious.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="lore-block">
-      <div class="lore-block-title">Fairy Towers</div>
-      <div class="card">
-        <p>Enormously difficult to clear. Even kings wouldn't attempt them — the cost in lives would be catastrophic. This makes them the great equalizer: no amount of wealth or power can substitute for the skill and luck required to reach the top alone. The people who clear them tend to be exceptional individuals from any walk of life.</p>
-        <p>Each tower is different. Each Djinn at the top is different. The Living Artifact rewarded varies by tower.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- LIVING ARTIFACTS -->
-  <section class="page" id="page-artifacts">
-    <div class="page-head">
-      <h1>Living Artifacts</h1>
-      <p>Objects that contain a Fairy and hold one spell or power</p>
-    </div>
-
-    <div class="card">
-      <p>Living Artifacts are objects that contain a Fairy and hold one spell or power within them. Clearing a Fairy Tower earns one. They are extraordinarily rare and valuable.</p>
-    </div>
-
-    <div class="card">
-      <h2>Eustace's Sword</h2>
-      <p>Contained a fire Djinn. Every swing released flame. Eustace earned it in his youth clearing a tower. He kept it secret and spent decades running a quiet shop raising Tilly. He spent it protecting her at the end of Chapter I.</p>
-    </div>
-
-    <div class="card">
-      <h2>The Skeleton Key</h2>
-      <p>The finger of the King of Humanity, who threw himself into a Fairy Fountain and made every part of his body holy. The Key allows travel through unseen doorways — any door leads to any other door, though unpredictably. The longer it is used the more it infects the user's body, so it must be used selectively. It is fused to Tilly's right hand.</p>
-      <h3>Deeper Significance</h3>
-      <p>The King of Humanity's body was scattered as Living Artifacts after his death. Each piece resonates loudly with Fairies — not as a threat, but as something sacred. The Key sings to Fairies like a beacon of something holy and ancient.</p>
-      <p>This has an unintended effect: <strong>it drowns out the signal of forbidden magic being used nearby.</strong> Whoever holds a fragment of the King's body can use forbidden magic without Fairy detection.</p>
-      <p>The Kingdom holds half the fragments. They do not know about the masking property — they believe the fragments are simply powerful relics. Forbidden mages hold the other half. They know exactly what the fragments do.</p>
-      <p>Tilly holds one piece that neither side has managed to acquire. She is now caught between two forces who want her — for different reasons, neither of which they will tell her plainly. The forbidden mages court her patiently. They come to her in dreams. They save her at convenient moments. They are patient because they have survived centuries of hiding and know how to want someone rather than demand them.</p>
-    </div>
-  </section>
-
-  <!-- SOVEREIGNTIES -->
-  <section class="page" id="page-sovereignties">
-    <div class="page-head">
-      <h1>The 22 Sovereignties</h1>
-      <p>Named after the 22 Major Arcana of the Tarot. Each has 10 Steps plus a Step 0.</p>
-    </div>
-    <div class="sov-grid" id="sov-grid"></div>
-  </section>
-
-  <!-- THE STAR — FULL DETAIL -->
-  <section class="page" id="page-the-star">
-    <div class="back-btn" onclick="go('sovereignties')">← Back to Sovereignties</div>
-    <div class="page-head">
-      <h1>The Star</h1>
-      <p>Sovereignty of Hope · XVII of the Major Arcana</p>
-    </div>
-    <div class="step-list" id="star-steps"></div>
-  </section>
-
-  <!-- CHAPTERS -->
-  <section class="page" id="page-chapters">
-    <div class="page-head">
-      <h1>Chapters</h1>
-      <p>Spring of the 993rd Free Year</p>
-    </div>
-    <div class="chapter-card">
-      <div class="chapter-eyebrow">Chapter I</div>
-      <div class="chapter-title">The Skeleton Key</div>
-      <div class="chapter-body">
-        <p>Tilly works the counter at Eustace's Oddities. A worn-down adventurer comes in looking at swords. She reads him immediately — no money, genuine need — and sells him one for practically nothing. Then a noble walks in. Same product. She sells it for ten times the price without blinking.</p>
-        <p>She visits Eustace, who is bedridden. He coughs. She decides to find a Fairy Fountain to enchant his medicine and heal him.</p>
-        <p>She searches the outskirts of Alderrdeen all day. Beautiful landscapes. No fountain. The wealthy have claimed them all.</p>
-        <p>Returning home hungry, she steals bread from a market stall. Guards give chase. She rounds a corner into an alley and nearly steps on a dying man. He begs her not to give him away. She throws a tarp over him and acts casual.</p>
-        <p>Two guard groups converge — one chasing a bread thief, one hunting someone who escaped with a Living Artifact. The second group waves the first away. Tilly is alone with the dying man.</p>
-        <p>He presses something into her hand — a long pale bone-like key. It fuses to her finger before she can react. He tells her to run. It doesn't matter where. Just don't let it fall into the wrong hands. Then he is gone.</p>
-        <p>Tilly returns home. She has only moments with Eustace before guards arrive demanding the artifact. It won't leave her hand. They decide to take the finger. Eustace rises from his bed, unwraps his Living Artifact, and the sword erupts in flame.</p>
-        <p><em>"You will do no such thing."</em></p>
-        <p>He holds them off. Tilly is pushed through the back door. Eustace throws his sword through just before it closes. The guards who follow find themselves in the back alleyway. Tilly finds herself somewhere else entirely.</p>
-        <p>A snowfield. Silent. Cold. No city. No guards. No grandfather.</p>
-        <p>Just Tilly, alone, with a dying flaming sword in the snow and a dead king's finger fused to her hand.</p>
-        <p>This is when she becomes a <strong>Candlebearer.</strong></p>
-      </div>
-    </div>
-  </section>
-
-  <!-- CALENDAR & CURRENCY -->
-  <section class="page" id="page-calendar">
-    <div class="page-head">
-      <h1>Calendar &amp; Currency</h1>
-      <p>The Free Calendar counts from the death of God</p>
-    </div>
-
-    <div class="lore-block">
-      <div class="lore-block-title">The Free Calendar</div>
-      <div class="card">
-        <p>The calendar counts from the death of God — A.G. (Anno God's-death). The current date is <strong>Spring of the 993rd Free Year (993 A.G. — Springtide)</strong>.</p>
-        <h3>Seasons</h3>
-        <ul>
-          <li>Springtide</li>
-          <li>Highsun</li>
-          <li>Dimfall</li>
-          <li>Deeprest</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="lore-block">
-      <div class="lore-block-title">Currency</div>
-      <div class="card">
-        <table class="currency-table">
-          <thead><tr><th>Coin</th><th>Material</th><th>Exchange</th></tr></thead>
-          <tbody>
-            <tr><td><strong>Aurem</strong></td><td>Gold</td><td>Highest denomination</td></tr>
-            <tr><td><strong>Sonen</strong></td><td>Silver</td><td>20 per Aurem</td></tr>
-            <tr><td><strong>Trin</strong></td><td>Copper</td><td>100 per Sonen · 2000 per Aurem</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
+<!-- CALENDAR & CURRENCY -->
+<section class="page" id="page-calendar">
+  <div class="ph"><h1>Calendar &amp; Currency</h1><p>The Free Calendar counts from the death of God</p></div>
+  <div class="lb"><div class="lbt">The Free Calendar</div>
+    <div class="card"><p>The calendar counts from the death of God — A.G. (Anno God's-death). Current date: <strong>Spring of the 993rd Free Year (993 A.G. — Springtide)</strong>.</p>
+    <h3>Seasons</h3><ul><li>Springtide</li><li>Highsun</li><li>Dimfall</li><li>Deeprest</li></ul></div>
+  </div>
+  <div class="lb"><div class="lbt">Currency</div>
+    <div class="card"><table class="ctable">
+      <thead><tr><th>Coin</th><th>Material</th><th>Exchange</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Aurem</strong></td><td>Gold</td><td>Highest denomination</td></tr>
+        <tr><td><strong>Sonen</strong></td><td>Silver</td><td>20 per Aurem</td></tr>
+        <tr><td><strong>Trin</strong></td><td>Copper</td><td>100 per Sonen · 2000 per Aurem</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
 
 </main>
 
 <script>
-// ╔═══════════════════════════════════════════════════════════════╗
-// ║  CHARACTER DATA                                               ║
-// ║  To add a new character:                                      ║
-// ║  1. Add an object to the CHARACTERS array below              ║
-// ║  2. Add a nav-item in the sidebar HTML pointing to char-{id}  ║
-// ║  3. Add a <section> with id="page-char-{id}"> in the HTML    ║
-// ╚═══════════════════════════════════════════════════════════════╝
-const CHARACTERS = [
-  {
-    id: "tilly",
-    name: "Tilly",
-    nameJp: "ティリー",
-    age: 12,
-    hair: "Short, shaggy, dark auburn",
-    eyes: "Warm amber",
-    appearance: "Small for her age, easy to underestimate. Freckles across her nose and cheeks. Worn vest, linen shirt, old boots.",
-    alignment: "Chaotic Good",
-    karma: 425,
-    karmaMax: 1000,
-    sovereignty: "The Star — Sovereignty of Hope",
-    stepNum: 0,
-    stepName: "Candlebearer",
-    synopsis: `Tilly is twelve years old and has already learned that the world is not always kind. Raised above a cluttered antique shop in the city of Alderrdeen by her grandfather, she has a gift for knowing exactly what something is worth, and exactly what someone can pay. She is sharper than she looks, and kinder than she has any reason to be.
+// ═══════════════════════════════════════════════════
+//  DATA — stored in localStorage
+// ═══════════════════════════════════════════════════
 
-She is not selfless. She is selfish in the most specific way — she cannot tolerate a world in which the people she loves are suffering. So she acts. Radically. Without asking permission from anyone, including herself.`,
-    stats: [
-      { name: "Kindness",    value: 88 },
-      { name: "Wit",         value: 64 },
-      { name: "Stubbornness",value: 91 },
-      { name: "Luck",        value: 49 },
-      { name: "Renown",      value: 1  },
-    ],
-    artifacts: ["The Skeleton Key (fused to right hand)", "Eustace's Sword (inherited)"],
-    items: ["4 Sonens", "7 Trins"],
-    quote: '"You will do no such thing."',
-    tags: ["Protagonist", "Arcanist", "Step 0 — Candlebearer"],
-  },
-  {
-    id: "eustace",
-    name: "Eustace",
-    nameJp: null,
-    age: null,
-    hair: null,
-    eyes: null,
-    appearance: null,
-    alignment: null,
-    karma: null,
-    karmaMax: null,
-    sovereignty: null,
-    stepNum: null,
-    stepName: null,
-    synopsis: `Tilly's adoptive grandfather. Ran a small antique shop called Eustace's Oddities in Alderrdeen Township. Bedridden and ill at the start of the story.
+const BLANK_CHAR = () => ({
+  id: 'c' + Date.now(),
+  number: '02',
+  nameJp: '',
+  nameEn: 'New Character',
+  title: '',
+  arcanaLabel: 'Arcana',
+  arcanaValue: '',
+  stepLabel: 'Step',
+  stepValue: '',
+  imgUrl: '',
+  appearance: '',
+  quote: '',
+  footer1: '',
+  footer2: '993 A.G. — Springtide',
+  karma: 0,
+  basicInfo: [{label:'Age',value:''},{label:'Alignment',value:''}],
+  stats: [{name:'New stat',val:50}],
+  customSections: []
+});
 
-In his youth he cleared a Fairy Tower and earned a Living Artifact — a sword containing a fire Djinn. He kept it secret and spent decades running a quiet shop raising Tilly. His final act was rising from his sickbed, drawing his sword, and holding off the guards long enough for Tilly to escape.`,
-    stats: [],
-    artifacts: ["Eustace's Sword (fire Djinn — spent)"],
-    items: [],
-    quote: '"You will do no such thing."',
-    tags: ["Grandfather", "Tower-Clearer", "Deceased"],
-    status: "Deceased — end of Chapter I",
-  },
-];
+const TILLY_DEFAULT = {
+  id: 'tilly',
+  number: '01',
+  nameJp: 'ティリー',
+  nameEn: 'Tilly',
+  title: "Eustace's beloved child",
+  arcanaLabel: 'Arcana',
+  arcanaValue: 'The Star',
+  stepLabel: 'Step',
+  stepValue: '0 — Candlebearer',
+  imgUrl: 'https://i.imgur.com/RqDz8JN.jpeg',
+  appearance: 'Short shaggy dark auburn hair\nWarm amber eyes\nWorn vest · linen shirt · old boots',
+  quote: 'Tilly is twelve years old and has already learned that the world is not always kind. Raised above a cluttered antique shop in the city of Alderrdeen by her grandfather, she has a gift for knowing exactly what something is worth, and exactly what someone can pay. She is sharper than she looks, and kinder than she has any reason to be. She asks for very little in return for either. She loves deeply and without condition, and it has never once occurred to her that this might someday cost her something.',
+  footer1: 'Alderrdeen Township',
+  footer2: '993 A.G. — Springtide',
+  karma: 425,
+  basicInfo: [
+    {label:'Age',value:'12'},
+    {label:'Race',value:'Human'},
+    {label:'Origin',value:'Orphaned from a young age, Tilly was raised in an antique shop by a local man who took her in.'},
+    {label:'Guardian',value:'Eustace (Grandfather)'},
+    {label:'Residence',value:"Eustace's Oddities"},
+    {label:'Alignment',value:'Chaotic Good'}
+  ],
+  stats: [
+    {name:'Kindness',val:88},{name:'Courage',val:80},{name:'Wit',val:64},
+    {name:'Stubbornness',val:91},{name:'Luck',val:49},{name:'Renown',val:1}
+  ],
+  customSections: [
+    {title:'Items',items:[
+      {name:'4 Sonens',note:'(20 of these make up a single Aurem)'},
+      {name:'7 Trins',note:'(100 of these make up a single Sonen)'}
+    ]},
+    {title:'Living Artifacts',items:[
+      {name:'The Skeleton Key',note:'fused to right hand'},
+      {name:"Eustace's Sword",note:'inherited'}
+    ]}
+  ]
+};
 
-// ╔═══════════════════════════════════════════════════════════════╗
-// ║  SOVEREIGNTY DATA                                             ║
-// ╚═══════════════════════════════════════════════════════════════╝
-const SOVEREIGNTIES = [
-  { num:"0",    card:"The Fool",         name:"Sovereignty of Wandering"   },
-  { num:"I",    card:"The Magician",     name:"Sovereignty of Direction"   },
-  { num:"II",   card:"The High Priestess",name:"Sovereignty of Secrets"   },
-  { num:"III",  card:"The Empress",      name:"Sovereignty of Growth"      },
-  { num:"IV",   card:"The Emperor",      name:"Sovereignty of Command"     },
-  { num:"V",    card:"The Hierophant",   name:"Sovereignty of Tradition"   },
-  { num:"VI",   card:"The Lovers",       name:"Sovereignty of Bonds"       },
-  { num:"VII",  card:"The Chariot",      name:"Sovereignty of Motion"      },
-  { num:"VIII", card:"Strength",         name:"Sovereignty of Force"       },
-  { num:"IX",   card:"The Hermit",       name:"Sovereignty of Isolation"   },
-  { num:"X",    card:"Wheel of Fortune", name:"Sovereignty of Luck"        },
-  { num:"XI",   card:"Justice",          name:"Sovereignty of Balance"     },
-  { num:"XII",  card:"The Hanged Man",   name:"Sovereignty of Sacrifice"   },
-  { num:"XIII", card:"Death",            name:"Sovereignty of Endings"     },
-  { num:"XIV",  card:"Temperance",       name:"Sovereignty of Restraint"   },
-  { num:"XV",   card:"The Devil",        name:"Sovereignty of Temptation"  },
-  { num:"XVI",  card:"The Tower",        name:"Sovereignty of Destruction" },
-  { num:"XVII", card:"The Star",         name:"Sovereignty of Hope", detail:"the-star", featured:true },
-  { num:"XVIII",card:"The Moon",         name:"Sovereignty of Illusion"    },
-  { num:"XIX",  card:"The Sun",          name:"Sovereignty of Radiance"    },
-  { num:"XX",   card:"Judgement",        name:"Sovereignty of Awakening"   },
-  { num:"XXI",  card:"The World",        name:"Sovereignty of Completion"  },
-];
-
-// ╔═══════════════════════════════════════════════════════════════╗
-// ║  THE STAR — STEP DATA                                         ║
-// ╚═══════════════════════════════════════════════════════════════╝
-const STAR_STEPS = [
-  {
-    step:0, title:"Candlebearer",
-    color:"#94a3b8",
-    ability:"A faint warm light emanates from the Arcanist that wind and water cannot extinguish. Small radius. Always present. Can be dimmed by will. In complete darkness it's the difference between seeing and not seeing.",
-    downside:"They begin sleeping later than usual. Nothing dramatic yet."
-  },
-  {
-    step:1, title:"Omen-Reader",
-    color:"#86efac",
-    ability:"They begin noticing signs others miss. A fighter's weight shifting before they throw a punch. A mage's breath changing before they draw a sigil. They see it coming a half second before it arrives. In a brawl a half second is everything.",
-    downside:"They begin feeling the emotions of people around them without meaning to. Someone nearby is grieving and they feel it like pressure behind their eyes. They can't turn it off yet."
-  },
-  {
-    step:2, title:"Stargazer",
-    color:"#67e8f9",
-    ability:"Their light has developed an edge. They can focus it into a narrow beam — not enough to burn yet, but enough to blind someone momentarily. They can also project it as a short burst in all directions, disorienting multiple enemies at once. By studying the night sky for an hour they gain a vague sense of what tomorrow holds for themselves or someone nearby.",
-    downside:"They can no longer lie convincingly. Their light flickers almost imperceptibly when they say something untrue. Animals notice first. Then perceptive people."
-  },
-  {
-    step:3, title:"Fate-Charter",
-    color:"#a78bfa",
-    ability:"They begin to read the immediate future in combat with frightening accuracy. Not minutes ahead — seconds. The next blow. The next step. The next breath. They move through a fight like water finding its path, never quite where the attack lands. They aren't faster than their opponents. They simply aren't there when the hit arrives. They can also sense when someone nearby is at a turning point in their life — a decision that will matter.",
-    downside:"They are inexplicably drawn to people who are suffering. Strangers in pain find them. They cannot walk past someone in genuine despair without stopping. This is not a choice."
-  },
-  {
-    step:4, title:"Lodestar",
-    color:"#fbbf24",
-    ability:"They can now project their light as a physical force. A concentrated pulse that hits like a shove — enough to knock someone off their feet or send a weapon spinning out of a hand. It can be fired repeatedly but costs genuine effort. Too many in succession and they feel it in their bones. Lost things also find their way to them — a missing person wanders past them on the street, a stolen object turns up nearby.",
-    downside:"They stop being able to sustain hatred. They can be furious. Devastated. But hatred dissolves in them like salt in water."
-  },
-  {
-    step:5, title:"Scribe of Skies",
-    color:"#f97316",
-    ability:"Their body has begun to change. Bones subtly denser. Reflexes sharpened beyond normal human limits without any training to explain it. The road is rewriting them from the inside. They hit harder than they should for their size and recover from impacts faster than makes sense. They also always know the broad shape of fate moving around them — who is in danger, where hope is concentrated. Always on. Cannot be turned off.",
-    downside:"They stop needing to eat as much. A meal every few days sustains them. People who know them well begin to notice they never seem hungry."
-  },
-  {
-    step:6, title:"Astrologer of Ruin",
-    color:"#ef4444",
-    ability:"They can see the threads of fate connecting people in a fight. Who is about to make a fatal mistake. Where the turning point of the battle is. They only need to pull the right thread at the right moment and watch everything unravel. They can also hear wishes — not spoken ones, the ones people carry silently. With focus they can isolate a single person's deepest want.",
-    downside:"They begin to glow faintly in complete darkness. They cannot control it."
-  },
-  {
-    step:7, title:"Living Constellation",
-    color:"#ec4899",
-    ability:"Their light has become something altogether different. They can shape it into walls of blazing radiance that physical weapons cannot pass through. Beams that strike with the force of a battering ram. A corona of burning light around their body that makes close combat deeply unpleasant. Allies near them feel steadier and harder to break. Enemies feel watched from very far away and found wanting.",
-    downside:"Their tears are luminescent. They cannot hide grief. It literally shines out of them."
-  },
-  {
-    step:8, title:"Terror of the Void",
-    color:"#8b5cf6",
-    ability:"Once per fight they can stop time for a single breath. In that breath they can move, redirect, reposition, pull someone out of the path of something unsurvivable. When time resumes nobody saw them move. Their body now heals at a rate that is difficult to explain — cuts close within minutes, broken bones within hours. They are becoming very hard to kill.",
-    downside:"They have begun to forget small human things. The taste of their favourite food. The sound of a voice they loved. Small human details blur while cosmic ones sharpen."
-  },
-  {
-    step:9, title:"Sovereign of Hope",
-    color:"#3b82f6",
-    ability:"They are no longer entirely fighting with a body. They are fighting with a concept. Their strikes carry weight beyond physical force — a blow doesn't just break bone, it breaks something in the spirit of whoever receives it. Anyone who has truly given up and comes near them feels something shift — the genuine sense that one more try is worth it. No range limit. Cannot be resisted. It has ended sieges. Their light can be seen from miles away if fully released.",
-    downside:"They are no longer aging. They will outlive everyone they love unless something kills them first. They are beginning to understand what that means."
-  },
-  {
-    step:10, title:"The Star",
-    color:"#e2e8f0",
-    ability:"There are no reliable accounts of a Star in combat because nothing that has ever fought one has survived to describe it coherently. What fragments exist speak of light that rewrites what it touches. Of wounds that simply cease to exist. Of enemies who stopped fighting not because they were defeated but because in the presence of a Star the concept of fighting seemed very small and very far away. A Star does not win battles. A Star ends them.",
-    downside:"They are still here. Still themselves. But when they look at the people around them there is something in their eyes that wasn't there before. A distance. Not coldness. But they are seeing something the rest of the world cannot see yet. And sometimes when someone speaks to them there is a moment — just a breath — before they remember to respond like a person."
-  },
-];
-
-// ═══════════════════════════════════════════════════════════════
-// RENDERING
-// ═══════════════════════════════════════════════════════════════
-
-function statBar(s) {
-  const pct = Math.min((s.value / 100) * 100, 100);
-  const over = s.value > 100;
-  return `<div class="stat-row">
-    <div class="stat-label">${s.name}</div>
-    <div class="stat-bar-bg"><div class="stat-bar-fill${over?' gold':''}" style="width:${pct}%"></div></div>
-    <div class="stat-val">${s.value}</div>
-  </div>`;
+// Load or init
+let charOrder, chars;
+try {
+  const saved = JSON.parse(localStorage.getItem('tw_chars') || 'null');
+  if (saved && saved.order && saved.data) {
+    charOrder = saved.order;
+    chars = saved.data;
+    // Ensure Tilly's default data is present if she exists in order but not data
+    if (charOrder.includes('tilly') && !chars['tilly']) chars['tilly'] = TILLY_DEFAULT;
+  } else {
+    charOrder = ['tilly'];
+    chars = { tilly: JSON.parse(JSON.stringify(TILLY_DEFAULT)) };
+  }
+} catch(e) {
+  charOrder = ['tilly'];
+  chars = { tilly: JSON.parse(JSON.stringify(TILLY_DEFAULT)) };
 }
 
-function karmaBar(karma, max) {
-  const pct = Math.min((karma / max) * 100, 100);
-  return `<div class="karma-wrap">
-    <div class="karma-labels"><span>Karma</span><span></span></div>
-    <div class="karma-bar-bg"><div class="karma-bar-fill" style="width:${pct}%"></div></div>
-    <div class="karma-val">+${karma}</div>
-  </div>`;
+function saveChars() {
+  localStorage.setItem('tw_chars', JSON.stringify({ order: charOrder, data: chars }));
 }
 
-function buildCharSheet(c) {
-  return `<div class="char-sheet">
-    ${c.nameJp ? `<div class="char-name-jp">${c.nameJp}</div>` : ''}
-    <div class="char-name">${c.name}</div>
-    <div class="char-role">${c.sovereignty || c.status || ''}</div>
+// ═══════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════
 
-    <div class="char-synopsis">${c.synopsis.replace(/\n\n/g,'</p><p>')}</div>
-
-    ${c.age || c.hair ? `<div class="char-fields">
-      ${c.age ? `<div class="char-field"><label>Age</label><span>${c.age}</span></div>` : ''}
-      ${c.alignment ? `<div class="char-field"><label>Alignment</label><span>${c.alignment}</span></div>` : ''}
-      ${c.hair ? `<div class="char-field"><label>Hair</label><span>${c.hair}</span></div>` : ''}
-      ${c.eyes ? `<div class="char-field"><label>Eyes</label><span>${c.eyes}</span></div>` : ''}
-      ${c.appearance ? `<div class="char-field full"><label>Appearance</label><span>${c.appearance}</span></div>` : ''}
-    </div>` : ''}
-
-    ${c.sovereignty ? `<div><span class="step-badge">${c.sovereignty}<span class="sep"> · </span>Step ${c.stepNum} — ${c.stepName}</span></div>` : ''}
-
-    ${c.stats.length ? `<div class="stats-section" style="margin-top:1rem">
-      <div class="tag-row-label" style="margin-bottom:8px">Stats</div>
-      ${c.stats.map(statBar).join('')}
-    </div>` : ''}
-
-    ${c.karma !== null && c.karma !== undefined ? karmaBar(c.karma, c.karmaMax) : ''}
-
-    ${c.artifacts.length ? `<div class="tag-row">
-      <div class="tag-row-label">Living Artifacts</div>
-      ${c.artifacts.map(a=>`<span class="tag tag-artifact">${a}</span>`).join('')}
-    </div>` : ''}
-
-    ${c.items.length ? `<div class="tag-row">
-      <div class="tag-row-label">Items</div>
-      ${c.items.map(i=>`<span class="tag tag-item">${i}</span>`).join('')}
-    </div>` : ''}
-
-    ${c.quote ? `<div class="char-quote">${c.quote}</div>` : ''}
-  </div>`;
+function esc(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-function initCharGrid() {
-  document.getElementById('char-grid').innerHTML = CHARACTERS.map(c => `
-    <div class="char-thumb" onclick="go('char-${c.id}')">
-      <div class="char-thumb-name">${c.name}</div>
-      <div class="char-thumb-sub">${c.sovereignty || c.status || ''}</div>
-      <div class="char-thumb-tags">${(c.tags||[]).map(t=>`<span class="char-thumb-tag">${t}</span>`).join('')}</div>
-    </div>`).join('');
-}
+function g(id) { return document.getElementById(id); }
 
-function initSovGrid() {
-  document.getElementById('sov-grid').innerHTML = SOVEREIGNTIES.map(s => `
-    <div class="sov-card${s.featured?' featured':''}${s.detail?' has-detail':''}"
-         ${s.detail ? `onclick="go('${s.detail}')"` : ''}>
-      <div class="sov-num">${s.num}</div>
-      <div class="sov-card-name">${s.card}</div>
-      <div class="sov-card-sov">${s.name}</div>
-      ${s.detail ? `<div class="sov-link">Full detail →</div>` : ''}
-    </div>`).join('');
-}
+// ═══════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════
 
-function initStarSteps() {
-  document.getElementById('star-steps').innerHTML = STAR_STEPS.map(s => `
-    <div class="step-card" style="border-left-color:${s.color}">
-      <div class="step-card-head">
-        <span class="step-num-label">Step ${s.step === 10 ? 'X' : s.step}</span>
-        <span class="step-title">${s.title}</span>
-      </div>
-      <div class="ability-label">Ability</div>
-      <div class="step-text">${s.ability}</div>
-      <div class="downside-label">Downside</div>
-      <div class="step-text">${s.downside}</div>
-    </div>`).join('');
-}
-
-// ═══════════════════════════════════════════════════════════════
-// NAVIGATION
-// ═══════════════════════════════════════════════════════════════
 function go(pageId) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const el = document.getElementById('page-' + pageId);
-  if (!el) return;
-  el.classList.add('active');
-
-  // Render character sheet on first visit
-  if (pageId.startsWith('char-')) {
-    const charId = pageId.slice(5);
-    const wrap = el.querySelector('.char-sheet-wrap');
-    if (wrap && !wrap.dataset.rendered) {
-      const char = CHARACTERS.find(c => c.id === charId);
-      if (char) { wrap.innerHTML = buildCharSheet(char); wrap.dataset.rendered = '1'; }
-    }
-  }
-
-  // Update sidebar highlight
-  document.querySelectorAll('.nav-item').forEach(n => {
+  const el = g('page-' + pageId);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.ni').forEach(n => {
     const fn = n.getAttribute('onclick') || '';
-    n.classList.toggle('active', fn.includes(`'${pageId}'`));
+    n.classList.toggle('active', fn.includes("'" + pageId + "'"));
   });
-
   window.scrollTo(0, 0);
 }
 
-// ═══════════════════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════════════════
-initCharGrid();
-initSovGrid();
-initStarSteps();
+// ═══════════════════════════════════════════════════
+//  CHARACTER SHEET — BUILD HTML
+// ═══════════════════════════════════════════════════
+
+function buildSheetHTML(id) {
+  const c = chars[id];
+  const kPct = ((c.karma + 500) / 1000) * 100;
+  return `
+  <div class="sheet-wrap">
+    <div class="sheet-toolbar">
+      <button class="mode-btn active" id="${id}__bv" onclick="sMode('${id}','vm')">View</button>
+      <button class="mode-btn" id="${id}__be" onclick="sMode('${id}','em')">Edit</button>
+      <button class="tbtn tbtn-img" onclick="sSaveImg('${id}')">Save as image</button>
+      ${id !== 'tilly' ? `<button class="tbtn tbtn-del" onclick="delChar('${id}')">Delete</button>` : ''}
+    </div>
+
+    <div class="sheet vm" id="${id}__sheet">
+      <div class="char-number display" id="${id}__dn">${esc(c.number)}</div>
+      <div class="top-label">Character</div>
+
+      <div class="display">
+        <div class="njp" id="${id}__djp">${esc(c.nameJp)}</div>
+        <div class="nen" id="${id}__den">${esc(c.nameEn)}</div>
+        <div class="ntitle" id="${id}__dti">${esc(c.title)}</div>
+        <div id="${id}__dar" style="display:${c.arcanaValue?'flex':'none'};align-items:baseline;gap:8px;margin-bottom:.5rem;padding:8px 0 0;">
+          <span id="${id}__dal" style="font-family:sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#aaa;min-width:90px;flex-shrink:0;">${esc(c.arcanaLabel)}</span>
+          <span id="${id}__dav" style="font-family:'Cinzel',serif;font-size:16px;color:#3C3489;letter-spacing:.05em;">${esc(c.arcanaValue)}</span>
+        </div>
+        <div id="${id}__dsr" style="display:${c.stepValue?'flex':'none'};align-items:baseline;gap:8px;margin-bottom:1rem;padding:4px 0 8px;border-bottom:1px solid #eee;">
+          <span id="${id}__dsl" style="font-family:sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#aaa;min-width:90px;flex-shrink:0;">${esc(c.stepLabel)}</span>
+          <span id="${id}__dsv" style="font-family:'Cinzel',serif;font-size:15px;color:#555;letter-spacing:.05em;">${esc(c.stepValue)}</span>
+        </div>
+      </div>
+
+      <div class="editable" style="margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid #eee;">
+        <div class="frow"><span class="flabel">Char no.</span><input type="text" id="${id}__en" value="${esc(c.number)}" style="width:60px;"></div>
+        <div class="frow"><span class="flabel">Name (JP)</span><input type="text" id="${id}__ejp" value="${esc(c.nameJp)}"></div>
+        <div class="frow"><span class="flabel">Name (EN)</span><input type="text" id="${id}__een" value="${esc(c.nameEn)}"></div>
+        <div class="frow"><span class="flabel">Title</span><input type="text" id="${id}__eti" value="${esc(c.title)}"></div>
+        <div class="frow">
+          <input type="text" id="${id}__eal" value="${esc(c.arcanaLabel)}" style="width:90px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;flex-shrink:0;" oninput="sArcana('${id}')">
+          <input type="text" id="${id}__eav" value="${esc(c.arcanaValue)}" placeholder="e.g. The Star" oninput="sArcana('${id}')" style="flex:1;">
+        </div>
+        <div class="frow">
+          <input type="text" id="${id}__esl" value="${esc(c.stepLabel)}" style="width:90px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;flex-shrink:0;" oninput="sStep('${id}')">
+          <input type="text" id="${id}__esv" value="${esc(c.stepValue)}" placeholder="e.g. Candlebearer" oninput="sStep('${id}')" style="flex:1;">
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div id="${id}__biv" class="display"></div>
+          <div id="${id}__bie" class="editable"></div>
+          <button class="add-btn editable" onclick="sAddBI('${id}')">+ Add info field</button>
+          <hr class="div">
+
+          <div class="slabel">Karma scale</div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
+            <span style="font-size:13px;color:#666;font-family:sans-serif;">Alignment value <span class="kbadge">karma <span id="${id}__dkb">${c.karma>=0?'+':''}${c.karma}</span></span></span>
+            <span class="karma-value" id="${id}__dkv" style="color:${c.karma>=0?'#185FA5':'#A32D2D'};">${c.karma>=0?'+':''}${c.karma}</span>
+          </div>
+          <div class="editable" style="margin-bottom:6px;">
+            <input type="range" min="-500" max="500" step="1" id="${id}__ek" value="${c.karma}" style="width:100%;" oninput="sKarma('${id}',parseInt(this.value))">
+          </div>
+          <div class="karma-track">
+            <div class="karma-evil" id="${id}__kev" style="width:${100-kPct}%;"></div>
+            <div class="karma-good" id="${id}__kgd" style="width:${kPct}%;"></div>
+          </div>
+          <div class="karma-labels"><span class="karma-label-evil">Supreme Evil −500</span><span class="karma-label-good">Supreme Good +500</span></div>
+          <hr class="div">
+
+          <div id="${id}__csv" class="display"></div>
+          <div id="${id}__cse" class="editable"></div>
+          <button class="add-btn editable" onclick="sAddCS('${id}')">+ Add Category Tab</button>
+        </div>
+
+        <div>
+          <div class="art-frame">
+            <div class="art-ph" id="${id}__aph" style="${c.imgUrl?'display:none':'display:flex'}">
+              <span style="font-size:28px;opacity:.3;">🖼</span>
+              <span>Paste an image URL in edit mode</span>
+            </div>
+            <img class="art-img" id="${id}__aimg" src="${esc(c.imgUrl)}" alt="Character art"
+              style="${c.imgUrl?'display:block':'display:none'}"
+              onerror="this.style.display='none';g('${id}__aph').style.display='flex';">
+          </div>
+          <div class="editable" style="margin-top:8px;">
+            <input type="text" id="${id}__eiu" value="${esc(c.imgUrl)}" placeholder="https://..." oninput="sImg('${id}',this.value)">
+            <div class="url-hint">Paste a direct image URL</div>
+          </div>
+          <div style="margin-top:10px;">
+            <div class="display" id="${id}__dap" style="font-size:11px;font-family:sans-serif;color:#aaa;text-align:center;line-height:1.6;">${esc(c.appearance).replace(/\n/g,'<br>')}</div>
+            <div class="editable"><textarea id="${id}__eap">${esc(c.appearance)}</textarea></div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="div">
+      <div style="margin-bottom:.7rem;">
+        <div class="slabel">Character</div>
+        <p class="trait-block display" id="${id}__dq">${esc(c.quote)}</p>
+        <div class="editable"><textarea id="${id}__eq">${esc(c.quote)}</textarea></div>
+      </div>
+
+      <hr class="div">
+      <div class="slabel">Status</div>
+      <div id="${id}__stv"></div>
+      <div id="${id}__ste" class="editable"></div>
+      <button class="add-btn editable" onclick="sAddStat('${id}')">+ Add stat</button>
+
+      <hr class="div">
+      <div class="footer-row">
+        <span class="display" id="${id}__df1">${esc(c.footer1)}</span>
+        <span class="display" id="${id}__df2">${esc(c.footer2)}</span>
+        <input type="text" id="${id}__ef1" class="editable" value="${esc(c.footer1)}" style="width:48%;">
+        <input type="text" id="${id}__ef2" class="editable" value="${esc(c.footer2)}" style="width:48%;">
+      </div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════
+//  SHEET RENDER FUNCTIONS
+// ═══════════════════════════════════════════════════
+
+function sRenderBI(id) {
+  const c = chars[id];
+  g(id+'__biv').innerHTML = c.basicInfo.map(bi =>
+    `<div class="info-row"><span class="info-label">${bi.label}</span><span class="info-value">${bi.value}</span></div>`
+  ).join('');
+  g(id+'__bie').innerHTML = c.basicInfo.map((bi, i) =>
+    `<div class="frow">
+      <input type="text" value="${esc(bi.label)}" placeholder="Label" onchange="chars['${id}'].basicInfo[${i}].label=this.value;sRenderBI('${id}');saveChars();" style="width:90px;font-size:11px;text-transform:uppercase;letter-spacing:.1em;flex-shrink:0;">
+      <input type="text" value="${esc(bi.value)}" placeholder="Value" onchange="chars['${id}'].basicInfo[${i}].value=this.value;sRenderBI('${id}');saveChars();" style="flex:1;">
+      <button class="rmbtn" onclick="chars['${id}'].basicInfo.splice(${i},1);sRenderBI('${id}');saveChars();">✕</button>
+    </div>`
+  ).join('');
+}
+
+function sRenderStats(id) {
+  const c = chars[id];
+  g(id+'__stv').innerHTML = c.stats.map(s => {
+    const n = parseFloat(s.val); const pct = Math.min(isNaN(n)?0:n, 100);
+    return `<div class="stat-row-v"><span class="stat-name">${s.name}</span><div class="stat-bg"><div class="stat-fill" style="width:${pct}%"></div></div><span class="stat-val">${s.val}</span></div>`;
+  }).join('');
+  g(id+'__ste').innerHTML = c.stats.map((s, i) => {
+    const nv = isNaN(parseFloat(s.val)) ? 50 : Math.min(Math.max(parseFloat(s.val),0),100);
+    return `<div class="stat-row-e">
+      <input type="text" value="${esc(s.name)}" onchange="chars['${id}'].stats[${i}].name=this.value;sRenderStats('${id}');saveChars();" style="width:110px;flex-shrink:0;">
+      <input type="range" min="0" max="100" step="1" value="${nv}" oninput="chars['${id}'].stats[${i}].val=parseInt(this.value);this.nextElementSibling.value=this.value;sRenderStats('${id}');saveChars();" style="flex:1;min-width:60px;">
+      <input type="text" value="${esc(String(s.val))}" onchange="chars['${id}'].stats[${i}].val=this.value;sRenderStats('${id}');saveChars();" style="width:52px;flex-shrink:0;text-align:center;" placeholder="0–∞">
+      <button class="rmbtn" onclick="chars['${id}'].stats.splice(${i},1);sRenderStats('${id}');saveChars();">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function sRenderCS(id) {
+  const c = chars[id];
+  g(id+'__csv').innerHTML = c.customSections.map(sec =>
+    `<div style="margin-bottom:.5rem;"><div class="slabel">${sec.title}</div>${
+      sec.items.length === 0 ? '<span class="empty-note">None</span>' :
+      sec.items.map(it => `<span class="item-tag"><span style="color:#222;font-weight:500;">${it.name}</span>${it.note?`<span style="color:#aaa;font-size:11px;">· ${it.note}</span>`:''}</span>`).join('')
+    }</div>`
+  ).join('');
+  g(id+'__cse').innerHTML = c.customSections.map((sec, si) =>
+    `<div style="margin-bottom:16px;padding:12px;background:#f9f9f9;border-radius:10px;border:1px solid #eee;">
+      <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;">
+        <span style="font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:.1em;font-family:sans-serif;">Tab</span>
+        <input type="text" value="${esc(sec.title)}" onchange="chars['${id}'].customSections[${si}].title=this.value;sRenderCS('${id}');saveChars();" style="font-weight:bold;flex:1;">
+        <button class="rmbtn" onclick="chars['${id}'].customSections.splice(${si},1);sRenderCS('${id}');saveChars();">✕</button>
+      </div>
+      ${sec.items.map((it, ii) =>
+        `<div class="item-row-e">
+          <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+            <input type="text" value="${esc(it.name)}" onchange="chars['${id}'].customSections[${si}].items[${ii}].name=this.value;sRenderCS('${id}');saveChars();">
+            <input type="text" value="${esc(it.note)}" onchange="chars['${id}'].customSections[${si}].items[${ii}].note=this.value;sRenderCS('${id}');saveChars();" style="font-size:11px;" placeholder="Note (optional)">
+          </div>
+          <button class="rmbtn" onclick="chars['${id}'].customSections[${si}].items.splice(${ii},1);sRenderCS('${id}');saveChars();">✕</button>
+        </div>`
+      ).join('')}
+      <button class="add-btn" style="margin-top:8px;" onclick="chars['${id}'].customSections[${si}].items.push({name:'New entry',note:''});sRenderCS('${id}');saveChars();">+ Add to ${sec.title}</button>
+    </div>`
+  ).join('');
+}
+
+function sKarma(id, v) {
+  chars[id].karma = v;
+  const p = ((v+500)/1000)*100;
+  g(id+'__kev').style.width = (100-p)+'%';
+  g(id+'__kgd').style.width = p+'%';
+  const s = v>=0?'+':'';
+  g(id+'__dkv').textContent = s+v;
+  g(id+'__dkb').textContent = s+v;
+  g(id+'__dkv').style.color = v>=0?'#185FA5':'#A32D2D';
+  saveChars();
+}
+
+function sArcana(id) {
+  const al = g(id+'__eal'), av = g(id+'__eav');
+  if(al) chars[id].arcanaLabel = al.value;
+  if(av) chars[id].arcanaValue = av.value;
+  g(id+'__dal').textContent = chars[id].arcanaLabel;
+  g(id+'__dav').textContent = chars[id].arcanaValue;
+  g(id+'__dar').style.display = chars[id].arcanaValue ? 'flex' : 'none';
+  saveChars();
+}
+
+function sStep(id) {
+  const sl = g(id+'__esl'), sv = g(id+'__esv');
+  if(sl) chars[id].stepLabel = sl.value;
+  if(sv) chars[id].stepValue = sv.value;
+  g(id+'__dsl').textContent = chars[id].stepLabel;
+  g(id+'__dsv').textContent = chars[id].stepValue;
+  g(id+'__dsr').style.display = chars[id].stepValue ? 'flex' : 'none';
+  saveChars();
+}
+
+function sImg(id, url) {
+  chars[id].imgUrl = url;
+  const img = g(id+'__aimg'), ph = g(id+'__aph');
+  if(url && url.trim()) {
+    img.src = url.trim(); img.style.display = 'block'; ph.style.display = 'none';
+    img.onerror = () => { img.style.display='none'; ph.style.display='flex'; };
+  } else { img.style.display='none'; ph.style.display='flex'; }
+  saveChars();
+}
+
+function sApplyEdits(id) {
+  const c = chars[id];
+  const read = (eid) => { const el=g(id+'__'+eid); return el?el.value:''; };
+  c.number   = read('en');  c.nameJp  = read('ejp'); c.nameEn = read('een');
+  c.title    = read('eti'); c.quote   = read('eq');  c.footer1= read('ef1');
+  c.footer2  = read('ef2'); c.appearance = read('eap');
+  g(id+'__dn').textContent  = c.number;
+  g(id+'__djp').textContent = c.nameJp;
+  g(id+'__den').textContent = c.nameEn;
+  g(id+'__dti').textContent = c.title;
+  g(id+'__dq').textContent  = c.quote;
+  g(id+'__df1').textContent = c.footer1;
+  g(id+'__df2').textContent = c.footer2;
+  g(id+'__dap').innerHTML   = esc(c.appearance).replace(/\n/g,'<br>');
+  sArcana(id); sStep(id);
+  saveChars();
+  // Update sidebar name
+  renderCharNav();
+}
+
+function sMode(id, mode) {
+  const sheet = g(id+'__sheet');
+  sheet.classList.remove('vm','em');
+  sheet.classList.add(mode);
+  g(id+'__bv').classList.toggle('active', mode==='vm');
+  g(id+'__be').classList.toggle('active', mode==='em');
+  if(mode==='vm') sApplyEdits(id);
+}
+
+function sAddBI(id)   { chars[id].basicInfo.push({label:'New Label',value:''}); sRenderBI(id); saveChars(); }
+function sAddStat(id) { chars[id].stats.push({name:'New stat',val:50}); sRenderStats(id); saveChars(); }
+function sAddCS(id)   { chars[id].customSections.push({title:'New Category',items:[]}); sRenderCS(id); saveChars(); }
+
+function sSaveImg(id) {
+  const btn = event.target;
+  btn.textContent = 'Saving...'; btn.disabled = true;
+  const sheet = g(id+'__sheet');
+  const wasEdit = sheet.classList.contains('em');
+  if(wasEdit){ sApplyEdits(id); sheet.classList.remove('em'); sheet.classList.add('vm'); }
+  html2canvas(sheet, { backgroundColor:null, scale:2, useCORS:true, allowTaint:true }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = (chars[id].nameEn||'character').toLowerCase().replace(/\s+/g,'-')+'-sheet.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    btn.textContent = 'Save as image'; btn.disabled = false;
+    if(wasEdit){ sheet.classList.remove('vm'); sheet.classList.add('em'); }
+  }).catch(() => { btn.textContent='Save as image'; btn.disabled=false; });
+}
+
+// ═══════════════════════════════════════════════════
+//  CHARACTER MANAGEMENT
+// ═══════════════════════════════════════════════════
+
+function initSheet(id) {
+  sRenderBI(id);
+  sRenderStats(id);
+  sRenderCS(id);
+}
+
+function addCharPage(id) {
+  const sec = document.createElement('section');
+  sec.className = 'page';
+  sec.id = 'page-char-' + id;
+  sec.innerHTML = buildSheetHTML(id);
+  g('char-pages').appendChild(sec);
+  initSheet(id);
+}
+
+function renderCharNav() {
+  g('char-nav').innerHTML = charOrder.map(id => {
+    const c = chars[id];
+    const name = c ? (c.nameEn || 'Unnamed') : 'Unnamed';
+    return `<div class="ni" id="nav-char-${id}" onclick="go('char-${id}')"><span class="nd"></span>${name}</div>`;
+  }).join('');
+}
+
+function addChar() {
+  const c = BLANK_CHAR();
+  chars[c.id] = c;
+  charOrder.push(c.id);
+  saveChars();
+  addCharPage(c.id);
+  renderCharNav();
+  go('char-' + c.id);
+}
+
+function delChar(id) {
+  if (!confirm('Delete this character sheet? This cannot be undone.')) return;
+  charOrder = charOrder.filter(x => x !== id);
+  delete chars[id];
+  saveChars();
+  const sec = g('page-char-' + id);
+  if (sec) sec.remove();
+  renderCharNav();
+  go(charOrder.length ? 'char-' + charOrder[0] : 'world');
+}
+
+// ═══════════════════════════════════════════════════
+//  SOVEREIGNTY & STAR DATA
+// ═══════════════════════════════════════════════════
+
+const SOVS = [
+  {num:'0',card:'The Fool',name:'Sovereignty of Wandering'},
+  {num:'I',card:'The Magician',name:'Sovereignty of Direction'},
+  {num:'II',card:'The High Priestess',name:'Sovereignty of Secrets'},
+  {num:'III',card:'The Empress',name:'Sovereignty of Growth'},
+  {num:'IV',card:'The Emperor',name:'Sovereignty of Command'},
+  {num:'V',card:'The Hierophant',name:'Sovereignty of Tradition'},
+  {num:'VI',card:'The Lovers',name:'Sovereignty of Bonds'},
+  {num:'VII',card:'The Chariot',name:'Sovereignty of Motion'},
+  {num:'VIII',card:'Strength',name:'Sovereignty of Force'},
+  {num:'IX',card:'The Hermit',name:'Sovereignty of Isolation'},
+  {num:'X',card:'Wheel of Fortune',name:'Sovereignty of Luck'},
+  {num:'XI',card:'Justice',name:'Sovereignty of Balance'},
+  {num:'XII',card:'The Hanged Man',name:'Sovereignty of Sacrifice'},
+  {num:'XIII',card:'Death',name:'Sovereignty of Endings'},
+  {num:'XIV',card:'Temperance',name:'Sovereignty of Restraint'},
+  {num:'XV',card:'The Devil',name:'Sovereignty of Temptation'},
+  {num:'XVI',card:'The Tower',name:'Sovereignty of Destruction'},
+  {num:'XVII',card:'The Star',name:'Sovereignty of Hope',detail:'the-star',ft:true},
+  {num:'XVIII',card:'The Moon',name:'Sovereignty of Illusion'},
+  {num:'XIX',card:'The Sun',name:'Sovereignty of Radiance'},
+  {num:'XX',card:'Judgement',name:'Sovereignty of Awakening'},
+  {num:'XXI',card:'The World',name:'Sovereignty of Completion'},
+];
+
+const STAR = [
+  {s:0,t:'Candlebearer',c:'#94a3b8',
+   a:'A faint warm light emanates from the Arcanist that wind and water cannot extinguish. Small radius. Always present. Can be dimmed by will. In complete darkness it\'s the difference between seeing and not seeing.',
+   d:'They begin sleeping later than usual. Nothing dramatic yet.'},
+  {s:1,t:'Omen-Reader',c:'#86efac',
+   a:'They begin noticing signs others miss. A fighter\'s weight shifting before they throw a punch. A mage\'s breath changing before they draw a sigil. They see it coming a half second before it arrives. In a brawl a half second is everything.',
+   d:'They begin feeling the emotions of people around them without meaning to. Someone nearby is grieving and they feel it like pressure behind their eyes. They can\'t turn it off yet.'},
+  {s:2,t:'Stargazer',c:'#67e8f9',
+   a:'Their light has developed an edge. They can focus it into a narrow beam — not enough to burn yet, but enough to blind someone momentarily. They can also project it as a short burst in all directions, disorienting multiple enemies at once. By studying the night sky for an hour they gain a vague sense of what tomorrow holds for themselves or someone nearby.',
+   d:'They can no longer lie convincingly. Their light flickers almost imperceptibly when they say something untrue. Animals notice first. Then perceptive people.'},
+  {s:3,t:'Fate-Charter',c:'#a78bfa',
+   a:'They begin to read the immediate future in combat with frightening accuracy. Not minutes ahead — seconds. The next blow. The next step. The next breath. They move through a fight like water finding its path, never quite where the attack lands. They aren\'t faster than their opponents. They simply aren\'t there when the hit arrives. They can also sense when someone nearby is at a turning point in their life.',
+   d:'They are inexplicably drawn to people who are suffering. Strangers in pain find them. They cannot walk past someone in genuine despair without stopping. This is not a choice.'},
+  {s:4,t:'Lodestar',c:'#fbbf24',
+   a:'They can now project their light as a physical force. A concentrated pulse that hits like a shove — enough to knock someone off their feet or send a weapon spinning out of a hand. It can be fired repeatedly but costs genuine effort. Lost things also find their way to them — a missing person wanders past them on the street, a stolen object turns up nearby.',
+   d:'They stop being able to sustain hatred. They can be furious. Devastated. But hatred dissolves in them like salt in water.'},
+  {s:5,t:'Scribe of Skies',c:'#f97316',
+   a:'Their body has begun to change. Bones subtly denser. Reflexes sharpened beyond normal human limits without any training to explain it. The road is rewriting them from the inside. They hit harder than they should for their size and recover from impacts faster than makes sense. They also always know the broad shape of fate moving around them — who is in danger, where hope is concentrated. Always on. Cannot be turned off.',
+   d:'They stop needing to eat as much. A meal every few days sustains them. People who know them well begin to notice they never seem hungry.'},
+  {s:6,t:'Astrologer of Ruin',c:'#ef4444',
+   a:'They can see the threads of fate connecting people in a fight. Who is about to make a fatal mistake. Where the turning point of the battle is. They only need to pull the right thread at the right moment and watch everything unravel. They can also hear wishes — not spoken ones, the ones people carry silently. With focus they can isolate a single person\'s deepest want.',
+   d:'They begin to glow faintly in complete darkness. They cannot control it.'},
+  {s:7,t:'Living Constellation',c:'#ec4899',
+   a:'Their light has become something altogether different. They can shape it into walls of blazing radiance that physical weapons cannot pass through. Beams that strike with the force of a battering ram. A corona of burning light around their body that makes close combat deeply unpleasant. Allies near them feel steadier and harder to break. Enemies feel watched from very far away and found wanting.',
+   d:'Their tears are luminescent. They cannot hide grief. It literally shines out of them.'},
+  {s:8,t:'Terror of the Void',c:'#8b5cf6',
+   a:'Once per fight they can stop time for a single breath. In that breath they can move, redirect, reposition, pull someone out of the path of something unsurvivable. When time resumes nobody saw them move. Their body now heals at a rate that is difficult to explain — cuts close within minutes, broken bones within hours. They are becoming very hard to kill.',
+   d:'They have begun to forget small human things. The taste of their favourite food. The sound of a voice they loved. Small human details blur while cosmic ones sharpen.'},
+  {s:9,t:'Sovereign of Hope',c:'#3b82f6',
+   a:'They are no longer entirely fighting with a body. They are fighting with a concept. Their strikes carry weight beyond physical force — a blow doesn\'t just break bone, it breaks something in the spirit of whoever receives it. Anyone who has truly given up and comes near them feels something shift — the genuine sense that one more try is worth it. No range limit. Cannot be resisted. It has ended sieges. Their light can be seen from miles away if fully released.',
+   d:'They are no longer aging. They will outlive everyone they love unless something kills them first. They are beginning to understand what that means.'},
+  {s:10,t:'The Star',c:'#e2e8f0',
+   a:'There are no reliable accounts of a Star in combat because nothing that has ever fought one has survived to describe it coherently. What fragments exist speak of light that rewrites what it touches. Of wounds that simply cease to exist. Of enemies who stopped fighting not because they were defeated but because in the presence of a Star the concept of fighting seemed very small and very far away. A Star does not win battles. A Star ends them.',
+   d:'They are still here. Still themselves. But when they look at the people around them there is something in their eyes that wasn\'t there before. A distance. Not coldness. But they are seeing something the rest of the world cannot see yet. And sometimes when someone speaks to them there is a moment — just a breath — before they remember to respond like a person.'},
+];
+
+// ═══════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════
+
+// Build sovereignty grid
+g('sov-grid').innerHTML = SOVS.map(s =>
+  `<div class="sov-card${s.ft?' ft':''}${s.detail?' hd':''}" ${s.detail?`onclick="go('${s.detail}')"`:''}">
+    <div class="sov-num">${s.num}</div>
+    <div class="sov-cn">${s.card}</div>
+    <div class="sov-cs">${s.name}</div>
+    ${s.detail?`<div class="sov-lk">Full detail →</div>`:''}
+  </div>`
+).join('');
+
+// Build star steps
+g('star-steps').innerHTML = STAR.map(s =>
+  `<div class="step-card" style="border-left-color:${s.c}">
+    <div class="step-ch"><span class="step-nl">Step ${s.s===10?'X':s.s}</span><span class="step-tt">${s.t}</span></div>
+    <div class="abl">Ability</div><div class="stxt">${s.a}</div>
+    <div class="dsl">Downside</div><div class="stxt">${s.d}</div>
+  </div>`
+).join('');
+
+// Build all character pages
+charOrder.forEach(id => addCharPage(id));
+
+// Build sidebar nav
+renderCharNav();
+
+// Start on first character
+go('char-' + charOrder[0]);
 </script>
 </body>
 </html>
