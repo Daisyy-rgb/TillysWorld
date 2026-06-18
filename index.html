@@ -310,9 +310,8 @@ function migrateContent(){
 
 // ── BLANK STEPS TEMPLATE ─────────────────────────────
 const STEP_COLORS=['#94a3b8','#86efac','#67e8f9','#a78bfa','#fbbf24','#f97316','#ef4444','#ec4899','#8b5cf6','#3b82f6','#e2e8f0'];
-const STEP_NAMES=['Candlebearer','Omen-Reader','Stargazer','Fate-Charter','Lodestar','Scribe of Skies','Astrologer of Ruin','Living Constellation','Terror of the Void','Sovereign','The ___'];
 function blankSteps(){
-  return Array.from({length:11},(_,i)=>({step:i,title:STEP_NAMES[i]||'Step '+i,color:STEP_COLORS[i]||'#94a3b8',ability:'',downside:''}));
+  return Array.from({length:11},(_,i)=>({step:i,title:'',color:STEP_COLORS[i],ability:'',downside:''}));
 }
 
 // ── APP STATE ─────────────────────────────────────────
