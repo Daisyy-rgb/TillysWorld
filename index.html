@@ -2,508 +2,1333 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Character Sheet</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tilly's World</title>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;500&display=swap');
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:#2a2a2a;padding:1rem;font-family:sans-serif;}
-h1.page-title{font-family:'Cinzel',serif;font-size:18px;font-weight:400;color:#444;margin-bottom:1rem;letter-spacing:0.1em;}
-.toolbar{display:flex;gap:8px;margin-bottom:1rem;align-items:center;flex-wrap:wrap;}
-.mode-btn{font-family:sans-serif;font-size:12px;padding:6px 16px;border-radius:8px;border:1px solid #ccc;cursor:pointer;background:#fff;color:#555;}
-.mode-btn.active{background:#EEEDFE;color:#3C3489;border-color:#AFA9EC;}
-.tool-btn{font-family:sans-serif;font-size:12px;padding:6px 16px;border-radius:8px;cursor:pointer;}
-.export-btn{border:1px solid #AFA9EC;background:#3C3489;color:#fff;}
-.export-btn:hover{background:#534AB7;}
-.import-btn{border:1px solid #ccc;background:#fff;color:#555;}
-.import-btn:hover{background:#f0f0f0;}
-.notice{font-size:11px;color:#3C3489;font-family:sans-serif;padding:6px 12px;background:#EEEDFE;border-radius:8px;display:none;}
-.sheet{background:#ddd8d0;border:1px solid #e0e0e0;border-radius:12px;padding:1.2rem 1.5rem;max-width:900px;margin:0 auto;font-family:'IM Fell English',serif;position:relative;}
-.view-mode .editable{display:none;}
-.view-mode .display{display:block;}
-.edit-mode .editable{display:block;}
-.edit-mode .display{display:none;}
-.top-label{font-size:11px;letter-spacing:0.15em;color:#999;text-transform:uppercase;font-family:sans-serif;margin-bottom:4px;}
-.char-number{font-family:'Cinzel',serif;font-size:48px;font-weight:400;color:#000;line-height:1;opacity:0.18;position:absolute;top:2rem;right:2rem;}
-.name-jp-display{font-size:13px;color:#aaa;font-family:sans-serif;margin-bottom:2px;}
-.name-en-display{font-family:'Cinzel',serif;font-size:32px;font-weight:400;color:#222;margin:0 0 4px;letter-spacing:0.05em;}
-.title-display{font-size:15px;color:#666;font-style:italic;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid #eee;}
-.two-col{display:grid;grid-template-columns:1fr 200px;gap:1.2rem;margin-bottom:0.8rem;}
-.art-frame{border:4px solid #111;border-radius:6px;box-shadow:inset 0 0 0 2px #555,inset 0 0 0 5px #111;overflow:hidden;height:280px;position:relative;background:#111;}
-.art-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;height:100%;color:#888;font-size:12px;font-family:sans-serif;text-align:center;padding:1rem;}
-.art-img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;}
-.info-row{display:flex;gap:8px;margin-bottom:6px;font-size:14px;align-items:baseline;}
-.info-label{color:#aaa;font-family:sans-serif;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;min-width:90px;padding-top:2px;flex-shrink:0;}
-.info-value{color:#222;font-size:14px;line-height:1.4;}
-input[type=text],textarea{width:100%;font-size:13px;font-family:sans-serif;padding:4px 8px;border-radius:6px;border:1px solid #ddd;background:#f9f9f9;color:#222;}
-textarea{resize:vertical;min-height:48px;}
-.field-row{display:flex;gap:8px;margin-bottom:6px;align-items:center;}
-.field-label{color:#aaa;font-family:sans-serif;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;min-width:90px;flex-shrink:0;}
-hr.div{border:none;border-top:1px solid #eee;margin:0.6rem 0;}
-.section-label{font-family:sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#bbb;margin-bottom:6px;}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-.stat-name-display{font-family:sans-serif;font-size:12px;color:#666;min-width:130px;}
-.stat-row-outer{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
-.stat-bar-bg{flex:1;height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;}
-.stat-bar-fill{height:100%;border-radius:3px;background:#3C3489;transition:width 0.2s;position:relative;}
-.stat-val-display{font-family:sans-serif;font-size:11px;color:#777;min-width:36px;text-align:right;white-space:nowrap;flex-shrink:0;}
-.stat-name-display{font-family:sans-serif;font-size:12px;color:#666;min-width:130px;}
-.stat-row-edit{display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:6px 8px;background:#f9f9f9;border-radius:8px;border:1px solid #eee;}
-.stat-row-edit input[type=text]{width:120px;flex-shrink:0;}
-.stat-row-edit input[type=range]{flex:1;min-width:60px;}
-.stat-val-out{font-size:12px;font-family:sans-serif;color:#666;min-width:24px;text-align:right;flex-shrink:0;}
-.remove-btn{flex-shrink:0;width:28px;height:28px;border-radius:6px;border:1px solid #F09595;background:#FCEBEB;color:#A32D2D;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;font-family:sans-serif;line-height:1;}
-.remove-btn:hover{background:#F7C1C1;}
-.add-btn{font-family:sans-serif;font-size:12px;color:#3C3489;background:none;border:1px dashed #AFA9EC;border-radius:8px;padding:6px 14px;cursor:pointer;margin-top:4px;width:100%;}
-.karma-track{width:100%;height:10px;border-radius:5px;overflow:hidden;display:flex;margin:8px 0 4px;}
-.karma-evil{height:100%;background:#A32D2D;transition:width 0.15s;}
-.karma-good{height:100%;background:#185FA5;transition:width 0.15s;}
-.karma-labels{display:flex;justify-content:space-between;font-size:10px;font-family:sans-serif;}
-.karma-label-evil{color:#A32D2D;}
-.karma-label-good{color:#185FA5;}
-.karma-value{font-family:'Cinzel',serif;font-size:18px;font-weight:400;}
-.alignment-badge{display:inline-block;background:#EEEDFE;color:#3C3489;font-family:sans-serif;font-size:11px;padding:3px 10px;border-radius:6px;margin-left:8px;vertical-align:middle;}
-.item-tag{display:inline-flex;align-items:center;gap:6px;border:1px solid #ddd;border-radius:6px;font-size:12px;font-family:sans-serif;color:#666;padding:3px 10px;margin:3px 3px 3px 0;}
-.item-row-edit{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px;background:#fff;border-radius:6px;border:1px solid #eee;}
-.item-row-edit input[type=text]{flex:1;}
-.trait-block{font-size:16px;color:#666;font-style:italic;line-height:1.6;border-left:2px solid #AFA9EC;padding-left:12px;border-radius:0;}
-.url-hint{font-size:11px;color:#aaa;font-family:sans-serif;margin-top:4px;}
-.empty-note{font-size:12px;font-family:sans-serif;color:#aaa;font-style:italic;}
-.footer-row{font-family:sans-serif;font-size:11px;color:#999;display:flex;justify-content:space-between;gap:8px;}
-.import-area{width:100%;height:80px;font-size:11px;font-family:monospace;margin-top:8px;display:none;border:1px solid #ddd;border-radius:6px;padding:6px;background:#f9f9f9;color:#333;}
-.export-area{width:100%;height:80px;font-size:11px;font-family:monospace;margin-top:8px;display:none;border:1px solid #ddd;border-radius:6px;padding:6px;background:#f9f9f9;color:#333;}
+:root {
+  --sidebar-bg: #19160f;
+  --sidebar-text: #b8ad9e;
+  --sidebar-accent: #7b6fbb;
+  --main-bg: #201d16;
+  --parchment: #ddd8d0;
+  --parchment-light: #e8e3db;
+  --card-border: rgba(0,0,0,0.12);
+  --text-dark: #2e2820;
+  --text-mid: #5a4e42;
+  --text-light: #8a7e72;
+  --accent: #3C3489;
+  --accent-light: #7b6fbb;
+  --gold: #c9a84c;
+}
+
+body {
+  background: var(--main-bg);
+  display: flex;
+  min-height: 100vh;
+  font-family: 'IM Fell English', serif;
+  color: var(--text-dark);
+}
+
+/* ── SIDEBAR ─────────────────────────────────────────── */
+.sidebar {
+  width: 210px;
+  min-width: 210px;
+  background: var(--sidebar-bg);
+  padding: 1.4rem 0 2rem;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  overflow-y: auto;
+  z-index: 100;
+  border-right: 1px solid rgba(255,255,255,0.04);
+}
+
+.sidebar-logo {
+  padding: 0 1.2rem 1.2rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  margin-bottom: 1.2rem;
+}
+
+.sidebar-logo .eyebrow {
+  font-family: sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(184,173,158,0.45);
+  margin-bottom: 4px;
+}
+
+.sidebar-logo .title {
+  font-family: 'Cinzel', serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: #e8e2d8;
+  letter-spacing: 0.1em;
+}
+
+.nav-group {
+  margin-bottom: 0.4rem;
+}
+
+.nav-group-label {
+  font-family: sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(184,173,158,0.4);
+  padding: 0.6rem 1.2rem 0.25rem;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.38rem 1.2rem;
+  font-family: sans-serif;
+  font-size: 12px;
+  color: var(--sidebar-text);
+  cursor: pointer;
+  transition: all 0.13s;
+  border-left: 2px solid transparent;
+  user-select: none;
+}
+
+.nav-item:hover { color: #fff; background: rgba(255,255,255,0.04); }
+
+.nav-item.active {
+  color: #fff;
+  border-left-color: var(--sidebar-accent);
+  background: rgba(123,111,187,0.1);
+}
+
+.nav-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: rgba(184,173,158,0.35);
+  flex-shrink: 0;
+  transition: background 0.13s;
+}
+
+.nav-item.active .nav-dot { background: var(--sidebar-accent); }
+
+/* ── MAIN ─────────────────────────────────────────────── */
+.main {
+  margin-left: 210px;
+  flex: 1;
+  padding: 2.2rem 2.4rem 3rem;
+  max-width: 1000px;
+}
+
+/* ── PAGES ────────────────────────────────────────────── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── PAGE HEADER ──────────────────────────────────────── */
+.page-head {
+  margin-bottom: 2rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+.page-head h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 26px;
+  font-weight: 400;
+  color: #e8e2d8;
+  letter-spacing: 0.07em;
+  line-height: 1.2;
+}
+
+.page-head p {
+  font-size: 13px;
+  color: rgba(184,173,158,0.7);
+  margin-top: 5px;
+  font-family: sans-serif;
+  font-style: italic;
+}
+
+/* ── LORE SECTION ─────────────────────────────────────── */
+.lore-block { margin-bottom: 2.2rem; }
+
+.lore-block-title {
+  font-family: 'Cinzel', serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: #c8c0b0;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+/* ── CARD ─────────────────────────────────────────────── */
+.card {
+  background: var(--parchment);
+  border-radius: 10px;
+  padding: 1.4rem 1.6rem;
+  margin-bottom: 1rem;
+}
+
+.card h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-dark);
+  margin-bottom: 0.7rem;
+  letter-spacing: 0.05em;
+}
+
+.card h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-mid);
+  margin: 1rem 0 0.4rem;
+  letter-spacing: 0.07em;
+}
+
+.card p {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--text-mid);
+}
+
+.card p + p { margin-top: 0.75rem; }
+
+.card ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 0.3rem;
+}
+
+.card ul li {
+  font-size: 14px;
+  color: var(--text-mid);
+  padding: 3px 0 3px 16px;
+  position: relative;
+  line-height: 1.6;
+}
+
+.card ul li::before {
+  content: '·';
+  position: absolute;
+  left: 4px;
+  color: var(--accent-light);
+}
+
+/* ── CHARACTER SHEET ──────────────────────────────────── */
+.char-sheet {
+  background: var(--parchment);
+  border-radius: 12px;
+  padding: 2rem 2.2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.char-sheet::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 160px; height: 160px;
+  background: radial-gradient(circle at top right, rgba(60,52,137,0.07), transparent 65%);
+  pointer-events: none;
+}
+
+.char-name-jp {
+  font-family: sans-serif;
+  font-size: 11px;
+  color: #aaa;
+  letter-spacing: 0.12em;
+  margin-bottom: 2px;
+}
+
+.char-name {
+  font-family: 'Cinzel', serif;
+  font-size: 34px;
+  font-weight: 400;
+  color: var(--text-dark);
+  letter-spacing: 0.05em;
+  line-height: 1.1;
+  margin-bottom: 5px;
+}
+
+.char-role {
+  font-size: 13px;
+  color: var(--text-light);
+  font-style: italic;
+  margin-bottom: 1.2rem;
+}
+
+.char-synopsis {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-mid);
+  font-style: italic;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  padding: 1rem 0;
+  margin: 1rem 0 1.2rem;
+}
+
+.char-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem 1.4rem;
+  margin-bottom: 1.2rem;
+}
+
+.char-field label {
+  display: block;
+  font-family: sans-serif;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #aaa;
+  margin-bottom: 2px;
+}
+
+.char-field span {
+  font-size: 13.5px;
+  color: var(--text-dark);
+  line-height: 1.4;
+}
+
+.char-field.full { grid-column: 1 / -1; }
+
+/* Step badge */
+.step-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #2d2875, #5c51a8);
+  color: #fff;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  letter-spacing: 0.07em;
+  margin-bottom: 1.2rem;
+}
+
+.step-badge .sep { opacity: 0.4; }
+
+/* Stats */
+.stats-section { margin: 0.8rem 0 1rem; }
+
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 7px;
+}
+
+.stat-label {
+  font-family: sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-mid);
+  width: 108px;
+  flex-shrink: 0;
+}
+
+.stat-bar-bg {
+  flex: 1;
+  height: 7px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.stat-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(to right, #3C3489, #7b6fbb);
+}
+
+.stat-bar-fill.gold {
+  background: linear-gradient(to right, #a07830, #c9a84c);
+}
+
+.stat-val {
+  font-family: sans-serif;
+  font-size: 11px;
+  color: var(--text-dark);
+  width: 26px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Karma */
+.karma-wrap { margin: 0.8rem 0 1rem; }
+
+.karma-labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: sans-serif;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #aaa;
+  margin-bottom: 4px;
+}
+
+.karma-bar-bg {
+  height: 9px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.karma-bar-fill {
+  height: 100%;
+  background: linear-gradient(to right, #4361c4, #7b6fbb);
+}
+
+.karma-val {
+  font-family: sans-serif;
+  font-size: 10px;
+  color: var(--text-mid);
+  text-align: center;
+  margin-top: 3px;
+}
+
+/* Tags */
+.tag-row { margin-top: 0.8rem; }
+
+.tag-row-label {
+  font-family: sans-serif;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #aaa;
+  margin-bottom: 5px;
+}
+
+.tag {
+  display: inline-block;
+  font-family: sans-serif;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 11px;
+  margin: 2px 3px 2px 0;
+}
+
+.tag-artifact {
+  background: rgba(60,52,137,0.1);
+  border: 1px solid rgba(60,52,137,0.22);
+  color: #3C3489;
+}
+
+.tag-item {
+  background: rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.11);
+  color: var(--text-mid);
+}
+
+.char-quote {
+  margin-top: 1.2rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  font-size: 13px;
+  color: #aaa;
+  font-style: italic;
+  text-align: center;
+}
+
+/* ── CHARACTER GRID ───────────────────────────────────── */
+.char-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.char-thumb {
+  background: var(--parchment);
+  border-radius: 10px;
+  padding: 1.2rem 1.4rem;
+  cursor: pointer;
+  transition: transform 0.14s, box-shadow 0.14s, border-color 0.14s;
+  border: 2px solid transparent;
+}
+
+.char-thumb:hover {
+  transform: translateY(-2px);
+  border-color: rgba(60,52,137,0.35);
+  box-shadow: 0 5px 18px rgba(0,0,0,0.28);
+}
+
+.char-thumb-name {
+  font-family: 'Cinzel', serif;
+  font-size: 20px;
+  color: var(--text-dark);
+  margin-bottom: 2px;
+}
+
+.char-thumb-sub {
+  font-size: 12px;
+  color: var(--text-light);
+  font-style: italic;
+  margin-bottom: 0.8rem;
+}
+
+.char-thumb-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+
+.char-thumb-tag {
+  font-family: sans-serif;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 9px;
+  background: rgba(60,52,137,0.1);
+  color: #3C3489;
+}
+
+/* ── SOVEREIGNTY GRID ─────────────────────────────────── */
+.sov-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+  gap: 0.75rem;
+}
+
+.sov-card {
+  background: var(--parchment);
+  border-radius: 8px;
+  padding: 1rem 1.1rem;
+  border: 2px solid transparent;
+  transition: all 0.14s;
+}
+
+.sov-card.has-detail { cursor: pointer; }
+
+.sov-card.has-detail:hover {
+  transform: translateY(-2px);
+  border-color: rgba(60,52,137,0.35);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.22);
+}
+
+.sov-card.featured {
+  border-color: rgba(60,52,137,0.4);
+  background: #eae6f5;
+}
+
+.sov-num {
+  font-family: sans-serif;
+  font-size: 9px;
+  color: #bbb;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.sov-card-name {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  color: var(--text-dark);
+  margin-bottom: 2px;
+}
+
+.sov-card-sov {
+  font-size: 11.5px;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+.sov-link {
+  margin-top: 6px;
+  font-family: sans-serif;
+  font-size: 9px;
+  color: var(--accent);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ── STAR STEPS ───────────────────────────────────────── */
+.step-list { display: flex; flex-direction: column; gap: 0.9rem; }
+
+.step-card {
+  background: var(--parchment);
+  border-radius: 9px;
+  padding: 1.2rem 1.4rem;
+  border-left: 3px solid;
+}
+
+.step-card-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 0.75rem;
+}
+
+.step-num-label {
+  font-family: sans-serif;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #bbb;
+}
+
+.step-title {
+  font-family: 'Cinzel', serif;
+  font-size: 15px;
+  color: var(--text-dark);
+}
+
+.ability-label {
+  font-family: sans-serif;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #3C3489;
+  margin-bottom: 3px;
+}
+
+.downside-label {
+  font-family: sans-serif;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #b83232;
+  margin-top: 9px;
+  margin-bottom: 3px;
+}
+
+.step-text {
+  font-size: 13.5px;
+  line-height: 1.72;
+  color: var(--text-mid);
+}
+
+/* ── FAIRY GRID ───────────────────────────────────────── */
+.fairy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 0.75rem;
+}
+
+.fairy-card {
+  background: var(--parchment);
+  border-radius: 8px;
+  padding: 1.1rem 1.2rem;
+}
+
+.fairy-card h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+}
+
+.fairy-card p {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--text-mid);
+}
+
+/* ── SIGIL GRID ───────────────────────────────────────── */
+.sigil-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.6rem;
+}
+
+.sigil-card {
+  background: var(--parchment);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  color: var(--text-dark);
+}
+
+/* ── CURRENCY TABLE ───────────────────────────────────── */
+.currency-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.currency-table th {
+  font-family: sans-serif;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #aaa;
+  text-align: left;
+  padding: 6px 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.currency-table td {
+  padding: 8px 12px;
+  font-size: 14px;
+  color: var(--text-mid);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.currency-table tr:last-child td { border-bottom: none; }
+
+/* ── CHAPTER CARD ─────────────────────────────────────── */
+.chapter-card {
+  background: var(--parchment);
+  border-radius: 10px;
+  padding: 1.6rem 1.9rem;
+  margin-bottom: 1.2rem;
+}
+
+.chapter-eyebrow {
+  font-family: sans-serif;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #aaa;
+  margin-bottom: 5px;
+}
+
+.chapter-title {
+  font-family: 'Cinzel', serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+}
+
+.chapter-body {
+  font-size: 14px;
+  line-height: 1.82;
+  color: var(--text-mid);
+}
+
+.chapter-body p { margin-bottom: 0.75rem; }
+.chapter-body p:last-child { margin-bottom: 0; }
+
+/* ── BACK BUTTON ──────────────────────────────────────── */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: sans-serif;
+  font-size: 12px;
+  color: rgba(184,173,158,0.7);
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  transition: all 0.13s;
+}
+
+.back-btn:hover { color: #fff; background: rgba(255,255,255,0.06); }
+
+/* ── SCROLLBAR ────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
-<h1 class="page-title">Character Sheet</h1>
-
-<div class="toolbar">
-  <button class="mode-btn active" id="btn-view" onclick="setMode('view')">View</button>
-  <button class="mode-btn" id="btn-edit" onclick="setMode('edit')">Edit</button>
-  <button class="tool-btn export-btn" onclick="doExport()">Export save</button>
-  <button class="tool-btn import-btn" onclick="toggleImport()">Import save</button>
-  <button class="tool-btn import-btn" id="copy-img-btn" onclick="copySheetAsImage()">Copy as image</button>
-  <span class="notice" id="img-notice" style="display:none;font-size:11px;color:#3C3489;font-family:sans-serif;padding:6px 12px;background:#EEEDFE;border-radius:8px;">Copied! Paste anywhere.</span>
-  <button class="tool-btn import-btn" onclick="saveImage()" id="img-btn">Save as image</button>
-  <span class="notice" id="notice"></span>
-</div>
-
-<div id="import-panel" style="max-width:900px;margin:0 auto 1rem;display:none;">
-  <div style="background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:1rem;">
-    <div style="font-family:sans-serif;font-size:12px;color:#555;margin-bottom:8px;">Paste your save text below and click Load:</div>
-    <textarea id="import-area" style="width:100%;height:80px;font-size:11px;font-family:monospace;border:1px solid #ddd;border-radius:6px;padding:6px;background:#f9f9f9;color:#333;" placeholder="Paste save text here..."></textarea>
-    <button class="tool-btn export-btn" style="margin-top:8px;" onclick="doImport()">Load save</button>
-  </div>
-</div>
-
-<div id="export-panel" style="max-width:900px;margin:0 auto 1rem;display:none;">
-  <div style="background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:1rem;">
-    <div style="font-family:sans-serif;font-size:12px;color:#555;margin-bottom:8px;">Copy all this text and save it in a .txt file on your desktop:</div>
-    <textarea id="export-area" style="width:100%;height:80px;font-size:11px;font-family:monospace;border:1px solid #ddd;border-radius:6px;padding:6px;background:#f9f9f9;color:#333;" readonly></textarea>
-    <button class="tool-btn import-btn" style="margin-top:8px;" onclick="copyExport()">Copy to clipboard</button>
-    <span id="copy-notice" style="font-size:11px;color:#3C3489;margin-left:8px;display:none;">Copied!</span>
-  </div>
-</div>
-
-<div class="sheet view-mode" id="sheet">
-  <div class="char-number" id="d-number">01</div>
-  <div class="top-label">Character</div>
-
-  <div class="display">
-    <div class="name-jp-display" id="d-namejp">ティリー</div>
-    <div class="name-en-display" id="d-nameen">Tilly</div>
-    <div class="title-display" id="d-title">Eustace's beloved child</div>
-    <div id="d-arcana-row" style="display:flex;align-items:baseline;gap:8px;margin-bottom:0.5rem;padding:8px 0 0;">
-      <span id="d-arcana-label" style="font-family:sans-serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#aaa;min-width:90px;flex-shrink:0;"></span>
-      <span id="d-arcana-value" style="font-family:'Cinzel',serif;font-size:16px;color:#3C3489;letter-spacing:0.05em;"></span>
-    </div>
-    <div id="d-step-row" style="display:flex;align-items:baseline;gap:8px;margin-bottom:1rem;padding:4px 0 8px;border-bottom:1px solid #eee;">
-      <span id="d-step-label" style="font-family:sans-serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#aaa;min-width:90px;flex-shrink:0;"></span>
-      <span id="d-step-value" style="font-family:'Cinzel',serif;font-size:15px;color:#555;letter-spacing:0.05em;"></span>
-    </div>
-  </div>
-  <div class="editable" style="margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid #eee;">
-    <div class="field-row"><span class="field-label">Char no.</span><input type="text" id="e-number" value="01" style="width:60px;"></div>
-    <div class="field-row"><span class="field-label">Name (JP)</span><input type="text" id="e-namejp" value="ティリー"></div>
-    <div class="field-row"><span class="field-label">Name (EN)</span><input type="text" id="e-nameen" value="Tilly"></div>
-    <div class="field-row"><span class="field-label">Title</span><input type="text" id="e-title" value="Eustace's beloved child"></div>
-    <div class="field-row">
-      <input type="text" id="e-arcana-label" value="Arcana" style="width:90px;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;flex-shrink:0;" oninput="arcanaLabel=this.value;updateArcana();">
-      <input type="text" id="e-arcana-value" value="" placeholder="e.g. The Star" oninput="arcanaValue=this.value;updateArcana();" style="flex:1;">
-    </div>
-    <div class="field-row">
-      <input type="text" id="e-step-label" value="Step" style="width:90px;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;flex-shrink:0;" oninput="stepLabel=this.value;updateStep();">
-      <input type="text" id="e-step-value" value="" placeholder="e.g. Candlebearer" oninput="stepValue=this.value;updateStep();" style="flex:1;">
-    </div>
+<!-- ═══════════════════════════════════ SIDEBAR ══════════════════════════════════ -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="eyebrow">World Wiki</div>
+    <div class="title">Tilly's World</div>
   </div>
 
-  <div class="two-col">
-    <div>
-      <div id="basic-info-view" class="display"></div>
-      <div id="basic-info-edit" class="editable" style="margin-bottom:8px;"></div>
-      <button class="add-btn editable" onclick="addBasicInfo()">+ Add info field</button>
-      <hr class="div">
+  <div class="nav-group">
+    <div class="nav-group-label">Characters</div>
+    <div class="nav-item active" onclick="go('characters')"><span class="nav-dot"></span>All Characters</div>
+    <div class="nav-item" onclick="go('char-tilly')"><span class="nav-dot"></span>Tilly</div>
+    <div class="nav-item" onclick="go('char-eustace')"><span class="nav-dot"></span>Eustace</div>
+  </div>
 
-      <div class="section-label">Karma scale</div>
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
-        <span style="font-size:13px;color:#666;">Alignment value <span class="alignment-badge">karma <span id="d-karma-badge">+425</span></span></span>
-        <span class="karma-value" id="d-karma-val" style="color:#185FA5;">+425</span>
-      </div>
-      <div class="editable" style="margin-bottom:6px;">
-        <input type="range" min="-500" max="500" step="1" id="e-karma" value="425" style="width:100%;" oninput="updateKarma(parseInt(this.value))">
-      </div>
-      <div class="karma-track">
-        <div class="karma-evil" id="karma-evil" style="width:7.5%;"></div>
-        <div class="karma-good" id="karma-good" style="width:92.5%;"></div>
-      </div>
-      <div class="karma-labels">
-        <span class="karma-label-evil">Supreme Evil −500</span>
-        <span class="karma-label-good">Supreme Good +500</span>
-      </div>
+  <div class="nav-group">
+    <div class="nav-group-label">The World</div>
+    <div class="nav-item" onclick="go('world')"><span class="nav-dot"></span>Overview</div>
+    <div class="nav-item" onclick="go('magic')"><span class="nav-dot"></span>Magic System</div>
+    <div class="nav-item" onclick="go('fairies')"><span class="nav-dot"></span>Fairies &amp; Towers</div>
+    <div class="nav-item" onclick="go('artifacts')"><span class="nav-dot"></span>Living Artifacts</div>
+    <div class="nav-item" onclick="go('sovereignties')"><span class="nav-dot"></span>Sovereignties</div>
+  </div>
 
-      <hr class="div">
+  <div class="nav-group">
+    <div class="nav-group-label">Story</div>
+    <div class="nav-item" onclick="go('chapters')"><span class="nav-dot"></span>Chapters</div>
+  </div>
 
-      <div id="custom-sections-view" class="display"></div>
-      <div id="custom-sections-edit" class="editable"></div>
-      <button class="add-btn editable" onclick="addCustomSection()">+ Add Category Tab</button>
+  <div class="nav-group">
+    <div class="nav-group-label">Reference</div>
+    <div class="nav-item" onclick="go('calendar')"><span class="nav-dot"></span>Calendar &amp; Currency</div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════ MAIN ═════════════════════════════════════ -->
+<main class="main">
+
+  <!-- ALL CHARACTERS -->
+  <section class="page active" id="page-characters">
+    <div class="page-head">
+      <h1>Characters</h1>
+      <p>All known characters in Tilly's World</p>
+    </div>
+    <div class="char-grid" id="char-grid"></div>
+  </section>
+
+  <!-- CHARACTER SHEETS (one per character, rendered by JS) -->
+  <section class="page" id="page-char-tilly"><div class="char-sheet-wrap"></div></section>
+  <section class="page" id="page-char-eustace"><div class="char-sheet-wrap"></div></section>
+
+  <!-- WORLD OVERVIEW -->
+  <section class="page" id="page-world">
+    <div class="page-head">
+      <h1>The World</h1>
+      <p>Spring of the 993rd Free Year (993 A.G.)</p>
     </div>
 
-    <div>
-      <div class="art-frame">
-        <div class="art-placeholder" id="art-placeholder" style="display:none;">
-          <span style="font-size:28px;opacity:0.3;">🖼</span>
-          <span>Paste an image URL in edit mode</span>
+    <div class="lore-block">
+      <div class="lore-block-title">History</div>
+      <div class="card">
+        <p>Long ago, God controlled the vast majority of magic and used it to set predetermined fates for all living things. The King of Humanity, the Fairy Paragon, and the largest Fragment of God rebelled and killed him. This freed magic for everyone — but chaos followed.</p>
+        <p>The three rebels reconvened and imposed limits on magic through an agreement known as <strong>The Binding</strong>. The world is set in a medieval-early renaissance era. The Free Calendar counts from the death of God.</p>
+      </div>
+    </div>
+
+    <div class="lore-block">
+      <div class="lore-block-title">The Mother Goddess</div>
+      <div class="card">
+        <p>The Mother Goddess predates God entirely. Fairies are her children. She allied with the King of Humanity and the Fairy Paragon to defeat God, but spent everything in the process and fell into a deep sleep.</p>
+        <p>As part of their agreement she still sends her essence into the world while sleeping — this manifests as <strong>Fairy Fountains</strong>, which appear randomly throughout the world. Anything submerged in a Fairy Fountain gains magical properties. They are essentially her dreams bleeding through into the waking world.</p>
+        <p>Most humans don't know she exists. Even most Fairies have forgotten her. Only the most ancient Fairies still remember her name. The wealthy hoard Fairy Fountains, draining them for personal use. Finding one before the rich claim it is nearly impossible.</p>
+      </div>
+    </div>
+
+    <div class="lore-block">
+      <div class="lore-block-title">Notable Locations</div>
+      <div class="card">
+        <h3>Alderrdeen Township</h3>
+        <p>The city where the story begins. A typical city — cobblestone streets, candlelight, merchant stalls, nobles who hoard Fairy Fountains. Home to Eustace's Oddities.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAGIC SYSTEM -->
+  <section class="page" id="page-magic">
+    <div class="page-head">
+      <h1>Magic System</h1>
+      <p>Magic directs — it does not create</p>
+    </div>
+
+    <div class="lore-block">
+      <div class="lore-block-title">The Principle</div>
+      <div class="card">
+        <p>Magic <em>directs</em> — it does not create. You cannot conjure something from nothing. You redirect forces that already exist in the world.</p>
+        <p>Magic is performed by drawing <strong>sigil circles</strong>. Each sigil represents a fundamental force. Combinations of sigils create instructions. The more complex the effect, the more sigils required and the more precision demanded.</p>
+        <p>Regular magic takes years of practice to master. Big spells — battlefield fog, minor earthquakes — can take weeks to prepare. Magic is used mostly for small daily tasks. To make fire from nothing requires combining Air, Motion/Force, Heat, Direction, and Containment sigils — five sigils combined correctly just to produce something resembling a fireball.</p>
+      </div>
+    </div>
+
+    <div class="lore-block">
+      <div class="lore-block-title">Fundamental Forces (Sigils)</div>
+      <div class="sigil-grid">
+        <div class="sigil-card">Air</div>
+        <div class="sigil-card">Water</div>
+        <div class="sigil-card">Earth</div>
+        <div class="sigil-card">Heat</div>
+        <div class="sigil-card">Motion / Force</div>
+        <div class="sigil-card">Structural</div>
+        <div class="sigil-card">Botanical</div>
+        <div class="sigil-card">Sensory</div>
+        <div class="sigil-card">Vital</div>
+      </div>
+    </div>
+
+    <div class="lore-block">
+      <div class="lore-block-title">Schools of Magic</div>
+      <div class="card">
+        <ul>
+          <li><strong>Elemental Direction</strong> — air, water, earth, fire</li>
+          <li><strong>Kinetics</strong> — force, motion, speed</li>
+          <li><strong>Structural</strong> — reinforcement, reduction, expansion</li>
+          <li><strong>Botanical</strong> — growth and decay</li>
+          <li><strong>Sensory</strong> — light, sound, temperature</li>
+          <li><strong>Vital</strong> — the body's own energy, heavily restricted</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="lore-block">
+      <div class="lore-block-title">The Binding &amp; Forbidden Magic</div>
+      <div class="card">
+        <p>After God's death, the three rebels imposed <strong>The Binding</strong> — limiting magic to sanctioned, caged use. Forbidden magic draws from the raw power released when God fell. It is faster, stronger, and requires no years of practice.</p>
+        <p>The moment someone uses forbidden magic, every Fairy in the vicinity feels it. They come. They punish — killing some, turning others into monsters. No mercy. No context. No exceptions.</p>
+        <p>Most people don't know the difference between regular magic and forbidden magic. They just know that dark magic brings bad omens and terrible things follow.</p>
+        <p><strong>Forbidden mages</strong> have survived by studying Fairy behavior for centuries. They have mapped territories, travel speeds, and patterns. They know which Fairies can be outrun and which cannot. This knowledge is passed down through their hidden community and is more precious than any spell. They also hide behind fragments of the Skeleton Key, which drowns out the signal of their magic entirely.</p>
+      </div>
+    </div>
+
+    <div class="lore-block">
+      <div class="lore-block-title">Arcanists</div>
+      <div class="card">
+        <p>Magic users who have chosen a <strong>Sovereignty</strong> — a discipline that shapes both their abilities and their soul over time — are called <strong>Arcanists</strong>. Most ordinary people don't know the word or what it means.</p>
+        <p>Each Sovereignty has <strong>10 Steps plus a Step 0</strong>, numbered from Step 0 (the beginning) to Step X (nearly unreachable pinnacle). Sanctioned practitioners change slowly as they walk their road. Forbidden magic practitioners change much faster and far more dangerously.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAIRIES & TOWERS -->
+  <section class="page" id="page-fairies">
+    <div class="page-head">
+      <h1>Fairies &amp; Towers</h1>
+      <p>Children of the Mother Goddess</p>
+    </div>
+
+    <div class="lore-block">
+      <div class="lore-block-title">About Fairies</div>
+      <div class="card">
+        <p>Fairies are the Mother Goddess's children — biologically identical regardless of type, but culturally divided. They can only use large amounts of magic when channeling it through a human.</p>
+        <p>Fairies are deeply racist toward one another despite being biologically the same. Many have forgotten the Mother Goddess and built their own identities and hierarchies in her absence.</p>
+        <p>Fairies manifest in different forms when enforcing The Binding. Some come as storms. Some appear as humans. Others are shapeless, horrifying monsters.</p>
+      </div>
+    </div>
+
+    <div class="lore-block">
+      <div class="lore-block-title">Types of Fairies</div>
+      <div class="fairy-grid">
+        <div class="fairy-card">
+          <h3>Djinn</h3>
+          <p>Reside in Fairy Towers. Anyone who clears a tower to the top claims the Djinn's treasure and a piece of their power, usually in the form of a Living Artifact.</p>
         </div>
-        <img class="art-img" id="art-img" src="https://i.imgur.com/RqDz8JN.jpeg" alt="Character art" style="display:block;" onerror="this.style.display='none';document.getElementById('art-placeholder').style.display='flex';">
-      </div>
-      <div class="editable" style="margin-top:8px;">
-        <input type="text" id="e-imgurl" value="https://i.imgur.com/RqDz8JN.jpeg" placeholder="https://i.imgur.com/..." oninput="updateImage(this.value)">
-        <div class="url-hint">Paste a direct image URL</div>
-      </div>
-      <div style="margin-top:10px;">
-        <div class="display" id="d-appearance" style="font-size:11px;font-family:sans-serif;color:#aaa;text-align:center;line-height:1.6;">Short shaggy black hair<br>Soft dark eyes<br>Worn vest · linen shirt · old boots</div>
-        <div class="editable"><textarea id="e-appearance" style="font-size:11px;">Short shaggy black hair
-Soft dark eyes
-Worn vest · linen shirt · old boots</textarea></div>
+        <div class="fairy-card">
+          <h3>Daemons</h3>
+          <p>Offer power through deals, taking body parts, memories, emotions, firstborn children, or other personal costs in exchange.</p>
+        </div>
+        <div class="fairy-card">
+          <h3>Angels</h3>
+          <p>Give power only to their most devout followers.</p>
+        </div>
+        <div class="fairy-card">
+          <h3>Others (In Development)</h3>
+          <p>Asura, Devas, Nymphs, Spirits, Wraiths, Shades. Each gives magic away differently. Some are malicious.</p>
+        </div>
       </div>
     </div>
-  </div>
 
-  <hr class="div">
+    <div class="lore-block">
+      <div class="lore-block-title">Fairy Towers</div>
+      <div class="card">
+        <p>Enormously difficult to clear. Even kings wouldn't attempt them — the cost in lives would be catastrophic. This makes them the great equalizer: no amount of wealth or power can substitute for the skill and luck required to reach the top alone. The people who clear them tend to be exceptional individuals from any walk of life.</p>
+        <p>Each tower is different. Each Djinn at the top is different. The Living Artifact rewarded varies by tower.</p>
+      </div>
+    </div>
+  </section>
 
-  <div style="margin-bottom:0.7rem;">
-    <div class="section-label">Character</div>
-    <p class="trait-block display" id="d-quote">Tilly is twelve years old and has already learned that the world is not always kind. Raised above a cluttered antique shop in the city Alderrdeen by her grandfather, she has a gift for knowing exactly what something is worth, and exactly what someone can pay. She is sharper than she looks, and kinder than she has any reason to be. She asks for very little in return for either. She loves deeply and without condition, and it has never once occurred to her that this might someday cost her something.</p>
-    <div class="editable"><textarea id="e-quote">Tilly is twelve years old and has already learned that the world is not always kind. Raised above a cluttered antique shop in the city Alderrdeen by her grandfather, she has a gift for knowing exactly what something is worth, and exactly what someone can pay. She is sharper than she looks, and kinder than she has any reason to be. She asks for very little in return for either. She loves deeply and without condition, and it has never once occurred to her that this might someday cost her something.</textarea></div>
-  </div>
+  <!-- LIVING ARTIFACTS -->
+  <section class="page" id="page-artifacts">
+    <div class="page-head">
+      <h1>Living Artifacts</h1>
+      <p>Objects that contain a Fairy and hold one spell or power</p>
+    </div>
 
-  <hr class="div">
+    <div class="card">
+      <p>Living Artifacts are objects that contain a Fairy and hold one spell or power within them. Clearing a Fairy Tower earns one. They are extraordinarily rare and valuable.</p>
+    </div>
 
-  <div class="section-label">Status</div>
-  <div id="stats-view"></div>
-  <div id="stats-edit" class="editable"></div>
-  <button class="add-btn editable" onclick="addStat()">+ Add stat</button>
+    <div class="card">
+      <h2>Eustace's Sword</h2>
+      <p>Contained a fire Djinn. Every swing released flame. Eustace earned it in his youth clearing a tower. He kept it secret and spent decades running a quiet shop raising Tilly. He spent it protecting her at the end of Chapter I.</p>
+    </div>
 
-  <hr class="div">
+    <div class="card">
+      <h2>The Skeleton Key</h2>
+      <p>The finger of the King of Humanity, who threw himself into a Fairy Fountain and made every part of his body holy. The Key allows travel through unseen doorways — any door leads to any other door, though unpredictably. The longer it is used the more it infects the user's body, so it must be used selectively. It is fused to Tilly's right hand.</p>
+      <h3>Deeper Significance</h3>
+      <p>The King of Humanity's body was scattered as Living Artifacts after his death. Each piece resonates loudly with Fairies — not as a threat, but as something sacred. The Key sings to Fairies like a beacon of something holy and ancient.</p>
+      <p>This has an unintended effect: <strong>it drowns out the signal of forbidden magic being used nearby.</strong> Whoever holds a fragment of the King's body can use forbidden magic without Fairy detection.</p>
+      <p>The Kingdom holds half the fragments. They do not know about the masking property — they believe the fragments are simply powerful relics. Forbidden mages hold the other half. They know exactly what the fragments do.</p>
+      <p>Tilly holds one piece that neither side has managed to acquire. She is now caught between two forces who want her — for different reasons, neither of which they will tell her plainly. The forbidden mages court her patiently. They come to her in dreams. They save her at convenient moments. They are patient because they have survived centuries of hiding and know how to want someone rather than demand them.</p>
+    </div>
+  </section>
 
-  <div class="footer-row">
-    <span class="display" id="d-footer1">Alderrdeen Township</span>
-    <span class="display" id="d-footer2">993 A.G. — Springtide</span>
-    <input type="text" id="e-footer1" class="editable" value="Alderrdeen Township" style="width:48%;">
-    <input type="text" id="e-footer2" class="editable" value="993 A.G. — Springtide" style="width:48%;">
-  </div>
-</div>
+  <!-- SOVEREIGNTIES -->
+  <section class="page" id="page-sovereignties">
+    <div class="page-head">
+      <h1>The 22 Sovereignties</h1>
+      <p>Named after the 22 Major Arcana of the Tarot. Each has 10 Steps plus a Step 0.</p>
+    </div>
+    <div class="sov-grid" id="sov-grid"></div>
+  </section>
+
+  <!-- THE STAR — FULL DETAIL -->
+  <section class="page" id="page-the-star">
+    <div class="back-btn" onclick="go('sovereignties')">← Back to Sovereignties</div>
+    <div class="page-head">
+      <h1>The Star</h1>
+      <p>Sovereignty of Hope · XVII of the Major Arcana</p>
+    </div>
+    <div class="step-list" id="star-steps"></div>
+  </section>
+
+  <!-- CHAPTERS -->
+  <section class="page" id="page-chapters">
+    <div class="page-head">
+      <h1>Chapters</h1>
+      <p>Spring of the 993rd Free Year</p>
+    </div>
+    <div class="chapter-card">
+      <div class="chapter-eyebrow">Chapter I</div>
+      <div class="chapter-title">The Skeleton Key</div>
+      <div class="chapter-body">
+        <p>Tilly works the counter at Eustace's Oddities. A worn-down adventurer comes in looking at swords. She reads him immediately — no money, genuine need — and sells him one for practically nothing. Then a noble walks in. Same product. She sells it for ten times the price without blinking.</p>
+        <p>She visits Eustace, who is bedridden. He coughs. She decides to find a Fairy Fountain to enchant his medicine and heal him.</p>
+        <p>She searches the outskirts of Alderrdeen all day. Beautiful landscapes. No fountain. The wealthy have claimed them all.</p>
+        <p>Returning home hungry, she steals bread from a market stall. Guards give chase. She rounds a corner into an alley and nearly steps on a dying man. He begs her not to give him away. She throws a tarp over him and acts casual.</p>
+        <p>Two guard groups converge — one chasing a bread thief, one hunting someone who escaped with a Living Artifact. The second group waves the first away. Tilly is alone with the dying man.</p>
+        <p>He presses something into her hand — a long pale bone-like key. It fuses to her finger before she can react. He tells her to run. It doesn't matter where. Just don't let it fall into the wrong hands. Then he is gone.</p>
+        <p>Tilly returns home. She has only moments with Eustace before guards arrive demanding the artifact. It won't leave her hand. They decide to take the finger. Eustace rises from his bed, unwraps his Living Artifact, and the sword erupts in flame.</p>
+        <p><em>"You will do no such thing."</em></p>
+        <p>He holds them off. Tilly is pushed through the back door. Eustace throws his sword through just before it closes. The guards who follow find themselves in the back alleyway. Tilly finds herself somewhere else entirely.</p>
+        <p>A snowfield. Silent. Cold. No city. No guards. No grandfather.</p>
+        <p>Just Tilly, alone, with a dying flaming sword in the snow and a dead king's finger fused to her hand.</p>
+        <p>This is when she becomes a <strong>Candlebearer.</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CALENDAR & CURRENCY -->
+  <section class="page" id="page-calendar">
+    <div class="page-head">
+      <h1>Calendar &amp; Currency</h1>
+      <p>The Free Calendar counts from the death of God</p>
+    </div>
+
+    <div class="lore-block">
+      <div class="lore-block-title">The Free Calendar</div>
+      <div class="card">
+        <p>The calendar counts from the death of God — A.G. (Anno God's-death). The current date is <strong>Spring of the 993rd Free Year (993 A.G. — Springtide)</strong>.</p>
+        <h3>Seasons</h3>
+        <ul>
+          <li>Springtide</li>
+          <li>Highsun</li>
+          <li>Dimfall</li>
+          <li>Deeprest</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="lore-block">
+      <div class="lore-block-title">Currency</div>
+      <div class="card">
+        <table class="currency-table">
+          <thead><tr><th>Coin</th><th>Material</th><th>Exchange</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Aurem</strong></td><td>Gold</td><td>Highest denomination</td></tr>
+            <tr><td><strong>Sonen</strong></td><td>Silver</td><td>20 per Aurem</td></tr>
+            <tr><td><strong>Trin</strong></td><td>Copper</td><td>100 per Sonen · 2000 per Aurem</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</main>
 
 <script>
-let basicInfo=[
-  {label:'Age',value:'12'},
-  {label:'Race',value:'Human'},
-  {label:'Origin',value:'Orphaned from a young age, Tilly was raised in an antique shop by a local man who took her in.'},
-  {label:'Guardian',value:'Eustace (Grandfather)'},
-  {label:'Residence',value:"Eustace's Oddities"},
-  {label:'Alignment',value:'Chaotic Good'}
+// ╔═══════════════════════════════════════════════════════════════╗
+// ║  CHARACTER DATA                                               ║
+// ║  To add a new character:                                      ║
+// ║  1. Add an object to the CHARACTERS array below              ║
+// ║  2. Add a nav-item in the sidebar HTML pointing to char-{id}  ║
+// ║  3. Add a <section> with id="page-char-{id}"> in the HTML    ║
+// ╚═══════════════════════════════════════════════════════════════╝
+const CHARACTERS = [
+  {
+    id: "tilly",
+    name: "Tilly",
+    nameJp: "ティリー",
+    age: 12,
+    hair: "Short, shaggy, dark auburn",
+    eyes: "Warm amber",
+    appearance: "Small for her age, easy to underestimate. Freckles across her nose and cheeks. Worn vest, linen shirt, old boots.",
+    alignment: "Chaotic Good",
+    karma: 425,
+    karmaMax: 1000,
+    sovereignty: "The Star — Sovereignty of Hope",
+    stepNum: 0,
+    stepName: "Candlebearer",
+    synopsis: `Tilly is twelve years old and has already learned that the world is not always kind. Raised above a cluttered antique shop in the city of Alderrdeen by her grandfather, she has a gift for knowing exactly what something is worth, and exactly what someone can pay. She is sharper than she looks, and kinder than she has any reason to be.
+
+She is not selfless. She is selfish in the most specific way — she cannot tolerate a world in which the people she loves are suffering. So she acts. Radically. Without asking permission from anyone, including herself.`,
+    stats: [
+      { name: "Kindness",    value: 88 },
+      { name: "Wit",         value: 64 },
+      { name: "Stubbornness",value: 91 },
+      { name: "Luck",        value: 49 },
+      { name: "Renown",      value: 1  },
+    ],
+    artifacts: ["The Skeleton Key (fused to right hand)", "Eustace's Sword (inherited)"],
+    items: ["4 Sonens", "7 Trins"],
+    quote: '"You will do no such thing."',
+    tags: ["Protagonist", "Arcanist", "Step 0 — Candlebearer"],
+  },
+  {
+    id: "eustace",
+    name: "Eustace",
+    nameJp: null,
+    age: null,
+    hair: null,
+    eyes: null,
+    appearance: null,
+    alignment: null,
+    karma: null,
+    karmaMax: null,
+    sovereignty: null,
+    stepNum: null,
+    stepName: null,
+    synopsis: `Tilly's adoptive grandfather. Ran a small antique shop called Eustace's Oddities in Alderrdeen Township. Bedridden and ill at the start of the story.
+
+In his youth he cleared a Fairy Tower and earned a Living Artifact — a sword containing a fire Djinn. He kept it secret and spent decades running a quiet shop raising Tilly. His final act was rising from his sickbed, drawing his sword, and holding off the guards long enough for Tilly to escape.`,
+    stats: [],
+    artifacts: ["Eustace's Sword (fire Djinn — spent)"],
+    items: [],
+    quote: '"You will do no such thing."',
+    tags: ["Grandfather", "Tower-Clearer", "Deceased"],
+    status: "Deceased — end of Chapter I",
+  },
 ];
-let stats=[
-  {name:'Kindness',val:88},{name:'Courage',val:80},{name:'Wit',val:64},
-  {name:'Stubbornness',val:91},{name:'Luck',val:49},{name:'Renown',val:1}
+
+// ╔═══════════════════════════════════════════════════════════════╗
+// ║  SOVEREIGNTY DATA                                             ║
+// ╚═══════════════════════════════════════════════════════════════╝
+const SOVEREIGNTIES = [
+  { num:"0",    card:"The Fool",         name:"Sovereignty of Wandering"   },
+  { num:"I",    card:"The Magician",     name:"Sovereignty of Direction"   },
+  { num:"II",   card:"The High Priestess",name:"Sovereignty of Secrets"   },
+  { num:"III",  card:"The Empress",      name:"Sovereignty of Growth"      },
+  { num:"IV",   card:"The Emperor",      name:"Sovereignty of Command"     },
+  { num:"V",    card:"The Hierophant",   name:"Sovereignty of Tradition"   },
+  { num:"VI",   card:"The Lovers",       name:"Sovereignty of Bonds"       },
+  { num:"VII",  card:"The Chariot",      name:"Sovereignty of Motion"      },
+  { num:"VIII", card:"Strength",         name:"Sovereignty of Force"       },
+  { num:"IX",   card:"The Hermit",       name:"Sovereignty of Isolation"   },
+  { num:"X",    card:"Wheel of Fortune", name:"Sovereignty of Luck"        },
+  { num:"XI",   card:"Justice",          name:"Sovereignty of Balance"     },
+  { num:"XII",  card:"The Hanged Man",   name:"Sovereignty of Sacrifice"   },
+  { num:"XIII", card:"Death",            name:"Sovereignty of Endings"     },
+  { num:"XIV",  card:"Temperance",       name:"Sovereignty of Restraint"   },
+  { num:"XV",   card:"The Devil",        name:"Sovereignty of Temptation"  },
+  { num:"XVI",  card:"The Tower",        name:"Sovereignty of Destruction" },
+  { num:"XVII", card:"The Star",         name:"Sovereignty of Hope", detail:"the-star", featured:true },
+  { num:"XVIII",card:"The Moon",         name:"Sovereignty of Illusion"    },
+  { num:"XIX",  card:"The Sun",          name:"Sovereignty of Radiance"    },
+  { num:"XX",   card:"Judgement",        name:"Sovereignty of Awakening"   },
+  { num:"XXI",  card:"The World",        name:"Sovereignty of Completion"  },
 ];
-let customSections=[
-  {title:'Items',items:[
-    {name:'4 Sonens',note:'(20 of these make up a single Aurem)'},
-    {name:'7 Trins',note:'(100 of these make up a single Sonen)'}
-  ]}
+
+// ╔═══════════════════════════════════════════════════════════════╗
+// ║  THE STAR — STEP DATA                                         ║
+// ╚═══════════════════════════════════════════════════════════════╝
+const STAR_STEPS = [
+  {
+    step:0, title:"Candlebearer",
+    color:"#94a3b8",
+    ability:"A faint warm light emanates from the Arcanist that wind and water cannot extinguish. Small radius. Always present. Can be dimmed by will. In complete darkness it's the difference between seeing and not seeing.",
+    downside:"They begin sleeping later than usual. Nothing dramatic yet."
+  },
+  {
+    step:1, title:"Omen-Reader",
+    color:"#86efac",
+    ability:"They begin noticing signs others miss. A fighter's weight shifting before they throw a punch. A mage's breath changing before they draw a sigil. They see it coming a half second before it arrives. In a brawl a half second is everything.",
+    downside:"They begin feeling the emotions of people around them without meaning to. Someone nearby is grieving and they feel it like pressure behind their eyes. They can't turn it off yet."
+  },
+  {
+    step:2, title:"Stargazer",
+    color:"#67e8f9",
+    ability:"Their light has developed an edge. They can focus it into a narrow beam — not enough to burn yet, but enough to blind someone momentarily. They can also project it as a short burst in all directions, disorienting multiple enemies at once. By studying the night sky for an hour they gain a vague sense of what tomorrow holds for themselves or someone nearby.",
+    downside:"They can no longer lie convincingly. Their light flickers almost imperceptibly when they say something untrue. Animals notice first. Then perceptive people."
+  },
+  {
+    step:3, title:"Fate-Charter",
+    color:"#a78bfa",
+    ability:"They begin to read the immediate future in combat with frightening accuracy. Not minutes ahead — seconds. The next blow. The next step. The next breath. They move through a fight like water finding its path, never quite where the attack lands. They aren't faster than their opponents. They simply aren't there when the hit arrives. They can also sense when someone nearby is at a turning point in their life — a decision that will matter.",
+    downside:"They are inexplicably drawn to people who are suffering. Strangers in pain find them. They cannot walk past someone in genuine despair without stopping. This is not a choice."
+  },
+  {
+    step:4, title:"Lodestar",
+    color:"#fbbf24",
+    ability:"They can now project their light as a physical force. A concentrated pulse that hits like a shove — enough to knock someone off their feet or send a weapon spinning out of a hand. It can be fired repeatedly but costs genuine effort. Too many in succession and they feel it in their bones. Lost things also find their way to them — a missing person wanders past them on the street, a stolen object turns up nearby.",
+    downside:"They stop being able to sustain hatred. They can be furious. Devastated. But hatred dissolves in them like salt in water."
+  },
+  {
+    step:5, title:"Scribe of Skies",
+    color:"#f97316",
+    ability:"Their body has begun to change. Bones subtly denser. Reflexes sharpened beyond normal human limits without any training to explain it. The road is rewriting them from the inside. They hit harder than they should for their size and recover from impacts faster than makes sense. They also always know the broad shape of fate moving around them — who is in danger, where hope is concentrated. Always on. Cannot be turned off.",
+    downside:"They stop needing to eat as much. A meal every few days sustains them. People who know them well begin to notice they never seem hungry."
+  },
+  {
+    step:6, title:"Astrologer of Ruin",
+    color:"#ef4444",
+    ability:"They can see the threads of fate connecting people in a fight. Who is about to make a fatal mistake. Where the turning point of the battle is. They only need to pull the right thread at the right moment and watch everything unravel. They can also hear wishes — not spoken ones, the ones people carry silently. With focus they can isolate a single person's deepest want.",
+    downside:"They begin to glow faintly in complete darkness. They cannot control it."
+  },
+  {
+    step:7, title:"Living Constellation",
+    color:"#ec4899",
+    ability:"Their light has become something altogether different. They can shape it into walls of blazing radiance that physical weapons cannot pass through. Beams that strike with the force of a battering ram. A corona of burning light around their body that makes close combat deeply unpleasant. Allies near them feel steadier and harder to break. Enemies feel watched from very far away and found wanting.",
+    downside:"Their tears are luminescent. They cannot hide grief. It literally shines out of them."
+  },
+  {
+    step:8, title:"Terror of the Void",
+    color:"#8b5cf6",
+    ability:"Once per fight they can stop time for a single breath. In that breath they can move, redirect, reposition, pull someone out of the path of something unsurvivable. When time resumes nobody saw them move. Their body now heals at a rate that is difficult to explain — cuts close within minutes, broken bones within hours. They are becoming very hard to kill.",
+    downside:"They have begun to forget small human things. The taste of their favourite food. The sound of a voice they loved. Small human details blur while cosmic ones sharpen."
+  },
+  {
+    step:9, title:"Sovereign of Hope",
+    color:"#3b82f6",
+    ability:"They are no longer entirely fighting with a body. They are fighting with a concept. Their strikes carry weight beyond physical force — a blow doesn't just break bone, it breaks something in the spirit of whoever receives it. Anyone who has truly given up and comes near them feels something shift — the genuine sense that one more try is worth it. No range limit. Cannot be resisted. It has ended sieges. Their light can be seen from miles away if fully released.",
+    downside:"They are no longer aging. They will outlive everyone they love unless something kills them first. They are beginning to understand what that means."
+  },
+  {
+    step:10, title:"The Star",
+    color:"#e2e8f0",
+    ability:"There are no reliable accounts of a Star in combat because nothing that has ever fought one has survived to describe it coherently. What fragments exist speak of light that rewrites what it touches. Of wounds that simply cease to exist. Of enemies who stopped fighting not because they were defeated but because in the presence of a Star the concept of fighting seemed very small and very far away. A Star does not win battles. A Star ends them.",
+    downside:"They are still here. Still themselves. But when they look at the people around them there is something in their eyes that wasn't there before. A distance. Not coldness. But they are seeing something the rest of the world cannot see yet. And sometimes when someone speaks to them there is a moment — just a breath — before they remember to respond like a person."
+  },
 ];
-let karmaVal=425;
-let arcanaLabel='Arcana';
-let arcanaValue='';
-let stepLabel='Step';
-let stepValue='';
 
-function escQ(str){return(str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+// ═══════════════════════════════════════════════════════════════
+// RENDERING
+// ═══════════════════════════════════════════════════════════════
 
-function renderBasicInfo(){
-  document.getElementById('basic-info-view').innerHTML=basicInfo.map(info=>`<div class="info-row"><span class="info-label">${info.label}</span><span class="info-value">${info.value}</span></div>`).join('');
-  document.getElementById('basic-info-edit').innerHTML=basicInfo.map((info,i)=>`<div class="field-row"><input type="text" value="${escQ(info.label)}" placeholder="Label" onchange="basicInfo[${i}].label=this.value;renderBasicInfo();" style="width:90px;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;flex-shrink:0;"><input type="text" value="${escQ(info.value)}" placeholder="Value" onchange="basicInfo[${i}].value=this.value;renderBasicInfo();" style="flex:1;"><button class="remove-btn" onclick="basicInfo.splice(${i},1);renderBasicInfo();">✕</button></div>`).join('');
-}
-function addBasicInfo(){basicInfo.push({label:'New Label',value:'New Value'});renderBasicInfo();}
-
-function renderCustomSections(){
-  document.getElementById('custom-sections-view').innerHTML=customSections.map(sec=>`<div style="margin-bottom:0.5rem;"><div class="section-label">${sec.title}</div>${sec.items.length===0?'<span class="empty-note">None</span>':sec.items.map(it=>`<span class="item-tag"><span style="color:#222;font-weight:500;">${it.name}</span>${it.note?`<span style="color:#aaa;font-size:11px;">· ${it.note}</span>`:''}</span>`).join('')}</div>`).join('');
-  document.getElementById('custom-sections-edit').innerHTML=customSections.map((sec,sIdx)=>`<div style="margin-bottom:16px;padding:12px;background:#f9f9f9;border-radius:10px;border:1px solid #eee;"><div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;"><span style="font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:0.1em;font-family:sans-serif;">Tab</span><input type="text" value="${escQ(sec.title)}" onchange="customSections[${sIdx}].title=this.value;renderCustomSections();" style="font-weight:bold;flex:1;"><button class="remove-btn" onclick="customSections.splice(${sIdx},1);renderCustomSections();">✕</button></div>${sec.items.map((it,iIdx)=>`<div class="item-row-edit" style="margin-bottom:6px;"><div style="flex:1;display:flex;flex-direction:column;gap:4px;"><input type="text" value="${escQ(it.name)}" onchange="customSections[${sIdx}].items[${iIdx}].name=this.value;renderCustomSections();"><input type="text" value="${escQ(it.note)}" onchange="customSections[${sIdx}].items[${iIdx}].note=this.value;renderCustomSections();" style="font-size:11px;" placeholder="Note (optional)"></div><button class="remove-btn" onclick="customSections[${sIdx}].items.splice(${iIdx},1);renderCustomSections();">✕</button></div>`).join('')}<button class="add-btn" style="margin-top:8px;" onclick="customSections[${sIdx}].items.push({name:'New entry',note:''});renderCustomSections();">+ Add to ${sec.title}</button></div>`).join('');
-}
-function addCustomSection(){customSections.push({title:'New Category',items:[]});renderCustomSections();}
-
-function renderStats(){
-  document.getElementById('stats-view').innerHTML=stats.map(function(s,i){
-    var raw = s.val;
-    var num = parseFloat(raw);
-    if(isNaN(num)) num = 0;
-    var fillPct = Math.min(num, 100);
-    return '<div class="stat-row-outer">' +
-      '<span class="stat-name-display">' + s.name + '</span>' +
-      '<div class="stat-bar-bg"><div class="stat-bar-fill" style="width:' + fillPct + '%"></div></div>' +
-      '<span class="stat-val-display">' + raw + '</span>' +
-      '</div>';
-  }).join('');
-  document.getElementById('stats-edit').innerHTML=stats.map((s,i)=>{
-    const numVal = isNaN(parseFloat(s.val)) ? 100 : Math.min(Math.max(parseFloat(s.val),0),100);
-    return `<div class="stat-row-edit">
-      <input type="text" value="${escQ(s.name)}" onchange="stats[${i}].name=this.value;renderStats();" style="width:110px;flex-shrink:0;">
-      <input type="range" min="0" max="100" step="1" value="${numVal}" oninput="stats[${i}].val=this.value;this.nextElementSibling.value=this.value;renderStats();" style="flex:1;min-width:60px;">
-      <input type="text" value="${escQ(String(s.val))}" onchange="stats[${i}].val=this.value;renderStats();" style="width:52px;flex-shrink:0;text-align:center;" placeholder="0-∞">
-      <button class="remove-btn" onclick="stats.splice(${i},1);renderStats();">✕</button>
-    </div>`;
-  }).join('');
-}
-function addStat(){stats.push({name:'New stat',val:50});renderStats();}
-
-function updateKarma(v){
-  karmaVal=v;
-  const p=((v+500)/1000)*100;
-  document.getElementById('karma-evil').style.width=(100-p)+'%';
-  document.getElementById('karma-good').style.width=p+'%';
-  const s=v>=0?'+':'';
-  document.getElementById('d-karma-val').textContent=s+v;
-  document.getElementById('d-karma-badge').textContent=s+v;
-  document.getElementById('d-karma-val').style.color=v>=0?'#185FA5':'#A32D2D';
+function statBar(s) {
+  const pct = Math.min((s.value / 100) * 100, 100);
+  const over = s.value > 100;
+  return `<div class="stat-row">
+    <div class="stat-label">${s.name}</div>
+    <div class="stat-bar-bg"><div class="stat-bar-fill${over?' gold':''}" style="width:${pct}%"></div></div>
+    <div class="stat-val">${s.value}</div>
+  </div>`;
 }
 
-function updateImage(url){
-  const img=document.getElementById('art-img');
-  const ph=document.getElementById('art-placeholder');
-  if(url&&url.trim()){img.src=url.trim();img.style.display='block';ph.style.display='none';img.onerror=()=>{img.style.display='none';ph.style.display='flex';};}
-  else{img.style.display='none';ph.style.display='flex';}
+function karmaBar(karma, max) {
+  const pct = Math.min((karma / max) * 100, 100);
+  return `<div class="karma-wrap">
+    <div class="karma-labels"><span>Karma</span><span></span></div>
+    <div class="karma-bar-bg"><div class="karma-bar-fill" style="width:${pct}%"></div></div>
+    <div class="karma-val">+${karma}</div>
+  </div>`;
 }
 
-function collectState(){
-  return{
-    number:document.getElementById('e-number').value,
-    namejp:document.getElementById('e-namejp').value,
-    nameen:document.getElementById('e-nameen').value,
-    title:document.getElementById('e-title').value,
-    quote:document.getElementById('e-quote').value,
-    footer1:document.getElementById('e-footer1').value,
-    footer2:document.getElementById('e-footer2').value,
-    appearance:document.getElementById('e-appearance').value,
-    imgUrl:document.getElementById('e-imgurl').value,
-    karma:karmaVal,
-    basicInfo:JSON.parse(JSON.stringify(basicInfo)),
-    stats:JSON.parse(JSON.stringify(stats)),
-    customSections:JSON.parse(JSON.stringify(customSections))
-  };
+function buildCharSheet(c) {
+  return `<div class="char-sheet">
+    ${c.nameJp ? `<div class="char-name-jp">${c.nameJp}</div>` : ''}
+    <div class="char-name">${c.name}</div>
+    <div class="char-role">${c.sovereignty || c.status || ''}</div>
+
+    <div class="char-synopsis">${c.synopsis.replace(/\n\n/g,'</p><p>')}</div>
+
+    ${c.age || c.hair ? `<div class="char-fields">
+      ${c.age ? `<div class="char-field"><label>Age</label><span>${c.age}</span></div>` : ''}
+      ${c.alignment ? `<div class="char-field"><label>Alignment</label><span>${c.alignment}</span></div>` : ''}
+      ${c.hair ? `<div class="char-field"><label>Hair</label><span>${c.hair}</span></div>` : ''}
+      ${c.eyes ? `<div class="char-field"><label>Eyes</label><span>${c.eyes}</span></div>` : ''}
+      ${c.appearance ? `<div class="char-field full"><label>Appearance</label><span>${c.appearance}</span></div>` : ''}
+    </div>` : ''}
+
+    ${c.sovereignty ? `<div><span class="step-badge">${c.sovereignty}<span class="sep"> · </span>Step ${c.stepNum} — ${c.stepName}</span></div>` : ''}
+
+    ${c.stats.length ? `<div class="stats-section" style="margin-top:1rem">
+      <div class="tag-row-label" style="margin-bottom:8px">Stats</div>
+      ${c.stats.map(statBar).join('')}
+    </div>` : ''}
+
+    ${c.karma !== null && c.karma !== undefined ? karmaBar(c.karma, c.karmaMax) : ''}
+
+    ${c.artifacts.length ? `<div class="tag-row">
+      <div class="tag-row-label">Living Artifacts</div>
+      ${c.artifacts.map(a=>`<span class="tag tag-artifact">${a}</span>`).join('')}
+    </div>` : ''}
+
+    ${c.items.length ? `<div class="tag-row">
+      <div class="tag-row-label">Items</div>
+      ${c.items.map(i=>`<span class="tag tag-item">${i}</span>`).join('')}
+    </div>` : ''}
+
+    ${c.quote ? `<div class="char-quote">${c.quote}</div>` : ''}
+  </div>`;
 }
 
-function applyState(state){
-  document.getElementById('e-number').value=state.number||'01';
-  document.getElementById('e-namejp').value=state.namejp||'';
-  document.getElementById('e-nameen').value=state.nameen||'';
-  document.getElementById('e-title').value=state.title||'';
-  document.getElementById('e-quote').value=state.quote||'';
-  document.getElementById('e-footer1').value=state.footer1||'';
-  document.getElementById('e-footer2').value=state.footer2||'';
-  document.getElementById('e-appearance').value=state.appearance||'';
-  document.getElementById('e-imgurl').value=state.imgUrl||'';
-  if(state.imgUrl) updateImage(state.imgUrl);
-  basicInfo=state.basicInfo||[];
-  stats=state.stats||[];
-  customSections=state.customSections||[];
-  karmaVal=state.karma||0;
-  document.getElementById('e-karma').value=karmaVal;
-  updateKarma(karmaVal);
-  renderBasicInfo();
-  renderStats();
-  renderCustomSections();
-  applyEdits();
+function initCharGrid() {
+  document.getElementById('char-grid').innerHTML = CHARACTERS.map(c => `
+    <div class="char-thumb" onclick="go('char-${c.id}')">
+      <div class="char-thumb-name">${c.name}</div>
+      <div class="char-thumb-sub">${c.sovereignty || c.status || ''}</div>
+      <div class="char-thumb-tags">${(c.tags||[]).map(t=>`<span class="char-thumb-tag">${t}</span>`).join('')}</div>
+    </div>`).join('');
 }
 
-function doExport(){
-  const state=collectState();
-  const text=JSON.stringify(state);
-  document.getElementById('export-area').value=text;
-  document.getElementById('export-panel').style.display='block';
-  document.getElementById('import-panel').style.display='none';
-  document.getElementById('export-area').select();
+function initSovGrid() {
+  document.getElementById('sov-grid').innerHTML = SOVEREIGNTIES.map(s => `
+    <div class="sov-card${s.featured?' featured':''}${s.detail?' has-detail':''}"
+         ${s.detail ? `onclick="go('${s.detail}')"` : ''}>
+      <div class="sov-num">${s.num}</div>
+      <div class="sov-card-name">${s.card}</div>
+      <div class="sov-card-sov">${s.name}</div>
+      ${s.detail ? `<div class="sov-link">Full detail →</div>` : ''}
+    </div>`).join('');
 }
 
-function copyExport(){
-  const area=document.getElementById('export-area');
-  area.select();
-  document.execCommand('copy');
-  const n=document.getElementById('copy-notice');
-  n.style.display='inline';
-  setTimeout(()=>n.style.display='none',2000);
+function initStarSteps() {
+  document.getElementById('star-steps').innerHTML = STAR_STEPS.map(s => `
+    <div class="step-card" style="border-left-color:${s.color}">
+      <div class="step-card-head">
+        <span class="step-num-label">Step ${s.step === 10 ? 'X' : s.step}</span>
+        <span class="step-title">${s.title}</span>
+      </div>
+      <div class="ability-label">Ability</div>
+      <div class="step-text">${s.ability}</div>
+      <div class="downside-label">Downside</div>
+      <div class="step-text">${s.downside}</div>
+    </div>`).join('');
 }
 
-function toggleImport(){
-  const p=document.getElementById('import-panel');
-  p.style.display=p.style.display==='none'?'block':'none';
-  document.getElementById('export-panel').style.display='none';
-}
+// ═══════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+function go(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById('page-' + pageId);
+  if (!el) return;
+  el.classList.add('active');
 
-function doImport(){
-  const text=document.getElementById('import-area').value.trim();
-  try{
-    const state=JSON.parse(text);
-    applyState(state);
-    document.getElementById('import-panel').style.display='none';
-    document.getElementById('import-area').value='';
-    showNotice('Loaded successfully!');
-  }catch(e){
-    showNotice('Could not read save — make sure you pasted the full text!');
+  // Render character sheet on first visit
+  if (pageId.startsWith('char-')) {
+    const charId = pageId.slice(5);
+    const wrap = el.querySelector('.char-sheet-wrap');
+    if (wrap && !wrap.dataset.rendered) {
+      const char = CHARACTERS.find(c => c.id === charId);
+      if (char) { wrap.innerHTML = buildCharSheet(char); wrap.dataset.rendered = '1'; }
+    }
   }
-}
 
-function showNotice(msg){
-  const n=document.getElementById('notice');
-  n.textContent=msg;
-  n.style.display='inline-block';
-  setTimeout(()=>n.style.display='none',3000);
-}
-
-function updateArcana(){
-  const label = document.getElementById('e-arcana-label');
-  const value = document.getElementById('e-arcana-value');
-  const dLabel = document.getElementById('d-arcana-label');
-  const dValue = document.getElementById('d-arcana-value');
-  const row = document.getElementById('d-arcana-row');
-  if(label) arcanaLabel = label.value;
-  if(value) arcanaValue = value.value;
-  if(dLabel) dLabel.textContent = arcanaLabel;
-  if(dValue) dValue.textContent = arcanaValue;
-  if(row) row.style.display = arcanaValue ? 'flex' : 'none';
-}
-function updateStep(){
-  const label = document.getElementById('e-step-label');
-  const value = document.getElementById('e-step-value');
-  const dLabel = document.getElementById('d-step-label');
-  const dValue = document.getElementById('d-step-value');
-  const row = document.getElementById('d-step-row');
-  if(label) stepLabel = label.value;
-  if(value) stepValue = value.value;
-  if(dLabel) dLabel.textContent = stepLabel;
-  if(dValue) dValue.textContent = stepValue;
-  if(row) row.style.display = stepValue ? 'flex' : 'none';
-}
-function applyEdits(){
-  updateArcana();
-  updateStep();
-  [['e-namejp','d-namejp'],['e-nameen','d-nameen'],['e-title','d-title'],
-   ['e-number','d-number'],['e-quote','d-quote'],
-   ['e-footer1','d-footer1'],['e-footer2','d-footer2']
-  ].forEach(([eid,did])=>{
-    const e=document.getElementById(eid);
-    const d=document.getElementById(did);
-    if(e&&d)d.textContent=e.value;
+  // Update sidebar highlight
+  document.querySelectorAll('.nav-item').forEach(n => {
+    const fn = n.getAttribute('onclick') || '';
+    n.classList.toggle('active', fn.includes(`'${pageId}'`));
   });
-  const app=document.getElementById('e-appearance');
-  if(app)document.getElementById('d-appearance').innerHTML=app.value.replace(/\n/g,'<br>');
+
+  window.scrollTo(0, 0);
 }
 
-function setMode(m){
-  const sheet=document.getElementById('sheet');
-  sheet.classList.remove('view-mode','edit-mode');
-  sheet.classList.add(m+'-mode');
-  document.getElementById('btn-view').classList.toggle('active',m==='view');
-  document.getElementById('btn-edit').classList.toggle('active',m==='edit');
-  if(m==='view')applyEdits();
-}
-
-renderBasicInfo();
-renderStats();
-renderCustomSections();
-updateKarma(425);
-updateArcana();
-updateStep();
-
-function copySheetAsImage(){
-  var btn = document.getElementById('copy-img-btn');
-  var notice = document.getElementById('img-notice');
-  btn.textContent = 'Capturing...';
-  btn.disabled = true;
-  // Make sure we are in view mode first
-  setMode('view');
-  var sheet = document.getElementById('sheet');
-  html2canvas(sheet, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: null,
-    logging: false
-  }).then(function(canvas){
-    canvas.toBlob(function(blob){
-      try {
-        var item = new ClipboardItem({'image/png': blob});
-        navigator.clipboard.write([item]).then(function(){
-          btn.textContent = 'Copy as image';
-          btn.disabled = false;
-          notice.style.display = 'inline-block';
-          setTimeout(function(){ notice.style.display = 'none'; }, 3000);
-        }).catch(function(){
-          // Fallback - open in new tab to save manually
-          var url = URL.createObjectURL(blob);
-          window.open(url);
-          btn.textContent = 'Copy as image';
-          btn.disabled = false;
-        });
-      } catch(e){
-        var url = URL.createObjectURL(blob);
-        window.open(url);
-        btn.textContent = 'Copy as image';
-        btn.disabled = false;
-      }
-    });
-  });
-}
-
-function saveImage(){
-  var btn = document.getElementById('img-btn');
-  var sheet = document.getElementById('sheet');
-  // Temporarily switch to view mode for clean capture
-  var wasEdit = sheet.classList.contains('edit-mode');
-  if(wasEdit){ applyEdits(); sheet.classList.remove('edit-mode'); sheet.classList.add('view-mode'); }
-  btn.textContent = 'Saving...';
-  btn.disabled = true;
-  html2canvas(sheet, {
-    backgroundColor: null,
-    scale: 2,
-    useCORS: true,
-    allowTaint: true
-  }).then(function(canvas){
-    var link = document.createElement('a');
-    var name = document.getElementById('e-nameen').value || 'character';
-    link.download = name.toLowerCase().replace(/\s+/g,'-') + '-sheet.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-    btn.textContent = 'Save as image';
-    btn.disabled = false;
-    if(wasEdit){ sheet.classList.remove('view-mode'); sheet.classList.add('edit-mode'); }
-  }).catch(function(){
-    btn.textContent = 'Save as image';
-    btn.disabled = false;
-    if(wasEdit){ sheet.classList.remove('view-mode'); sheet.classList.add('edit-mode'); }
-  });
-}
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+initCharGrid();
+initSovGrid();
+initStarSteps();
 </script>
 </body>
 </html>
