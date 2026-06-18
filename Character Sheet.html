@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Character Sheet</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#2a2a2a;padding:1rem;font-family:sans-serif;}
+h1.page-title{font-family:'Cinzel',serif;font-size:18px;font-weight:400;color:#444;margin-bottom:1rem;letter-spacing:0.1em;}
+.toolbar{display:flex;gap:8px;margin-bottom:1rem;align-items:center;flex-wrap:wrap;}
+.mode-btn{font-family:sans-serif;font-size:12px;padding:6px 16px;border-radius:8px;border:1px solid #ccc;cursor:pointer;background:#fff;color:#555;}
+.mode-btn.active{background:#EEEDFE;color:#3C3489;border-color:#AFA9EC;}
+.tool-btn{font-family:sans-serif;font-size:12px;padding:6px 16px;border-radius:8px;cursor:pointer;}
+.export-btn{border:1px solid #AFA9EC;background:#3C3489;color:#fff;}
+.export-btn:hover{background:#534AB7;}
+.import-btn{border:1px solid #ccc;background:#fff;color:#555;}
+.import-btn:hover{background:#f0f0f0;}
+.notice{font-size:11px;color:#3C3489;font-family:sans-serif;padding:6px 12px;background:#EEEDFE;border-radius:8px;display:none;}
+.sheet{background:#ddd8d0;border:1px solid #e0e0e0;border-radius:12px;padding:1.2rem 1.5rem;max-width:900px;margin:0 auto;font-family:'IM Fell English',serif;position:relative;}
+.view-mode .editable{display:none;}
+.view-mode .display{display:block;}
+.edit-mode .editable{display:block;}
+.edit-mode .display{display:none;}
+.top-label{font-size:11px;letter-spacing:0.15em;color:#999;text-transform:uppercase;font-family:sans-serif;margin-bottom:4px;}
+.char-number{font-family:'Cinzel',serif;font-size:48px;font-weight:400;color:#000;line-height:1;opacity:0.18;position:absolute;top:2rem;right:2rem;}
+.name-jp-display{font-size:13px;color:#aaa;font-family:sans-serif;margin-bottom:2px;}
+.name-en-display{font-family:'Cinzel',serif;font-size:32px;font-weight:400;color:#222;margin:0 0 4px;letter-spacing:0.05em;}
+.title-display{font-size:15px;color:#666;font-style:italic;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid #eee;}
+.two-col{display:grid;grid-template-columns:1fr 200px;gap:1.2rem;margin-bottom:0.8rem;}
+.art-frame{border:4px solid #111;border-radius:6px;box-shadow:inset 0 0 0 2px #555,inset 0 0 0 5px #111;overflow:hidden;height:280px;position:relative;background:#111;}
+.art-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;height:100%;color:#888;font-size:12px;font-family:sans-serif;text-align:center;padding:1rem;}
+.art-img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;}
+.info-row{display:flex;gap:8px;margin-bottom:6px;font-size:14px;align-items:baseline;}
+.info-label{color:#aaa;font-family:sans-serif;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;min-width:90px;padding-top:2px;flex-shrink:0;}
+.info-value{color:#222;font-size:14px;line-height:1.4;}
+input[type=text],textarea{width:100%;font-size:13px;font-family:sans-serif;padding:4px 8px;border-radius:6px;border:1px solid #ddd;background:#f9f9f9;color:#222;}
+textarea{resize:vertical;min-height:48px;}
+.field-row{display:flex;gap:8px;margin-bottom:6px;align-items:center;}
+.field-label{color:#aaa;font-family:sans-serif;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;min-width:90px;flex-shrink:0;}
+hr.div{border:none;border-top:1px solid #eee;margin:0.6rem 0;}
+.section-label{font-family:sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#bbb;margin-bottom:6px;}
+
+.stat-name-display{font-family:sans-serif;font-size:12px;color:#666;min-width:130px;}
+.stat-row-outer{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.stat-bar-bg{flex:1;height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;}
+.stat-bar-fill{height:100%;border-radius:3px;background:#3C3489;transition:width 0.2s;position:relative;}
+.stat-val-display{font-family:sans-serif;font-size:11px;color:#777;min-width:36px;text-align:right;white-space:nowrap;flex-shrink:0;}
+.stat-name-display{font-family:sans-serif;font-size:12px;color:#666;min-width:130px;}
+.stat-row-edit{display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:6px 8px;background:#f9f9f9;border-radius:8px;border:1px solid #eee;}
+.stat-row-edit input[type=text]{width:120px;flex-shrink:0;}
+.stat-row-edit input[type=range]{flex:1;min-width:60px;}
+.stat-val-out{font-size:12px;font-family:sans-serif;color:#666;min-width:24px;text-align:right;flex-shrink:0;}
+.remove-btn{flex-shrink:0;width:28px;height:28px;border-radius:6px;border:1px solid #F09595;background:#FCEBEB;color:#A32D2D;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;font-family:sans-serif;line-height:1;}
+.remove-btn:hover{background:#F7C1C1;}
+.add-btn{font-family:sans-serif;font-size:12px;color:#3C3489;background:none;border:1px dashed #AFA9EC;border-radius:8px;padding:6px 14px;cursor:pointer;margin-top:4px;width:100%;}
+.karma-track{width:100%;height:10px;border-radius:5px;overflow:hidden;display:flex;margin:8px 0 4px;}
+.karma-evil{height:100%;background:#A32D2D;transition:width 0.15s;}
+.karma-good{height:100%;background:#185FA5;transition:width 0.15s;}
+.karma-labels{display:flex;justify-content:space-between;font-size:10px;font-family:sans-serif;}
+.karma-label-evil{color:#A32D2D;}
+.karma-label-good{color:#185FA5;}
+.karma-value{font-family:'Cinzel',serif;font-size:18px;font-weight:400;}
+.alignment-badge{display:inline-block;background:#EEEDFE;color:#3C3489;font-family:sans-serif;font-size:11px;padding:3px 10px;border-radius:6px;margin-left:8px;vertical-align:middle;}
+.item-tag{display:inline-flex;align-items:center;gap:6px;border:1px solid #ddd;border-radius:6px;font-size:12px;font-family:sans-serif;color:#666;padding:3px 10px;margin:3px 3px 3px 0;}
+.item-row-edit{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:8px;background:#fff;border-radius:6px;border:1px solid #eee;}
+.item-row-edit input[type=text]{flex:1;}
+.trait-block{font-size:16px;color:#666;font-style:italic;line-height:1.6;border-left:2px solid #AFA9EC;padding-left:12px;border-radius:0;}
+.url-hint{font-size:11px;color:#aaa;font-family:sans-serif;margin-top:4px;}
+.empty-note{font-size:12px;font-family:sans-serif;color:#aaa;font-style:italic;}
+.footer-row{font-family:sans-serif;font-size:11px;color:#999;display:flex;justify-content:space-between;gap:8px;}
+.import-area{width:100%;height:80px;font-size:11px;font-family:monospace;margin-top:8px;display:none;border:1px solid #ddd;border-radius:6px;padding:6px;background:#f9f9f9;color:#333;}
+.export-area{width:100%;height:80px;font-size:11px;font-family:monospace;margin-top:8px;display:none;border:1px solid #ddd;border-radius:6px;padding:6px;background:#f9f9f9;color:#333;}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+<h1 class="page-title">Character Sheet</h1>
+
+<div class="toolbar">
+  <button class="mode-btn active" id="btn-view" onclick="setMode('view')">View</button>
+  <button class="mode-btn" id="btn-edit" onclick="setMode('edit')">Edit</button>
+  <button class="tool-btn export-btn" onclick="doExport()">Export save</button>
+  <button class="tool-btn import-btn" onclick="toggleImport()">Import save</button>
+  <button class="tool-btn import-btn" id="copy-img-btn" onclick="copySheetAsImage()">Copy as image</button>
+  <span class="notice" id="img-notice" style="display:none;font-size:11px;color:#3C3489;font-family:sans-serif;padding:6px 12px;background:#EEEDFE;border-radius:8px;">Copied! Paste anywhere.</span>
+  <button class="tool-btn import-btn" onclick="saveImage()" id="img-btn">Save as image</button>
+  <span class="notice" id="notice"></span>
+</div>
+
+<div id="import-panel" style="max-width:900px;margin:0 auto 1rem;display:none;">
+  <div style="background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:1rem;">
+    <div style="font-family:sans-serif;font-size:12px;color:#555;margin-bottom:8px;">Paste your save text below and click Load:</div>
+    <textarea id="import-area" style="width:100%;height:80px;font-size:11px;font-family:monospace;border:1px solid #ddd;border-radius:6px;padding:6px;background:#f9f9f9;color:#333;" placeholder="Paste save text here..."></textarea>
+    <button class="tool-btn export-btn" style="margin-top:8px;" onclick="doImport()">Load save</button>
+  </div>
+</div>
+
+<div id="export-panel" style="max-width:900px;margin:0 auto 1rem;display:none;">
+  <div style="background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:1rem;">
+    <div style="font-family:sans-serif;font-size:12px;color:#555;margin-bottom:8px;">Copy all this text and save it in a .txt file on your desktop:</div>
+    <textarea id="export-area" style="width:100%;height:80px;font-size:11px;font-family:monospace;border:1px solid #ddd;border-radius:6px;padding:6px;background:#f9f9f9;color:#333;" readonly></textarea>
+    <button class="tool-btn import-btn" style="margin-top:8px;" onclick="copyExport()">Copy to clipboard</button>
+    <span id="copy-notice" style="font-size:11px;color:#3C3489;margin-left:8px;display:none;">Copied!</span>
+  </div>
+</div>
+
+<div class="sheet view-mode" id="sheet">
+  <div class="char-number" id="d-number">01</div>
+  <div class="top-label">Character</div>
+
+  <div class="display">
+    <div class="name-jp-display" id="d-namejp">ティリー</div>
+    <div class="name-en-display" id="d-nameen">Tilly</div>
+    <div class="title-display" id="d-title">Eustace's beloved child</div>
+    <div id="d-arcana-row" style="display:flex;align-items:baseline;gap:8px;margin-bottom:0.5rem;padding:8px 0 0;">
+      <span id="d-arcana-label" style="font-family:sans-serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#aaa;min-width:90px;flex-shrink:0;"></span>
+      <span id="d-arcana-value" style="font-family:'Cinzel',serif;font-size:16px;color:#3C3489;letter-spacing:0.05em;"></span>
+    </div>
+    <div id="d-step-row" style="display:flex;align-items:baseline;gap:8px;margin-bottom:1rem;padding:4px 0 8px;border-bottom:1px solid #eee;">
+      <span id="d-step-label" style="font-family:sans-serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#aaa;min-width:90px;flex-shrink:0;"></span>
+      <span id="d-step-value" style="font-family:'Cinzel',serif;font-size:15px;color:#555;letter-spacing:0.05em;"></span>
+    </div>
+  </div>
+  <div class="editable" style="margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid #eee;">
+    <div class="field-row"><span class="field-label">Char no.</span><input type="text" id="e-number" value="01" style="width:60px;"></div>
+    <div class="field-row"><span class="field-label">Name (JP)</span><input type="text" id="e-namejp" value="ティリー"></div>
+    <div class="field-row"><span class="field-label">Name (EN)</span><input type="text" id="e-nameen" value="Tilly"></div>
+    <div class="field-row"><span class="field-label">Title</span><input type="text" id="e-title" value="Eustace's beloved child"></div>
+    <div class="field-row">
+      <input type="text" id="e-arcana-label" value="Arcana" style="width:90px;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;flex-shrink:0;" oninput="arcanaLabel=this.value;updateArcana();">
+      <input type="text" id="e-arcana-value" value="" placeholder="e.g. The Star" oninput="arcanaValue=this.value;updateArcana();" style="flex:1;">
+    </div>
+    <div class="field-row">
+      <input type="text" id="e-step-label" value="Step" style="width:90px;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;flex-shrink:0;" oninput="stepLabel=this.value;updateStep();">
+      <input type="text" id="e-step-value" value="" placeholder="e.g. Candlebearer" oninput="stepValue=this.value;updateStep();" style="flex:1;">
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div id="basic-info-view" class="display"></div>
+      <div id="basic-info-edit" class="editable" style="margin-bottom:8px;"></div>
+      <button class="add-btn editable" onclick="addBasicInfo()">+ Add info field</button>
+      <hr class="div">
+
+      <div class="section-label">Karma scale</div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
+        <span style="font-size:13px;color:#666;">Alignment value <span class="alignment-badge">karma <span id="d-karma-badge">+425</span></span></span>
+        <span class="karma-value" id="d-karma-val" style="color:#185FA5;">+425</span>
+      </div>
+      <div class="editable" style="margin-bottom:6px;">
+        <input type="range" min="-500" max="500" step="1" id="e-karma" value="425" style="width:100%;" oninput="updateKarma(parseInt(this.value))">
+      </div>
+      <div class="karma-track">
+        <div class="karma-evil" id="karma-evil" style="width:7.5%;"></div>
+        <div class="karma-good" id="karma-good" style="width:92.5%;"></div>
+      </div>
+      <div class="karma-labels">
+        <span class="karma-label-evil">Supreme Evil −500</span>
+        <span class="karma-label-good">Supreme Good +500</span>
+      </div>
+
+      <hr class="div">
+
+      <div id="custom-sections-view" class="display"></div>
+      <div id="custom-sections-edit" class="editable"></div>
+      <button class="add-btn editable" onclick="addCustomSection()">+ Add Category Tab</button>
+    </div>
+
+    <div>
+      <div class="art-frame">
+        <div class="art-placeholder" id="art-placeholder" style="display:none;">
+          <span style="font-size:28px;opacity:0.3;">🖼</span>
+          <span>Paste an image URL in edit mode</span>
+        </div>
+        <img class="art-img" id="art-img" src="https://i.imgur.com/RqDz8JN.jpeg" alt="Character art" style="display:block;" onerror="this.style.display='none';document.getElementById('art-placeholder').style.display='flex';">
+      </div>
+      <div class="editable" style="margin-top:8px;">
+        <input type="text" id="e-imgurl" value="https://i.imgur.com/RqDz8JN.jpeg" placeholder="https://i.imgur.com/..." oninput="updateImage(this.value)">
+        <div class="url-hint">Paste a direct image URL</div>
+      </div>
+      <div style="margin-top:10px;">
+        <div class="display" id="d-appearance" style="font-size:11px;font-family:sans-serif;color:#aaa;text-align:center;line-height:1.6;">Short shaggy black hair<br>Soft dark eyes<br>Worn vest · linen shirt · old boots</div>
+        <div class="editable"><textarea id="e-appearance" style="font-size:11px;">Short shaggy black hair
+Soft dark eyes
+Worn vest · linen shirt · old boots</textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="div">
+
+  <div style="margin-bottom:0.7rem;">
+    <div class="section-label">Character</div>
+    <p class="trait-block display" id="d-quote">Tilly is twelve years old and has already learned that the world is not always kind. Raised above a cluttered antique shop in the city Alderrdeen by her grandfather, she has a gift for knowing exactly what something is worth, and exactly what someone can pay. She is sharper than she looks, and kinder than she has any reason to be. She asks for very little in return for either. She loves deeply and without condition, and it has never once occurred to her that this might someday cost her something.</p>
+    <div class="editable"><textarea id="e-quote">Tilly is twelve years old and has already learned that the world is not always kind. Raised above a cluttered antique shop in the city Alderrdeen by her grandfather, she has a gift for knowing exactly what something is worth, and exactly what someone can pay. She is sharper than she looks, and kinder than she has any reason to be. She asks for very little in return for either. She loves deeply and without condition, and it has never once occurred to her that this might someday cost her something.</textarea></div>
+  </div>
+
+  <hr class="div">
+
+  <div class="section-label">Status</div>
+  <div id="stats-view"></div>
+  <div id="stats-edit" class="editable"></div>
+  <button class="add-btn editable" onclick="addStat()">+ Add stat</button>
+
+  <hr class="div">
+
+  <div class="footer-row">
+    <span class="display" id="d-footer1">Alderrdeen Township</span>
+    <span class="display" id="d-footer2">993 A.G. — Springtide</span>
+    <input type="text" id="e-footer1" class="editable" value="Alderrdeen Township" style="width:48%;">
+    <input type="text" id="e-footer2" class="editable" value="993 A.G. — Springtide" style="width:48%;">
+  </div>
+</div>
+
+<script>
+let basicInfo=[
+  {label:'Age',value:'12'},
+  {label:'Race',value:'Human'},
+  {label:'Origin',value:'Orphaned from a young age, Tilly was raised in an antique shop by a local man who took her in.'},
+  {label:'Guardian',value:'Eustace (Grandfather)'},
+  {label:'Residence',value:"Eustace's Oddities"},
+  {label:'Alignment',value:'Chaotic Good'}
+];
+let stats=[
+  {name:'Kindness',val:88},{name:'Courage',val:80},{name:'Wit',val:64},
+  {name:'Stubbornness',val:91},{name:'Luck',val:49},{name:'Renown',val:1}
+];
+let customSections=[
+  {title:'Items',items:[
+    {name:'4 Sonens',note:'(20 of these make up a single Aurem)'},
+    {name:'7 Trins',note:'(100 of these make up a single Sonen)'}
+  ]}
+];
+let karmaVal=425;
+let arcanaLabel='Arcana';
+let arcanaValue='';
+let stepLabel='Step';
+let stepValue='';
+
+function escQ(str){return(str||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function renderBasicInfo(){
+  document.getElementById('basic-info-view').innerHTML=basicInfo.map(info=>`<div class="info-row"><span class="info-label">${info.label}</span><span class="info-value">${info.value}</span></div>`).join('');
+  document.getElementById('basic-info-edit').innerHTML=basicInfo.map((info,i)=>`<div class="field-row"><input type="text" value="${escQ(info.label)}" placeholder="Label" onchange="basicInfo[${i}].label=this.value;renderBasicInfo();" style="width:90px;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;flex-shrink:0;"><input type="text" value="${escQ(info.value)}" placeholder="Value" onchange="basicInfo[${i}].value=this.value;renderBasicInfo();" style="flex:1;"><button class="remove-btn" onclick="basicInfo.splice(${i},1);renderBasicInfo();">✕</button></div>`).join('');
+}
+function addBasicInfo(){basicInfo.push({label:'New Label',value:'New Value'});renderBasicInfo();}
+
+function renderCustomSections(){
+  document.getElementById('custom-sections-view').innerHTML=customSections.map(sec=>`<div style="margin-bottom:0.5rem;"><div class="section-label">${sec.title}</div>${sec.items.length===0?'<span class="empty-note">None</span>':sec.items.map(it=>`<span class="item-tag"><span style="color:#222;font-weight:500;">${it.name}</span>${it.note?`<span style="color:#aaa;font-size:11px;">· ${it.note}</span>`:''}</span>`).join('')}</div>`).join('');
+  document.getElementById('custom-sections-edit').innerHTML=customSections.map((sec,sIdx)=>`<div style="margin-bottom:16px;padding:12px;background:#f9f9f9;border-radius:10px;border:1px solid #eee;"><div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;"><span style="font-size:11px;color:#aaa;text-transform:uppercase;letter-spacing:0.1em;font-family:sans-serif;">Tab</span><input type="text" value="${escQ(sec.title)}" onchange="customSections[${sIdx}].title=this.value;renderCustomSections();" style="font-weight:bold;flex:1;"><button class="remove-btn" onclick="customSections.splice(${sIdx},1);renderCustomSections();">✕</button></div>${sec.items.map((it,iIdx)=>`<div class="item-row-edit" style="margin-bottom:6px;"><div style="flex:1;display:flex;flex-direction:column;gap:4px;"><input type="text" value="${escQ(it.name)}" onchange="customSections[${sIdx}].items[${iIdx}].name=this.value;renderCustomSections();"><input type="text" value="${escQ(it.note)}" onchange="customSections[${sIdx}].items[${iIdx}].note=this.value;renderCustomSections();" style="font-size:11px;" placeholder="Note (optional)"></div><button class="remove-btn" onclick="customSections[${sIdx}].items.splice(${iIdx},1);renderCustomSections();">✕</button></div>`).join('')}<button class="add-btn" style="margin-top:8px;" onclick="customSections[${sIdx}].items.push({name:'New entry',note:''});renderCustomSections();">+ Add to ${sec.title}</button></div>`).join('');
+}
+function addCustomSection(){customSections.push({title:'New Category',items:[]});renderCustomSections();}
+
+function renderStats(){
+  document.getElementById('stats-view').innerHTML=stats.map(function(s,i){
+    var raw = s.val;
+    var num = parseFloat(raw);
+    if(isNaN(num)) num = 0;
+    var fillPct = Math.min(num, 100);
+    return '<div class="stat-row-outer">' +
+      '<span class="stat-name-display">' + s.name + '</span>' +
+      '<div class="stat-bar-bg"><div class="stat-bar-fill" style="width:' + fillPct + '%"></div></div>' +
+      '<span class="stat-val-display">' + raw + '</span>' +
+      '</div>';
+  }).join('');
+  document.getElementById('stats-edit').innerHTML=stats.map((s,i)=>{
+    const numVal = isNaN(parseFloat(s.val)) ? 100 : Math.min(Math.max(parseFloat(s.val),0),100);
+    return `<div class="stat-row-edit">
+      <input type="text" value="${escQ(s.name)}" onchange="stats[${i}].name=this.value;renderStats();" style="width:110px;flex-shrink:0;">
+      <input type="range" min="0" max="100" step="1" value="${numVal}" oninput="stats[${i}].val=this.value;this.nextElementSibling.value=this.value;renderStats();" style="flex:1;min-width:60px;">
+      <input type="text" value="${escQ(String(s.val))}" onchange="stats[${i}].val=this.value;renderStats();" style="width:52px;flex-shrink:0;text-align:center;" placeholder="0-∞">
+      <button class="remove-btn" onclick="stats.splice(${i},1);renderStats();">✕</button>
+    </div>`;
+  }).join('');
+}
+function addStat(){stats.push({name:'New stat',val:50});renderStats();}
+
+function updateKarma(v){
+  karmaVal=v;
+  const p=((v+500)/1000)*100;
+  document.getElementById('karma-evil').style.width=(100-p)+'%';
+  document.getElementById('karma-good').style.width=p+'%';
+  const s=v>=0?'+':'';
+  document.getElementById('d-karma-val').textContent=s+v;
+  document.getElementById('d-karma-badge').textContent=s+v;
+  document.getElementById('d-karma-val').style.color=v>=0?'#185FA5':'#A32D2D';
+}
+
+function updateImage(url){
+  const img=document.getElementById('art-img');
+  const ph=document.getElementById('art-placeholder');
+  if(url&&url.trim()){img.src=url.trim();img.style.display='block';ph.style.display='none';img.onerror=()=>{img.style.display='none';ph.style.display='flex';};}
+  else{img.style.display='none';ph.style.display='flex';}
+}
+
+function collectState(){
+  return{
+    number:document.getElementById('e-number').value,
+    namejp:document.getElementById('e-namejp').value,
+    nameen:document.getElementById('e-nameen').value,
+    title:document.getElementById('e-title').value,
+    quote:document.getElementById('e-quote').value,
+    footer1:document.getElementById('e-footer1').value,
+    footer2:document.getElementById('e-footer2').value,
+    appearance:document.getElementById('e-appearance').value,
+    imgUrl:document.getElementById('e-imgurl').value,
+    karma:karmaVal,
+    basicInfo:JSON.parse(JSON.stringify(basicInfo)),
+    stats:JSON.parse(JSON.stringify(stats)),
+    customSections:JSON.parse(JSON.stringify(customSections))
+  };
+}
+
+function applyState(state){
+  document.getElementById('e-number').value=state.number||'01';
+  document.getElementById('e-namejp').value=state.namejp||'';
+  document.getElementById('e-nameen').value=state.nameen||'';
+  document.getElementById('e-title').value=state.title||'';
+  document.getElementById('e-quote').value=state.quote||'';
+  document.getElementById('e-footer1').value=state.footer1||'';
+  document.getElementById('e-footer2').value=state.footer2||'';
+  document.getElementById('e-appearance').value=state.appearance||'';
+  document.getElementById('e-imgurl').value=state.imgUrl||'';
+  if(state.imgUrl) updateImage(state.imgUrl);
+  basicInfo=state.basicInfo||[];
+  stats=state.stats||[];
+  customSections=state.customSections||[];
+  karmaVal=state.karma||0;
+  document.getElementById('e-karma').value=karmaVal;
+  updateKarma(karmaVal);
+  renderBasicInfo();
+  renderStats();
+  renderCustomSections();
+  applyEdits();
+}
+
+function doExport(){
+  const state=collectState();
+  const text=JSON.stringify(state);
+  document.getElementById('export-area').value=text;
+  document.getElementById('export-panel').style.display='block';
+  document.getElementById('import-panel').style.display='none';
+  document.getElementById('export-area').select();
+}
+
+function copyExport(){
+  const area=document.getElementById('export-area');
+  area.select();
+  document.execCommand('copy');
+  const n=document.getElementById('copy-notice');
+  n.style.display='inline';
+  setTimeout(()=>n.style.display='none',2000);
+}
+
+function toggleImport(){
+  const p=document.getElementById('import-panel');
+  p.style.display=p.style.display==='none'?'block':'none';
+  document.getElementById('export-panel').style.display='none';
+}
+
+function doImport(){
+  const text=document.getElementById('import-area').value.trim();
+  try{
+    const state=JSON.parse(text);
+    applyState(state);
+    document.getElementById('import-panel').style.display='none';
+    document.getElementById('import-area').value='';
+    showNotice('Loaded successfully!');
+  }catch(e){
+    showNotice('Could not read save — make sure you pasted the full text!');
+  }
+}
+
+function showNotice(msg){
+  const n=document.getElementById('notice');
+  n.textContent=msg;
+  n.style.display='inline-block';
+  setTimeout(()=>n.style.display='none',3000);
+}
+
+function updateArcana(){
+  const label = document.getElementById('e-arcana-label');
+  const value = document.getElementById('e-arcana-value');
+  const dLabel = document.getElementById('d-arcana-label');
+  const dValue = document.getElementById('d-arcana-value');
+  const row = document.getElementById('d-arcana-row');
+  if(label) arcanaLabel = label.value;
+  if(value) arcanaValue = value.value;
+  if(dLabel) dLabel.textContent = arcanaLabel;
+  if(dValue) dValue.textContent = arcanaValue;
+  if(row) row.style.display = arcanaValue ? 'flex' : 'none';
+}
+function updateStep(){
+  const label = document.getElementById('e-step-label');
+  const value = document.getElementById('e-step-value');
+  const dLabel = document.getElementById('d-step-label');
+  const dValue = document.getElementById('d-step-value');
+  const row = document.getElementById('d-step-row');
+  if(label) stepLabel = label.value;
+  if(value) stepValue = value.value;
+  if(dLabel) dLabel.textContent = stepLabel;
+  if(dValue) dValue.textContent = stepValue;
+  if(row) row.style.display = stepValue ? 'flex' : 'none';
+}
+function applyEdits(){
+  updateArcana();
+  updateStep();
+  [['e-namejp','d-namejp'],['e-nameen','d-nameen'],['e-title','d-title'],
+   ['e-number','d-number'],['e-quote','d-quote'],
+   ['e-footer1','d-footer1'],['e-footer2','d-footer2']
+  ].forEach(([eid,did])=>{
+    const e=document.getElementById(eid);
+    const d=document.getElementById(did);
+    if(e&&d)d.textContent=e.value;
+  });
+  const app=document.getElementById('e-appearance');
+  if(app)document.getElementById('d-appearance').innerHTML=app.value.replace(/\n/g,'<br>');
+}
+
+function setMode(m){
+  const sheet=document.getElementById('sheet');
+  sheet.classList.remove('view-mode','edit-mode');
+  sheet.classList.add(m+'-mode');
+  document.getElementById('btn-view').classList.toggle('active',m==='view');
+  document.getElementById('btn-edit').classList.toggle('active',m==='edit');
+  if(m==='view')applyEdits();
+}
+
+renderBasicInfo();
+renderStats();
+renderCustomSections();
+updateKarma(425);
+updateArcana();
+updateStep();
+
+function copySheetAsImage(){
+  var btn = document.getElementById('copy-img-btn');
+  var notice = document.getElementById('img-notice');
+  btn.textContent = 'Capturing...';
+  btn.disabled = true;
+  // Make sure we are in view mode first
+  setMode('view');
+  var sheet = document.getElementById('sheet');
+  html2canvas(sheet, {
+    scale: 2,
+    useCORS: true,
+    backgroundColor: null,
+    logging: false
+  }).then(function(canvas){
+    canvas.toBlob(function(blob){
+      try {
+        var item = new ClipboardItem({'image/png': blob});
+        navigator.clipboard.write([item]).then(function(){
+          btn.textContent = 'Copy as image';
+          btn.disabled = false;
+          notice.style.display = 'inline-block';
+          setTimeout(function(){ notice.style.display = 'none'; }, 3000);
+        }).catch(function(){
+          // Fallback - open in new tab to save manually
+          var url = URL.createObjectURL(blob);
+          window.open(url);
+          btn.textContent = 'Copy as image';
+          btn.disabled = false;
+        });
+      } catch(e){
+        var url = URL.createObjectURL(blob);
+        window.open(url);
+        btn.textContent = 'Copy as image';
+        btn.disabled = false;
+      }
+    });
+  });
+}
+
+function saveImage(){
+  var btn = document.getElementById('img-btn');
+  var sheet = document.getElementById('sheet');
+  // Temporarily switch to view mode for clean capture
+  var wasEdit = sheet.classList.contains('edit-mode');
+  if(wasEdit){ applyEdits(); sheet.classList.remove('edit-mode'); sheet.classList.add('view-mode'); }
+  btn.textContent = 'Saving...';
+  btn.disabled = true;
+  html2canvas(sheet, {
+    backgroundColor: null,
+    scale: 2,
+    useCORS: true,
+    allowTaint: true
+  }).then(function(canvas){
+    var link = document.createElement('a');
+    var name = document.getElementById('e-nameen').value || 'character';
+    link.download = name.toLowerCase().replace(/\s+/g,'-') + '-sheet.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    btn.textContent = 'Save as image';
+    btn.disabled = false;
+    if(wasEdit){ sheet.classList.remove('view-mode'); sheet.classList.add('edit-mode'); }
+  }).catch(function(){
+    btn.textContent = 'Save as image';
+    btn.disabled = false;
+    if(wasEdit){ sheet.classList.remove('view-mode'); sheet.classList.add('edit-mode'); }
+  });
+}
+</script>
+</body>
+</html>
