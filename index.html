@@ -605,8 +605,10 @@ function applyFormatting(s){
 }
 function normalizeFormatMarkers(body){
   if(!body)return body;
-  body=body.replace(/\*\*([\s\S]+?)\*\*/g,(m,c)=>c.includes('\n\n')?c.split('\n\n').map(p=>`**${p}**`).join('\n\n'):m);
-  body=body.replace(/(?<!\*)\*(?!\*)([\s\S]*?)(?<!\*)\*(?!\*)/g,(m,c)=>c.includes('\n\n')?c.split('\n\n').map(p=>`*${p}*`).join('\n\n'):m);
+  const bolds=[];
+  body=body.replace(/\*\*([\s\S]+?)\*\*/g,(_,c)=>{bolds.push(c);return'\x01'+(bolds.length-1)+'\x01';});
+  body=body.replace(/\*([\s\S]+?)\*/g,(m,c)=>c.includes('\n\n')?c.split('\n\n').map(p=>`*${p}*`).join('\n\n'):m);
+  body=body.replace(/\x01(\d+)\x01/g,(_,i)=>{const c=bolds[+i];return c.includes('\n\n')?c.split('\n\n').map(p=>`**${p}**`).join('\n\n'):`**${c}**`;});
   return body;
 }
 function renderBodyWithLinks(body){
