@@ -553,8 +553,8 @@ function renderSecEdit(pid,idx,sec){
   if(type==='text'){
     const pageList=Object.entries(CONTENT.pages).map(([pid2,pg])=>`<span style="font-family:monospace;background:#e8e4f0;padding:1px 5px;border-radius:3px;cursor:pointer;" onclick="navigator.clipboard&&navigator.clipboard.writeText('[[${pid2}]]')" title="Click to copy">[[${esc(pid2)}]]</span> ${esc(pg.navLabel||pg.title||pid2)}`).join('<br>');
     content=`<div class="fmt-toolbar">
-      <button class="fmt-btn" onclick="wrapSelected('ta-${pid}-${idx}','**','**')"><strong>B</strong></button>
-      <button class="fmt-btn" onclick="wrapSelected('ta-${pid}-${idx}','*','*')"><em>I</em></button>
+      <button class="fmt-btn" onmousedown="event.preventDefault()" onclick="wrapSelected('ta-${pid}-${idx}','**','**')"><strong>B</strong></button>
+      <button class="fmt-btn" onmousedown="event.preventDefault()" onclick="wrapSelected('ta-${pid}-${idx}','*','*')"><em>I</em></button>
     </div>
     <textarea id="ta-${pid}-${idx}" class="sect-body-ta" rows="6" oninput="CONTENT.pages['${pid}'].sections[${idx}].body=this.value;scheduleSave();">${esc(sec.body||'')}</textarea>
     <details style="margin-top:5px;">
