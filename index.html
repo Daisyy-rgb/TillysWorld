@@ -530,7 +530,7 @@ function renderSecView(sec){
   const type=sec.type||'text';
   if(type==='text'){
     let inner=sec.title?`<h2>${esc(sec.title)}</h2>`:'';
-    inner+=(sec.body||'').split('\n\n').filter(Boolean).map(p=>`<p>${renderBodyWithLinks(p)}</p>`).join('');
+    inner+=normalizeFormatMarkers(sec.body||'').split('\n\n').filter(Boolean).map(p=>`<p>${renderBodyWithLinks(p)}</p>`).join('');
     return `<div class="card">${inner}</div>`;
   }
   if(type==='list'){
@@ -600,8 +600,14 @@ function renderSecEdit(pid,idx,sec){
 // ── INLINE LINKS + FORMATTING ────────────────────────
 function applyFormatting(s){
   return s
-    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g,'<em>$1</em>');
+    .replace(/\*\*([\s\S]+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*([\s\S]+?)\*/g,'<em>$1</em>');
+}
+function normalizeFormatMarkers(body){
+  if(!body)return body;
+  body=body.replace(/\*\*([\s\S]+?)\*\*/g,(m,c)=>c.includes('\n\n')?c.split('\n\n').map(p=>`**${p}**`).join('\n\n'):m);
+  body=body.replace(/(?<!\*)\*(?!\*)([\s\S]*?)(?<!\*)\*(?!\*)/g,(m,c)=>c.includes('\n\n')?c.split('\n\n').map(p=>`*${p}*`).join('\n\n'):m);
+  return body;
 }
 function renderBodyWithLinks(body){
   const parts=(body||'').split(/(\[\[[^\]]+\]\])/g);
