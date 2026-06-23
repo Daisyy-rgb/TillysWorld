@@ -345,6 +345,7 @@ function blankSteps(){
   return Array.from({length:11},(_,i)=>({step:i,title:'',color:STEP_COLORS[i],ability:'',downside:''}));
 }
 function hasStarNames(steps){return steps&&steps.some&&steps.some(s=>STAR_NAMES.has(s.title));}
+function toRoman(n){if(n===0)return'0';const v=[10,9,5,4,1],r=['X','IX','V','IV','I'];let s='';v.forEach((val,i)=>{while(n>=val){s+=r[i];n-=val;}});return s;}
 
 // ── APP STATE ─────────────────────────────────────────
 let editMode=false, saveTimer=null, currentPage='';
@@ -767,14 +768,14 @@ function renderStepsPage(pid){
   steps.forEach((s,i)=>{
     if(!editMode){
       html+=`<div class="step-card" style="border-left-color:${esc(s.color)}">
-        <div class="step-ch"><span class="step-nl">Step ${s.step===10?'X':s.step}</span><span class="step-tt">${esc(s.title)}</span></div>
+        <div class="step-ch"><span class="step-nl">Step ${toRoman(s.step)}</span><span class="step-tt">${esc(s.title)}</span></div>
         <div class="abl">Ability</div><div class="stxt">${esc(s.ability)}</div>
         <div class="dsl">Downside</div><div class="stxt">${esc(s.downside)}</div>
       </div>`;
     } else {
       html+=`<div class="step-edit-card" style="border-left-color:${esc(s.color)}">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <span style="font-size:11px;color:#888;">Step ${s.step===10?'X':s.step}</span>
+          <span style="font-size:11px;color:#888;">Step ${toRoman(s.step)}</span>
           <div style="display:flex;gap:5px;">
             <button class="ec-btn" onclick="moveStar(${i},-1,'${pid}')">↑</button>
             <button class="ec-btn" onclick="moveStar(${i},1,'${pid}')">↓</button>
