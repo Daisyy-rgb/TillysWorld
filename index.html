@@ -1036,7 +1036,7 @@ function showCtxMenu(e){
   if(!word)return;
   e.preventDefault();
   _ctxOriginal=word;
-  _ctxWord=word.toLowerCase();
+  _ctxWord=word;
   const existing=CONTENT.autoLinks&&CONTENT.autoLinks[_ctxWord];
   const existingPage=existing?CONTENT.pages[existing]:null;
   const existingLabel=existingPage?(existingPage.navLabel||existingPage.title||existing):'';
@@ -1098,7 +1098,7 @@ function applyAutoLinks(body){
     if(/^\[\[/.test(part))return part;
     links.forEach(([word,pageId])=>{
       const esc2=word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-      part=part.replace(new RegExp(`(?<=[\\s\\S]|^)(${esc2})(?=[\\s\\S]|$)`,'gi'),m=>`[[${pageId}|${m}]]`);
+      part=part.replace(new RegExp(`(?<=[\\s\\S]|^)(${esc2})(?=[\\s\\S]|$)`,'g'),m=>`[[${pageId}|${m}]]`);
     });
     return part;
   }).join('');
