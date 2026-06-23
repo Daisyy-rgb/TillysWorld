@@ -1038,7 +1038,21 @@ function showCtxMenu(e){
   e.preventDefault();
   _ctxOriginal=word;
   _ctxWord=word;
-  const existing=CONTENT.autoLinks&&CONTENT.autoLinks[_ctxWord];
+  // If clicking a link span, find the matching autoLinks key robustly:
+  // try exact word match first, then find by the pageId the span links to
+  let _autoKey=null;
+  if(linkEl&&CONTENT.autoLinks){
+    if(CONTENT.autoLinks[word]!==undefined){
+      _autoKey=word;
+    } else {
+      const onclickStr=linkEl.getAttribute('onclick')||'';
+      const pidM=onclickStr.match(/go\('([^']+)'\)/);
+      const linkedPid=pidM?pidM[1]:null;
+      if(linkedPid) _autoKey=Object.keys(CONTENT.autoLinks).find(k=>CONTENT.autoLinks[k]===linkedPid)||null;
+    }
+    if(_autoKey) _ctxWord=_autoKey;
+  }
+  const existing=_autoKey?CONTENT.autoLinks[_autoKey]:(CONTENT.autoLinks&&CONTENT.autoLinks[_ctxWord]);
   const existingPage=existing?CONTENT.pages[existing]:null;
   const existingLabel=existingPage?(existingPage.navLabel||existingPage.title||existing):'';
   let html=`<div class="ctx-item" onclick="showALPicker()">🔗 Link <span class="ctx-word">"${esc(word)}"</span> to a page…</div>`;
