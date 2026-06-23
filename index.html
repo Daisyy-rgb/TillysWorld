@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -234,6 +234,26 @@ hr.div{border:none;border-top:1px solid #eee;margin:.6rem 0;}
 .fmt-toolbar{display:flex;gap:4px;margin-bottom:5px;}
 .fmt-btn{font-size:12px;padding:3px 9px;border-radius:5px;border:1px solid #ccc;background:#fff;cursor:pointer;color:#444;line-height:1.4;}
 .fmt-btn:hover{background:#eee;}
+/* ── CONTEXT MENU ─────────────────────────────── */
+.ctx-menu{position:fixed;background:#fff;border:1px solid #ddd;border-radius:8px;box-shadow:0 4px 18px rgba(0,0,0,.18);padding:4px 0;z-index:9999;min-width:190px;display:none;}
+.ctx-item{padding:8px 14px;cursor:pointer;font-size:13px;color:#333;font-family:sans-serif;white-space:nowrap;}
+.ctx-item:hover{background:#f0ede5;color:#2e2820;}
+.ctx-sep{border:none;border-top:1px solid #eee;margin:3px 0;}
+.ctx-word{color:#7b6fbb;font-weight:600;}
+/* ── AUTO-LINK MODAL ──────────────────────────── */
+.al-modal{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:10000;display:none;align-items:center;justify-content:center;}
+.al-box{background:#fff;border-radius:12px;padding:18px;width:320px;max-height:70vh;display:flex;flex-direction:column;gap:8px;box-shadow:0 8px 32px rgba(0,0,0,.25);}
+.al-box h3{font-size:14px;font-family:'Cinzel',serif;color:#2e2820;margin:0;}
+.al-search{font-size:13px;padding:6px 10px;border:1px solid #ccc;border-radius:6px;font-family:sans-serif;outline:none;}
+.al-pages{overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:2px;max-height:45vh;}
+.al-page-btn{padding:7px 12px;font-size:13px;font-family:sans-serif;cursor:pointer;border:none;background:none;text-align:left;border-radius:6px;color:#333;}
+.al-page-btn:hover{background:#f0ede5;color:#2e2820;}
+.al-cancel{font-size:12px;padding:5px 14px;border-radius:5px;border:1px solid #ccc;background:#fff;cursor:pointer;align-self:flex-start;}
+/* ── NAV DRAG ─────────────────────────────────── */
+.ni-draggable{cursor:grab;}
+.ni-draggable .drag-hdl{opacity:.35;font-size:10px;margin-right:1px;}
+.ni-draggable:hover .drag-hdl{opacity:.7;}
+.ni-drag-over{background:rgba(123,111,187,.22)!important;border-left-color:#7b6fbb!important;}
 ::-webkit-scrollbar{width:6px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px;}
@@ -280,6 +300,7 @@ let CONTENT = {"charOrder":["tilly"],"charGroups":[{"id":"cg_heroes","label":"He
 
 // ── MIGRATION (ensures old saves gain new fields) ─────
 function migrateContent(){
+  if(!CONTENT.autoLinks) CONTENT.autoLinks={};
   if(!CONTENT.navSections) CONTENT.navSections=[{id:'ns_chars',label:'Characters',type:'characters'},{id:'ns_world',label:'The World',type:'lore',pages:['world','magic','fairies','artifacts','sovereignties']},{id:'ns_story',label:'Story',type:'lore',pages:['chapters']},{id:'ns_ref',label:'Reference',type:'lore',pages:['calendar']}];
   if(!CONTENT.charGroups) CONTENT.charGroups=[{id:'cg_heroes',label:'Heroes',chars:[...(CONTENT.charOrder||[])]}];
   if(!CONTENT.arcanaDecks) CONTENT.arcanaDecks=[{id:'deck_major',label:'Major Arcana',cards:CONTENT.sovereignties||[]}];
@@ -381,10 +402,20 @@ function buildNav(){
     if(ns.type==='characters'){
       html+=buildCharGroupNavHtml();
     } else {
-      (ns.pages||[]).forEach(pid=>{
+      (ns.pages||[]).forEach((pid,pidIdx)=>{
         const pg=CONTENT.pages[pid];
         const label=pg?(pg.navLabel||pg.title||pid):pid;
-        html+=`<div class="ni${currentPage===pid?' active':''}" onclick="go('${pid}')"><span class="nd"></span>${esc(label)}</div>`;
+        if(editMode){
+          html+=`<div class="ni ni-draggable${currentPage===pid?' active':''}"
+            draggable="true"
+            ondragstart="navDragStart(event,${nsi},${pidIdx})"
+            ondragover="navDragOver(event,${nsi},${pidIdx})"
+            ondragleave="navDragLeave(event)"
+            ondrop="navDrop(event,${nsi},${pidIdx})"
+            onclick="go('${pid}')"><span class="drag-hdl">⠿</span><span class="nd"></span>${esc(label)}</div>`;
+        } else {
+          html+=`<div class="ni${currentPage===pid?' active':''}" onclick="go('${pid}')"><span class="nd"></span>${esc(label)}</div>`;
+        }
       });
       if(editMode){
         html+=`<div class="nadd" onclick="addPage(${nsi})">＋ Add page</div>`;
@@ -530,7 +561,7 @@ function renderSecView(sec){
   const type=sec.type||'text';
   if(type==='text'){
     let inner=sec.title?`<h2>${esc(sec.title)}</h2>`:'';
-    inner+=normalizeFormatMarkers(sec.body||'').split('\n\n').filter(Boolean).map(p=>`<p>${renderBodyWithLinks(p)}</p>`).join('');
+    inner+=normalizeFormatMarkers(applyAutoLinks(sec.body||'')).split('\n\n').filter(Boolean).map(p=>`<p>${renderBodyWithLinks(p)}</p>`).join('');
     return `<div class="card">${inner}</div>`;
   }
   if(type==='list'){
@@ -980,6 +1011,124 @@ initPages();
 CONTENT.charOrder.forEach(id=>addCharPage(id));
 buildNav();
 go(CONTENT.charOrder[0]?'char-'+CONTENT.charOrder[0]:'world');
+
+// ── CONTEXT MENU & AUTO-LINK ──────────────────────────
+let _ctxWord='', _ctxOriginal='';
+function getWordAtCursor(x,y){
+  const sel=window.getSelection();
+  if(sel&&sel.toString().trim()) return sel.toString().trim();
+  let node,offset;
+  if(document.caretRangeFromPoint){const r=document.caretRangeFromPoint(x,y);if(!r)return'';node=r.startContainer;offset=r.startOffset;}
+  else if(document.caretPositionFromPoint){const p=document.caretPositionFromPoint(x,y);if(!p)return'';node=p.offsetNode;offset=p.offset;}
+  else return'';
+  if(!node||node.nodeType!==Node.TEXT_NODE)return'';
+  const t=node.textContent;
+  let s=offset,e=offset;
+  while(s>0&&/\S/.test(t[s-1]))s--;
+  while(e<t.length&&/\S/.test(t[e]))e++;
+  return t.slice(s,e).replace(/[.,!?;:'"()]+$/,'').replace(/^[.,!?;:'"()]+/,'');
+}
+function showCtxMenu(e){
+  if(editMode)return;
+  const tgt=e.target;
+  if(tgt.tagName==='INPUT'||tgt.tagName==='TEXTAREA'||tgt.tagName==='BUTTON')return;
+  const word=getWordAtCursor(e.clientX,e.clientY);
+  if(!word)return;
+  e.preventDefault();
+  _ctxOriginal=word;
+  _ctxWord=word.toLowerCase();
+  const existing=CONTENT.autoLinks&&CONTENT.autoLinks[_ctxWord];
+  const existingPage=existing?CONTENT.pages[existing]:null;
+  const existingLabel=existingPage?(existingPage.navLabel||existingPage.title||existing):'';
+  let html=`<div class="ctx-item" onclick="showALPicker()">🔗 Link <span class="ctx-word">"${esc(word)}"</span> to a page…</div>`;
+  if(existing) html+=`<hr class="ctx-sep"><div class="ctx-item" style="font-size:12px;color:#666;cursor:default;padding:4px 14px;">Currently → ${esc(existingLabel)}</div><div class="ctx-item" style="color:#a32d2d;" onclick="removeAutoLink()">✕ Remove this link</div>`;
+  const menu=g('ctx-menu');
+  menu.innerHTML=html;
+  menu.style.display='block';
+  menu.style.left=e.clientX+'px';
+  menu.style.top=e.clientY+'px';
+  requestAnimationFrame(()=>{
+    const r=menu.getBoundingClientRect();
+    if(r.right>window.innerWidth)menu.style.left=(e.clientX-r.width)+'px';
+    if(r.bottom>window.innerHeight)menu.style.top=(e.clientY-r.height)+'px';
+  });
+}
+function closeCtxMenu(){g('ctx-menu').style.display='none';}
+function showALPicker(){
+  closeCtxMenu();
+  const pages=Object.entries(CONTENT.pages)
+    .filter(([,pg])=>pg.title||pg.navLabel)
+    .map(([pid,pg])=>`<button class="al-page-btn" data-pid="${esc(pid)}" data-label="${esc((pg.navLabel||pg.title||'').toLowerCase())}" onclick="setAutoLink('${esc(pid)}')">${esc(pg.navLabel||pg.title||pid)}</button>`)
+    .join('');
+  g('al-modal').style.display='flex';
+  g('al-modal-inner').innerHTML=`<div class="al-box">
+    <h3>Link <span style="color:#7b6fbb">"${esc(_ctxOriginal)}"</span> to…</h3>
+    <input class="al-search" placeholder="Search pages…" oninput="filterALPages(this.value)" autofocus>
+    <div class="al-pages" id="al-pages">${pages}</div>
+    <button class="al-cancel" onclick="closeALModal()">Cancel</button>
+  </div>`;
+  setTimeout(()=>g('al-modal-inner').querySelector('.al-search')&&g('al-modal-inner').querySelector('.al-search').focus(),50);
+}
+function filterALPages(q){
+  q=q.toLowerCase();
+  g('al-pages').querySelectorAll('.al-page-btn').forEach(btn=>{
+    btn.style.display=btn.dataset.label.includes(q)?'':'none';
+  });
+}
+function closeALModal(){g('al-modal').style.display='none';}
+function setAutoLink(pageId){
+  if(!CONTENT.autoLinks)CONTENT.autoLinks={};
+  CONTENT.autoLinks[_ctxWord]=pageId;
+  closeALModal();
+  scheduleSave();
+  rerenderCurrentPage();
+}
+function removeAutoLink(){
+  if(CONTENT.autoLinks)delete CONTENT.autoLinks[_ctxWord];
+  closeCtxMenu();
+  scheduleSave();
+  rerenderCurrentPage();
+}
+function applyAutoLinks(body){
+  if(!body||!CONTENT.autoLinks)return body;
+  const links=Object.entries(CONTENT.autoLinks);
+  if(!links.length)return body;
+  const parts=body.split(/(\[\[[^\]]+\]\])/g);
+  return parts.map(part=>{
+    if(/^\[\[/.test(part))return part;
+    links.forEach(([word,pageId])=>{
+      const esc2=word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+      part=part.replace(new RegExp(`(?<=[\\s\\S]|^)(${esc2})(?=[\\s\\S]|$)`,'gi'),m=>`[[${pageId}|${m}]]`);
+    });
+    return part;
+  }).join('');
+}
+document.addEventListener('contextmenu',showCtxMenu);
+document.addEventListener('click',function(e){if(!g('ctx-menu').contains(e.target))closeCtxMenu();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeCtxMenu();closeALModal();}});
+
+// ── NAV DRAG-AND-DROP ─────────────────────────────────
+let _navDrag={nsi:-1,idx:-1};
+function navDragStart(e,nsi,idx){e.dataTransfer.effectAllowed='move';_navDrag={nsi,idx};}
+function navDragOver(e,nsi,idx){
+  e.preventDefault();e.dataTransfer.dropEffect='move';
+  document.querySelectorAll('.ni-drag-over').forEach(el=>el.classList.remove('ni-drag-over'));
+  e.currentTarget.classList.add('ni-drag-over');
+}
+function navDragLeave(e){e.currentTarget.classList.remove('ni-drag-over');}
+function navDrop(e,nsi,idx){
+  e.preventDefault();
+  document.querySelectorAll('.ni-drag-over').forEach(el=>el.classList.remove('ni-drag-over'));
+  if(_navDrag.nsi!==nsi||_navDrag.idx===idx){_navDrag={nsi:-1,idx:-1};return;}
+  const pages=CONTENT.navSections[nsi].pages;
+  const [moved]=pages.splice(_navDrag.idx,1);
+  pages.splice(idx,0,moved);
+  _navDrag={nsi:-1,idx:-1};
+  buildNav();scheduleSave();
+}
 </script>
+
+<div id="ctx-menu" class="ctx-menu"></div>
+<div id="al-modal" class="al-modal" onclick="if(event.target===this)closeALModal()"><div id="al-modal-inner"></div></div>
 </body>
 </html>
