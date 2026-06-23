@@ -1032,7 +1032,8 @@ function showCtxMenu(e){
   if(editMode)return;
   const tgt=e.target;
   if(tgt.tagName==='INPUT'||tgt.tagName==='TEXTAREA'||tgt.tagName==='BUTTON')return;
-  const word=getWordAtCursor(e.clientX,e.clientY);
+  const linkEl=tgt.closest?tgt.closest('.inline-link'):null;
+  const word=linkEl?linkEl.textContent.trim():getWordAtCursor(e.clientX,e.clientY);
   if(!word)return;
   e.preventDefault();
   _ctxOriginal=word;
