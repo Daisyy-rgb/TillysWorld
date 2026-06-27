@@ -691,6 +691,14 @@ function moveSec(pid,idx,dir){
 }
 
 // ── ARCANA PAGE ───────────────────────────────────────
+function enableStepsPage(di,ci){
+  var card=CONTENT.arcanaDecks[di].cards[ci];
+  if(!card.stepsPageId)card.stepsPageId=uid();
+  var sid=card.stepsPageId;
+  if(!CONTENT.pages[sid])CONTENT.pages[sid]={title:card.card,subtitle:card.name+(card.num?' · '+card.num:''),navLabel:card.card+' Steps',pageType:'steps'};
+  if(!CONTENT.pages[sid].steps||!CONTENT.pages[sid].steps.length)CONTENT.pages[sid].steps=blankSteps();
+  ensurePageDOM(sid);
+}
 function renderArcanaPage(pid){
   const pg=CONTENT.pages[pid];
   let html='';
@@ -714,7 +722,7 @@ function renderArcanaPage(pid){
             <label>Card name</label><input value="${esc(c.card)}" oninput="CONTENT.arcanaDecks[${di}].cards[${ci}].card=this.value;scheduleSave();">
             <label>Sovereignty / Title</label><input value="${esc(c.name)}" oninput="CONTENT.arcanaDecks[${di}].cards[${ci}].name=this.value;scheduleSave();">
             <label style="display:flex;align-items:center;gap:5px;cursor:pointer;margin-top:3px;">
-              <input type="checkbox" ${c.detail?'checked':''} style="width:auto;" onchange="(function(el,di,ci){var card=CONTENT.arcanaDecks[di].cards[ci];card.detail=el.checked;card.featured=el.checked;if(el.checked&&!card.stepsPageId){var sid=uid();card.stepsPageId=sid;CONTENT.pages[sid]={title:card.card,subtitle:card.name+(card.num?' · '+card.num:''),navLabel:card.card+' Steps',pageType:'steps',steps:blankSteps()};ensurePageDOM(sid);}renderArcanaPage('${pid}');scheduleSave();})(this,${di},${ci})">
+              <input type="checkbox" ${c.detail?'checked':''} style="width:auto;" onchange="(function(el,di,ci){var card=CONTENT.arcanaDecks[di].cards[ci];card.detail=el.checked;card.featured=el.checked;if(el.checked)enableStepsPage(di,ci);renderArcanaPage('${pid}');scheduleSave();})(this,${di},${ci})">
               Links to own steps page
             </label>
             ${c.stepsPageId?`<div style="font-size:9px;color:#aaa;margin-top:1px;">→ <span style="font-family:monospace;">${esc(c.stepsPageId)}</span></div>`:''}
