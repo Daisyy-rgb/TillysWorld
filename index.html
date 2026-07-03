@@ -359,7 +359,7 @@ function getToken(){return localStorage.getItem('tw_pat')||'';}
 function saveToken(){const v=g('pat-input').value.trim();if(v){localStorage.setItem('tw_pat',v);setStatus('Token saved.','saved');g('settings-panel').style.display='none';}}
 function toggleSettings(){const p=g('settings-panel');p.style.display=p.style.display==='none'?'block':'none';if(p.style.display==='block'){const t=getToken();if(t)g('pat-input').value=t;}}
 function setStatus(msg,type){const el=g('save-status');el.textContent=msg;el.className='sb-status '+(type||'');}
-function scheduleSave(){setStatus('● Unsaved changes','unsaved');clearTimeout(saveTimer);saveTimer=setTimeout(pushToGitHub,8000);}
+function scheduleSave(){setStatus('● Unsaved changes','unsaved');clearTimeout(saveTimer);saveTimer=setTimeout(pushToGitHub,30000);}
 async function pushToGitHub(){
   const token=getToken();
   if(!token){setStatus('⚠ No token — set one in GitHub settings','error');return;}
